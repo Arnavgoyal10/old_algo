@@ -252,11 +252,11 @@ def main():
     df = okx.add_trading_signals(ret)
     filtered_df = df[df['direction'] != 'nothing']
 
-    # print(filtered_df)
+    print(filtered_df)
 
     # df_ultimate = supertrend.SuperTrend(ret, period= 17, multiplier=3, ohlc=ohlc)
     # df_super = supertrend.SuperTrend(ret, period= 17, multiplier=1.5, ohlc=ohlc)
-    df_impulse = ret[['time', 'inth', 'intl', 'intc']]
+    # df_impulse = ret[['time', 'inth', 'intl', 'intc']]
     # df_impulse = impulsemacd.macd(df_impulse)
     # df_tsi = ret[['intc']]
     # df_tsi = tsi.tsi(df_tsi)
