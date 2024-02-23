@@ -13,6 +13,8 @@ import velocity_indicator
 import xtrend
 import hull_ma
 import okx
+import squeeze
+import range
 
 
 data_dict = files_interact.extract()      
@@ -250,11 +252,10 @@ def main():
     
     
 
-    print(ret)
-    df = xtrend.add_direction_column(ret)
-    filtered_df = df[df['direction'] != 'nothing']
+    df = range.range_detector(ret)
+    filtered_df = df[df['is_shading'] != False]
 
-    print(filtered_df)
+    print(filtered_df.tail(75))
 
     # df_ultimate = supertrend.SuperTrend(ret, period= 17, multiplier=3, ohlc=ohlc)
     # df_super = supertrend.SuperTrend(ret, period= 17, multiplier=1.5, ohlc=ohlc)
