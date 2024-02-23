@@ -1,5 +1,5 @@
 import datetime
-import pandas as pd 
+import pandas as pd
 import files_interact
 import login
 import supertrend
@@ -11,7 +11,7 @@ import argparse
 import hhll_indicator
 import velocity_indicator
 import xtrend
-import ssl_hy
+import hull_ma
 import okx
 
 
@@ -193,7 +193,9 @@ def main():
     token = files_interact.get_token("NSE", "Nifty 50")
     lastBusDay = datetime.datetime.now()-datetime.timedelta(days=16)
     lastBusDay = lastBusDay.replace(hour=0, minute=0, second=0, microsecond=0)
-    ret = client.get_time_price_series(exchange="NSE", token = str(int(token)), starttime=int(lastBusDay.timestamp()), interval="5")
+    last_day = datetime.datetime.now()-datetime.timedelta(days=1)
+    last_day = last_day.replace(hour=0, minute=0, second=0, microsecond=0)
+    ret = client.get_time_price_series(exchange="NSE", token = str(int(token)), starttime=int(lastBusDay.timestamp()), endtime=int(last_day.timestamp()) , interval="5")
     ret = pd.DataFrame.from_dict(ret)
     ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
     ret.sort_values(by='time', ascending=True, inplace=True)
@@ -248,8 +250,8 @@ def main():
     
     
 
-
-    df = okx.add_trading_signals(ret)
+    print(ret)
+    df = xtrend.add_direction_column(ret)
     filtered_df = df[df['direction'] != 'nothing']
 
     print(filtered_df)

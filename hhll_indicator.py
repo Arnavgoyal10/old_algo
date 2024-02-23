@@ -6,11 +6,11 @@ def find_pivots(df, lb, rb, ohlc=['open', 'high', 'low', 'close']):
     df['pivot_low'] = df[ohlc[2]].rolling(window=lb+rb+1, center=True).min() == df[ohlc[2]]
     return df
 
-def hhll(df, ohlc=['open', 'high', 'low', 'close']):
+def hhll(df, left, right, ohlc=['open', 'high', 'low', 'close']):
     
     df = find_pivots(df,5,5, ohlc)
-    lb = 5
-    rb = 5
+    lb = left
+    rb = right
     df['direction'] = False
     prev_pivot_high = None
     prev_pivot_low = None

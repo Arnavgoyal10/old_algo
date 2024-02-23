@@ -333,12 +333,13 @@ def set_atm(ltp):
 
 def main():
 
-    threading.Thread(target=conditions).start()
+    print("hello")
+    # threading.Thread(target=conditions).start()
      
-    while(feed_opened==False):
-        pass
+    # while(feed_opened==False):
+    #     pass
         
-    subsribe("NSE", "Nifty 50")
+    # subsribe("NSE", "Nifty 50")
 
 
 if __name__ == "__main__":
