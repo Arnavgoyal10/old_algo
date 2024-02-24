@@ -10,7 +10,6 @@ import os
 import argparse
 import hhll_indicator
 import velocity_indicator
-import xtrend
 import hull_ma
 import okx
 import squeeze
@@ -251,11 +250,10 @@ def main():
     # trade_data.to_csv(df_comb_file, index=False)
     
     
+    df = range.range_status(ret)
+    filtered_df = df[df['status'] == "unbroken"]
 
-    df = range.range_detector(ret)
-    filtered_df = df[df['is_shading'] != False]
-
-    print(filtered_df.tail(75))
+    print(filtered_df["time"].tail(60))
 
     # df_ultimate = supertrend.SuperTrend(ret, period= 17, multiplier=3, ohlc=ohlc)
     # df_super = supertrend.SuperTrend(ret, period= 17, multiplier=1.5, ohlc=ohlc)
