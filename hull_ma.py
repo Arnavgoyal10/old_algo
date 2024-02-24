@@ -7,22 +7,18 @@ def wma(weights):
     return calc
 
 def calculate_hma(df, length=60):
-    # Ensure 'close' column exists in the DataFrame
     if 'intc' not in df.columns:
         raise ValueError("DataFrame must contain a 'intc' column.")
     
-    # Calculate weights for WMA
     half_length = int(length / 2)
     sqrt_length = int(np.floor(np.sqrt(length)))
     weights_half = np.arange(1, half_length + 1)
     weights_full = np.arange(1, length + 1)
     weights_sqrt = np.arange(1, sqrt_length + 1)
     
-    # Calculate WMAs
     wma_half = df['intc'].rolling(window=half_length).apply(wma(weights_half), raw=True)
     wma_full = df['intc'].rolling(window=length).apply(wma(weights_full), raw=True)
     
-    # Calculate HMA
     df['hma'] = (2 * wma_half - wma_full).rolling(window=sqrt_length).apply(wma(weights_sqrt), raw=True)
     
     return df

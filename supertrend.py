@@ -5,20 +5,6 @@ import pandas as pd
 
 def EMA(df, base, target, period, alpha=False):
     
-    """
-    Function to compute Exponential Moving Average (EMA)
-
-    Args :
-        df : Pandas DataFrame which contains ['date', 'open', 'high', 'low', 'close', 'volume'] columns
-        base : String indicating the column name from which the EMA needs to be computed from
-        target : String indicates the column name to which the computed data needs to be stored
-        period : Integer indicates the period of computation in terms of number of candles
-        alpha : Boolean if True indicates to use the formula for computing EMA using alpha (default is False)
-
-    Returns :
-        df : Pandas DataFrame with new column added with name 'target'
-    """
-
     con = pd.concat([df[:period][base].rolling(window=period).mean(), df[period:][base]])
 
     if (alpha == True):
@@ -35,20 +21,6 @@ def EMA(df, base, target, period, alpha=False):
 
 
 def ATR(df, period, ohlc=['open', 'high', 'low', 'close']):
-
-    """
-    Function to compute Average True Range (ATR)
-
-    Args :
-        df : Pandas DataFrame which contains ['date', 'open', 'high', 'low', 'close', 'volume'] columns
-        period : Integer indicates the period of computation in terms of number of candles
-        ohlc: List defining OHLC Column names (default ['Open', 'High', 'Low', 'Close'])
-
-    Returns :
-        df : Pandas DataFrame with new columns added for
-            True Range (TR)
-            ATR (ATR_$period)
-    """
     atr = 'ATR_' + str(period)
 
     # Compute true range only if it is not computed and stored earlier in the df
@@ -75,22 +47,7 @@ def SuperTrend(df1, period, multiplier, ohlc=['open', 'high', 'low', 'close']):
 
     df = df1.copy()
     multiplier = float(multiplier)
-    
-    """
-    Function to compute SuperTrend
 
-    Args :
-        df : Pandas DataFrame which contains ['date', 'open', 'high', 'low', 'close', 'volume'] columns
-        period : Integer indicates the period of computation in terms of number of candles
-        multiplier : Integer indicates value to multiply the ATR
-        ohlc: List defining OHLC Column names (default ['Open', 'High', 'Low', 'Close'])
-
-    Returns :
-        df : Pandas DataFrame with new columns added for
-            True Range (TR), ATR (ATR_$period)
-            SuperTrend (ST_$period_$multiplier)
-            SuperTrend Direction (STX_$period_$multiplier)
-    """
 
     ATR(df, period, ohlc=ohlc)
     atr = 'ATR_' + str(period)
@@ -121,11 +78,9 @@ def SuperTrend(df1, period, multiplier, ohlc=['open', 'high', 'low', 'close']):
                                     Current FINAL UPPERBAND
     """
 
-    # Compute basic upper and lower bands
     df['basic_ub'] = (df[ohlc[1]] + df[ohlc[2]]) / 2 + multiplier * df[atr]
     df['basic_lb'] = (df[ohlc[1]] + df[ohlc[2]]) / 2 - multiplier * df[atr]
 
-    # Compute final upper and lower bands
     df['final_ub'] = 0.00
     df['final_lb'] = 0.00
     for i in range(period, len(df)):
@@ -136,7 +91,6 @@ def SuperTrend(df1, period, multiplier, ohlc=['open', 'high', 'low', 'close']):
                                                          df[ohlc[3]].iat[i - 1] < df['final_lb'].iat[i - 1] else \
         df['final_lb'].iat[i - 1]
 
-    # Set the Supertrend value
     df[st] = 0.00
     for i in range(period, len(df)):
         df[st].iat[i] = df['final_ub'].iat[i] if df[st].iat[i - 1] == df['final_ub'].iat[i - 1] and df[ohlc[3]].iat[
@@ -148,10 +102,8 @@ def SuperTrend(df1, period, multiplier, ohlc=['open', 'high', 'low', 'close']):
                     df['final_ub'].iat[i] if df[st].iat[i - 1] == df['final_lb'].iat[i - 1] and df[ohlc[3]].iat[i] < \
                                              df['final_lb'].iat[i] else 0.00
 
-        # Mark the trend direction up/down
     df[stx] = np.where((df[st] > 0.00), np.where((df[ohlc[3]] < df[st]), 'down', 'up'), np.NaN)
 
-    # Remove basic and final bands from the columns
     df.drop(['basic_ub', 'basic_lb', 'final_ub', 'final_lb'], inplace=True, axis=1)
 
     df.fillna(0, inplace=True)

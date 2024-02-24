@@ -2,22 +2,13 @@
 import pandas as pd
 import numpy as np
 import talib as tl
-from os import environ as env
 
 
-#--------------------------INPUTS--------------------------------
 lengthMA: int = 34
 lengthSignal: int = 9
 
-#--------------------------FUNCIONS------------------------------
 def calc_smma(src: np.ndarray, length: int) -> np.ndarray:
-    """
-    Calculate Smoothed Moving Average (SMMA) for a given numpy array `src` with a specified `length`.
 
-    :param src: A numpy ndarray of shape (n,) containing the input values of float64 dtype.
-    :param length: An integer representing the length of the SMMA window.
-    :return: A numpy ndarray of the same shape as `src` containing the SMMA values.
-    """
     smma = np.full_like(src, fill_value=np.nan)
     sma = tl.SMA(src, length)
 
@@ -31,13 +22,7 @@ def calc_smma(src: np.ndarray, length: int) -> np.ndarray:
     return smma
 
 def calc_zlema(src: np.ndarray, length: int) -> np.ndarray:
-    """
-    Calculates the zero-lag exponential moving average (ZLEMA) of the given price series.
 
-    :param src: The input price series of float64 dtype to calculate the ZLEMA for.
-    :param length: int The number of bars to use for the calculation of the ZLEMA.
-    :return: A numpy ndarray of ZLEMA values for the input price series.
-    """
     ema1 = tl.EMA(src, length)
     ema2 = tl.EMA(ema1, length)
     d = ema1 - ema2

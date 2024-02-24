@@ -14,6 +14,7 @@ import hull_ma
 import okx
 import squeeze
 import range
+import obv
 
 
 data_dict = files_interact.extract()      
@@ -250,10 +251,10 @@ def main():
     # trade_data.to_csv(df_comb_file, index=False)
     
     
-    df = range.range_status(ret)
-    filtered_df = df[df['status'] == "unbroken"]
+    df = obv.add_macd_to_df(ret)
+    # filtered_df = df[df['status'] == "unbroken"]
 
-    print(filtered_df["time"].tail(60))
+    print(df.tail(20))
 
     # df_ultimate = supertrend.SuperTrend(ret, period= 17, multiplier=3, ohlc=ohlc)
     # df_super = supertrend.SuperTrend(ret, period= 17, multiplier=1.5, ohlc=ohlc)
