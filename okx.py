@@ -3,7 +3,6 @@ import numpy as np
 
 def add_trading_signals(df):
     entryLength = 20
-    exitLength = 10
 
     df['highest_high'] = df['inth'].rolling(window=entryLength).max()
     df['lowest_low'] = df['intl'].rolling(window=entryLength).min()

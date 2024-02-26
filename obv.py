@@ -17,8 +17,9 @@ def calculate_ma(series, length, ma_type='DEMA'):
     else:
         raise NotImplementedError(f"MA type '{ma_type}' is not implemented")
 
-def compute_obv_macd_indicator(df, window_len=28, volume_len=14, obv_len=1, ma_type='DEMA', ma_len=9, slow_length=26):
+def compute_obv_macd_indicator(df, window_len=28, volume_len=14, obv_len=1, ma_len=9, slow_length=26):
     # Check if all required columns exist
+    ma_type='DEMA'
     required_columns = ['close', 'high', 'low', 'volume']
     if not all(col in df.columns for col in required_columns):
         raise ValueError(f"DataFrame must contain the following columns: {required_columns}")
