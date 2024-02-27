@@ -15,7 +15,8 @@ import okx
 import squeeze
 import range
 import obv
-
+import obv
+import range1
 
 data_dict = files_interact.extract()      
 client=login.login()
@@ -250,10 +251,11 @@ def main():
     # ret.to_csv(df_comb_file, index=False)
     
     
-    df = obv.compute_obv_macd_indicator(ret)
-    # filtered_df = df[df['in range'] == True]
-    print(df.tail(50))
+    df = range.in_range_detector(ret)
+    filtered_df = df[df['in range'] == True]
+    print(filtered_df.tail(50))
 
+    
     
 if __name__ == "__main__":
     main()

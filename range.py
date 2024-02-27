@@ -34,10 +34,3 @@ def in_range_detector(df, length=20, mult=1.0, atr_length=500):
     df.drop(['ma', 'atr'], axis=1, inplace=True)
     
     return df
-
-# Example usage
-# Ensure your DataFrame 'df' includes 'high', 'low', and 'close' columns
-# df = in_range_detector(df, length=20, mult=1.0, atr_length=500)
-
-
-
