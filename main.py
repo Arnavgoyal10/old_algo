@@ -192,14 +192,12 @@ def check_exit(df, side):
     
 def main():
     
-    # token = files_interact.get_token_instrument("NIFTY07MAR24C22000")
-    # print(token)
-    token = files_interact.get_token("NSE", "Nifty 50")
+    token = files_interact.get_token("NSE", "ADANIENT")
     lastBusDay = datetime.datetime.now()-datetime.timedelta(days=16)
     lastBusDay = lastBusDay.replace(hour=0, minute=0, second=0, microsecond=0)
-    last_day = datetime.datetime.now()-datetime.timedelta(days=4)
-    last_day = last_day.replace(hour=0, minute=0, second=0, microsecond=0)
-    ret = client.get_time_price_series(exchange="NFO", token = str(int(token)), starttime=int(lastBusDay.timestamp()), endtime=int(last_day.timestamp()) , interval="5")
+    # last_day = datetime.datetime.now()-datetime.timedelta(days=4)
+    # last_day = last_day.replace(hour=0, minute=0, second=0, microsecond=0)
+    ret = client.get_time_price_series(exchange="NSE", token = str(int(token)), starttime=int(lastBusDay.timestamp()), interval="5")
     ret = pd.DataFrame.from_dict(ret)
     ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
     ret.sort_values(by='time', ascending=True, inplace=True)
@@ -214,7 +212,6 @@ def main():
     # order_placed = False
     # main_signal = False
     # confirmation_waiting = False
-    # last_exit_index = 100
     # order_counter = 0
     # bull_or_bear = None   
     
@@ -250,29 +247,13 @@ def main():
     
     # current_directory = os.getcwd()
     # df_comb_file = os.path.join(current_directory, 'testing2.csv')
-    # trade_data.to_csv(df_comb_file, index=False)
+    # ret.to_csv(df_comb_file, index=False)
     
     
-    
-    
-    # print(ret.tail(20))
-    # df = obv.calculate_line(ret, obv_length=1, ma_length=9, macd_slow_length=26, len5=2)
-    # filtered_df = df[df['InRange'] == True]
-    print(ret)
+    df = obv.compute_obv_macd_indicator(ret)
+    # filtered_df = df[df['in range'] == True]
+    print(df.tail(50))
 
-
-    # df_ultimate = supertrend.SuperTrend(ret, period= 17, multiplier=3, ohlc=ohlc)
-    # df_super = supertrend.SuperTrend(ret, period= 17, multiplier=1.5, ohlc=ohlc)
-    # df_impulse = ret[['time', 'inth', 'intl', 'intc']]
-    # df_impulse = impulsemacd.macd(df_impulse)
-    # df_tsi = ret[['intc']]
-    # df_tsi = tsi.tsi(df_tsi)
-    # result = pd.concat([ret, df_ultimate["STX17_3.0"], df_super["STX17_1.5"], df_impulse, df_tsi ],  axis=1)
-    # result = result[500:]
-    # df_comb_file = os.path.join(current_directory, 'plssss.csv')
-    # result.to_csv(df_comb_file, index=False)
-    
-    
     
 if __name__ == "__main__":
     main()

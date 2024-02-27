@@ -77,7 +77,7 @@ def get_trading_symbol(exchange, symbol, side, strike):
     return TradingSymbol
 
 #extra
-def get_token_instrument(TradingSymbol):
+def get_ti(TradingSymbol):
     res =  data_dict['NFO_data'].query(f'TradingSymbol == "{TradingSymbol}"')
     res=res.sort_values("Expiry")
     token = res["Token"]
