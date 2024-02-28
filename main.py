@@ -16,7 +16,6 @@ import squeeze
 import range
 import obv
 import obv
-import range1
 
 data_dict = files_interact.extract()      
 client=login.login()
