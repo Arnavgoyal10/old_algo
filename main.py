@@ -13,9 +13,9 @@ import velocity_indicator
 import hull_ma
 import okx
 import squeeze
-import range
+import ranged
 import obv
-import obv
+
 
 data_dict = files_interact.extract()      
 client=login.login()
@@ -249,10 +249,8 @@ def main():
     # df_comb_file = os.path.join(current_directory, 'testing2.csv')
     # ret.to_csv(df_comb_file, index=False)
     
-    
-    df = range.in_range_detector(ret)
-    filtered_df = df[df['in range'] == True]
-    print(filtered_df.tail(50))
+    df = obv.compute_obv_macd_indicator(ret)
+    print(df.tail(50))
 
     
     

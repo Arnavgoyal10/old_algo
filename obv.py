@@ -13,7 +13,7 @@ def dema(series, length):
     ema2 = ema1.ewm(span=length, adjust=False).mean()
     return 2 * ema1 - ema2
 
-def compute_obv_macd_indicator(df, obv_ema_len=14, macd_fast_len=12, macd_slow_len=26, macd_signal_len=9, shadow_window=20):
+def compute_obv_macd_indicator(df, obv_ema_len=14, macd_fast_len=12, macd_slow_len=26, macd_signal_len=9, shadow_window=28):
     # Check for required columns
     df['intc'] = pd.to_numeric(df['intc'], errors='coerce')
     df['v'] = pd.to_numeric(df['v'], errors='coerce')   
