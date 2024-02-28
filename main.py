@@ -15,12 +15,11 @@ import okx
 import squeeze
 import ranged
 import obv
-
+import obv2
 
 data_dict = files_interact.extract()      
 client=login.login()
 ohlc=['into', 'inth', 'intl', 'intc']
-
 
 def set_stoploss(temp, side):
     global stoploss
@@ -192,7 +191,7 @@ def check_exit(df, side):
     
 def main():
     
-    token = files_interact.get_token("NSE", "ADANIENT")
+    token = files_interact.get_token("NSE", "Nifty 50")
     lastBusDay = datetime.datetime.now()-datetime.timedelta(days=16)
     lastBusDay = lastBusDay.replace(hour=0, minute=0, second=0, microsecond=0)
     # last_day = datetime.datetime.now()-datetime.timedelta(days=4)
@@ -249,9 +248,8 @@ def main():
     # df_comb_file = os.path.join(current_directory, 'testing2.csv')
     # ret.to_csv(df_comb_file, index=False)
     
-    df = obv.compute_obv_macd_indicator(ret)
+    df = obv2.compute_obv_macd_indicator(ret)
     print(df.tail(50))
-
     
     
 if __name__ == "__main__":
