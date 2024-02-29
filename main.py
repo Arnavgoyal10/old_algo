@@ -77,7 +77,7 @@ def confirmation(inner, df, side):
     
     return main_signal, confirmation_waiting
 
-def check_trade(outer, inner, df):
+def check_trade(outer, df):
     global stoploss
     supertrend_signal = False
     impulse_signal = False
