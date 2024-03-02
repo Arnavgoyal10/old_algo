@@ -14,7 +14,7 @@ import hull_ma
 import okx
 import squeeze
 import ranged
-import obv2
+import obv
 
 data_dict = files_interact.extract()      
 client=login.login()
@@ -247,7 +247,7 @@ def main():
     # df_comb_file = os.path.join(current_directory, 'testing2.csv')
     # ret.to_csv(df_comb_file, index=False)
     
-    df = obv2.compute_obv_macd_indicator(ret)
+    df = obv.compute_obv_macd_indicator(ret)
     print(df.tail(50))
     
     
