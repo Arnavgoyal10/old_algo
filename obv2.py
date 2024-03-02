@@ -12,7 +12,7 @@ def dema(series, length):
     ema2 = ema1.ewm(span=length, adjust=False).mean()
     return 2 * ema1 - ema2
 
-def compute_obv_macd_indicator(df, macd_fast_len=12, macd_slow_len=26, macd_signal_len=9):
+def compute_exit(df, macd_fast_len=12, macd_slow_len=26, macd_signal_len=9):
     df['MACD'] = dema(df['intc'], macd_fast_len) - dema(df['intc'], macd_slow_len)
     df['MACD_Signal'] = df['MACD'].ewm(span=macd_signal_len, adjust=False).mean()
 

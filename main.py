@@ -14,7 +14,6 @@ import hull_ma
 import okx
 import squeeze
 import ranged
-import obv
 import obv2
 
 data_dict = files_interact.extract()      
