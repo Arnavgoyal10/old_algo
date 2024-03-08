@@ -21,8 +21,8 @@ def add_trading_signals(df):
     df['exitBarssince2'].ffill(inplace=True)
 
     df['direction'] = 'Nothing'
-    df.loc[df['buySignal'] & (df['exitBarssince1'] < df['entryBarssince1'].shift(1)), 'direction'] = 'Long Entry'
-    df.loc[df['sellSignal'] & (df['exitBarssince2'] < df['entryBarssince2'].shift(1)), 'direction'] = 'Short Entry'
+    df.loc[df['buySignal'] & (df['exitBarssince1'] < df['entryBarssince1'].shift(1)), 'direction'] = 'up'
+    df.loc[df['sellSignal'] & (df['exitBarssince2'] < df['entryBarssince2'].shift(1)), 'direction'] = 'down'
 
     drop_columns = ['highest_high', 'lowest_low', 'buySignal', 'sellSignal',
                     'buySignalChange', 'sellSignalChange', 'entryBarssince1', 'entryBarssince2',
