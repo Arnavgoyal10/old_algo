@@ -20,18 +20,24 @@ data_dict = files_interact.extract()
 client=login.login()
 ohlc=['into', 'inth', 'intl', 'intc']
      
-def set_stoploss(temp, side):
-    global stoploss
-    num = 0 
+def set_stoploss(temp, side, stoploss):
+    num = 0.0
     if side == "up":
         num = temp["intl"].iloc[-1] - 10
-        if num > stoploss:
+        print(num)
+        if (num > stoploss or stoploss == 0):
             stoploss = num
+            print("stoploss_set at")
+            print(temp["time"].iloc[-1])
     else:
-        stoploss = temp["inth"].iloc[-1] + 10
-        if num < stoploss:
+        num = temp["inth"].iloc[-1] + 10
+        print(num)
+        if (num < stoploss or stoploss == 0):
             stoploss = num
-    float(stoploss)
+            print("stoploss_set at")
+            print(temp["time"].iloc[-1])
+    print(stoploss)
+    return stoploss
 
 def append_value(dataframe, column_name, value, index):
     if index >= len(dataframe):
@@ -44,31 +50,32 @@ def append_value(dataframe, column_name, value, index):
     return dataframe
 
 def confirmation(df, side):
-    df_okx = okx.add_trading_signals(df)
+    # df_okx = okx.add_trading_signals(df)
+    df_super = supertrend.SuperTrend(df, period= 17, multiplier=3, ohlc=ohlc)
     df_tsi = df[['intc']]
     df_tsi = tsi.tsi(df_tsi)
     order_signal = False
+    stoploss = 0
 
-    if (df_okx["direction"].iloc[-1] == df_okx["direction"].iloc[-2]):
+    if (df_super["STX17_3.0"].iloc[-1] == df_super["STX17_3.0"].iloc[-2]):
         temp1 = df_tsi["TSI_13_25_13"].iloc[-1] - df_tsi["TSI_13_25_13"].iloc[-2]
         temp2 = df_tsi["TSI_13_25_13"].iloc[-2] - df_tsi["TSI_13_25_13"].iloc[-3]
         if side == "up":
             if temp1 > temp2:
                 order_signal = True
-                set_stoploss(df, side)
+                stoploss = set_stoploss(df, side, stoploss)
         else:
             if temp1 < temp2:
                 order_signal = True
-                set_stoploss(df, side)
+                stoploss = set_stoploss(df, side, stoploss)
     else:
         print("order came in waiting but got canceled")
     confirmation_waiting = False
     
-    return order_signal, confirmation_waiting
+    return order_signal, confirmation_waiting, stoploss
 
 def check_trade(df):
-    global stoploss
-    okx_signal = False
+    supertrend_signal = False
     impulse_signal = False
     tsi_waiting = False
     signal = False
@@ -76,7 +83,8 @@ def check_trade(df):
     impulse_waiting = False
     small_signal = False
     
-    df_okx = okx.add_trading_signals(df)
+    # df_okx = okx.add_trading_signals(df)
+    df_super = supertrend.SuperTrend(df, period= 17, multiplier=3, ohlc=ohlc)
     df_squeeze = squeeze.squeeze_index(df)
     df_range = ranged.in_range_detector(df)
     df_impulse = df[['time', 'inth', 'intl', 'intc']]
@@ -86,14 +94,16 @@ def check_trade(df):
     current_time = df["time"].iloc[-1]
     comparison_time = current_time.replace(hour=15, minute=00, second=0, microsecond=0)
     bull_or_bear = "none"
+    stoploss = 0
+    
     
     if current_time < comparison_time:        
-        if (df_okx["direction"].iloc[-1] != df_okx["direction"].iloc[-2]):
-            okx_signal = True
+        if (df_super["STX17_3.0"].iloc[-1] != df_super["STX17_3.0"].iloc[-2]):
+            supertrend_signal = True
      
-        if (okx_signal == True and df_range["in range"].iloc[-1] == False):
+        if (supertrend_signal == True and df_range["in range"].iloc[-1] == False):
             if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and df_squeeze["psi"].iloc[-1] < df_squeeze["psi"].iloc[-2]):
-                bull_or_bear = df_okx["direction"].iloc[-1]
+                bull_or_bear = df_super["STX17_3.0"].iloc[-1]
                 small_signal = True
         
         if (df_impulse["ImpulseMACD"].iloc[-1] != 0 and small_signal == True): 
@@ -121,32 +131,35 @@ def check_trade(df):
                 tsi_waiting = True
             elif (tsi_temp1 > tsi_temp2):
                 signal = True
+            else:
+                impulse_waiting = False
     
-        if(impulse_waiting ==True or tsi_waiting == True):
+        if(impulse_waiting == True or tsi_waiting == True):
             confirmation_waiting = True    
         elif (signal == True):
             comparison_time = current_time.replace(hour=9, minute=20, second=0, microsecond=0)
             if current_time < comparison_time:
                 confirmation_waiting = True
             else:
-                set_stoploss(df, bull_or_bear)
+                stoploss = set_stoploss(df, bull_or_bear, stoploss)
         
         if (confirmation_waiting == True):
             signal = False
             
-    return signal, confirmation_waiting, bull_or_bear, df_impulse["ImpulseMACD"].iloc[-1], df_impulse["ImpulseMACDCDSignal"].iloc[-1], df_tsi["TSI_13_25_13"].iloc[-1], df_tsi["TSIs_13_25_13"].iloc[-1], df["time"].iloc[-1]
+    return signal, confirmation_waiting, bull_or_bear, stoploss
               
-def place_order(df):
+def place_order(df, bull_or_bear, stoploss):
     time = df["time"].iloc[-1]
     entry_price = df["into"].iloc[-1]
     order_signal = False
     order_placed = True
+    stoploss = set_stoploss(df, bull_or_bear, stoploss)
     print("order placed")
     print(time)
     
-    return time, entry_price, order_signal, order_placed
+    return time, entry_price, order_signal, order_placed, stoploss
 
-def check_exit(df, side):
+def check_exit(df, side, stoploss):
     df_exit = df[['intc']]
     df_exit = tsi.tsi(df_exit)
     exit_price = 0
@@ -174,8 +187,8 @@ def check_exit(df, side):
         if case == 2:
             exit_price = df["intc"].iloc[-1]
     else:
-        set_stoploss(df, side)
-    return time, exit_price, order_placed, order_exit
+        stoploss = set_stoploss(df, side, stoploss)
+    return time, exit_price, order_placed, order_exit, stoploss
     
 def main():
     
@@ -193,7 +206,7 @@ def main():
         ret[col] = ret[col].astype(float)
     temp = pd.DataFrame()
     temp = ret.iloc[:530].copy()
-    data_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'impulse_line', 'impulse_signal', 'tsi_line', 'tsi_signal', 'tsi_time']
+    data_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
     trade_data = pd.DataFrame(columns=data_columns)
     ret = ret[530:]
     ret.reset_index(inplace=True)
@@ -201,36 +214,29 @@ def main():
     order_signal = False
     confirmation_waiting = False
     order_counter = 0
-    bull_or_bear = None   
+    bull_or_bear = None  
+    stoploss = 0 
     
-    impulse_line = 0
-    impulse_signal = 0
-    tsi_line = 0
-    tsi_signal = 0
-    tsi_time = 0
-    
-    
-    for i in range(0, len(ret)):
-        
+    for i in range(0, len(ret)): 
         if (order_placed == True and order_signal == False and confirmation_waiting == False):
-            exit_time, exit_price, order_placed, order_exit = check_exit(temp, bull_or_bear) 
+            exit_time, exit_price, order_placed, order_exit, stoploss = check_exit(temp, bull_or_bear, stoploss) 
             if order_exit == True:
                 trade_data = append_value(trade_data, 'exit_time', exit_time, order_counter)
                 trade_data = append_value(trade_data, 'exit_price', exit_price, order_counter)
+                if bull_or_bear == "up":
+                    profit  = exit_price - entry_price
+                else:
+                    profit  = entry_price - exit_price
+                trade_data = append_value(trade_data, 'profit', profit, order_counter)
                 order_counter = order_counter + 1
         elif (order_placed == False and order_signal == False and confirmation_waiting == True):
-            order_signal, confirmation_waiting = confirmation(temp, bull_or_bear)
+            order_signal, confirmation_waiting, stoploss = confirmation(temp, bull_or_bear)
         elif (order_placed == False and order_signal == True and confirmation_waiting == False):
-            entry_time , entry_price, order_signal, order_placed = place_order(temp)
+            entry_time , entry_price, order_signal, order_placed, stoploss = place_order(temp, bull_or_bear, stoploss)
             trade_data = append_value(trade_data, 'entry_time', entry_time, order_counter)
             trade_data = append_value(trade_data, 'entry_price', entry_price, order_counter)
-            trade_data = append_value(trade_data, 'impulse_line', impulse_line, order_counter)
-            trade_data = append_value(trade_data, 'impulse_signal', impulse_signal, order_counter)
-            trade_data = append_value(trade_data, 'tsi_line', tsi_line, order_counter)
-            trade_data = append_value(trade_data, 'tsi_signal', tsi_signal, order_counter)
-            trade_data = append_value(trade_data, 'tsi_time', tsi_time, order_counter)
         elif (order_placed == False and order_signal == False and confirmation_waiting ==  False):
-            order_signal, confirmation_waiting, bull_or_bear, impulse_line, impulse_signal, tsi_line, tsi_signal , tsi_time= check_trade(temp)
+            order_signal, confirmation_waiting, bull_or_bear, stoploss = check_trade(temp)
         
         
         if (i%50 == 0):
