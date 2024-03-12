@@ -11,9 +11,10 @@ import argparse
 import hhll_indicator
 import velocity_indicator
 import hull_ma
-import okx
+# import okx
 import squeeze
 import ranged
+import okxfinal
 # trio-websocket, websocket, websocket-client, ypy-websocket 
 import obv
 # from tvDatafeed import TvDatafeed, Interval
@@ -87,8 +88,8 @@ def check_trade(df):
     impulse_waiting = False
     small_signal = False
     
-    # df_okx = okx.add_trading_signals(df)
-    df_super = supertrend.SuperTrend(df, period= 17, multiplier=3, ohlc=ohlc)
+    df_okx = okxfinal.add_trading_signals(df)
+    # df_super = supertrend.SuperTrend(df, period= 17, multiplier=3, ohlc=ohlc)
     df_squeeze = squeeze.squeeze_index(df)
     df_range = ranged.in_range_detector(df)
     df_impulse = df[['time', 'inth', 'intl', 'intc']]
@@ -103,14 +104,16 @@ def check_trade(df):
     
     
     if current_time < comparison_time:        
-        if (df_super["STX17_3.0"].iloc[-1] != df_super["STX17_3.0"].iloc[-2]):
+        # if (df_super["STX17_3.0"].iloc[-1] != df_super["STX17_3.0"].iloc[-2]):
+        if (df_okx["direction"].iloc[-1] != df_okx["direction"].iloc[-2]):
             supertrend_signal = True
         else:
             reason = "super_trend_ said no"
      
         if (supertrend_signal == True and df_range["in range"].iloc[-1] == False):
             if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and df_squeeze["psi"].iloc[-1] < df_squeeze["psi"].iloc[-2]):
-                bull_or_bear = df_super["STX17_3.0"].iloc[-1]
+                # bull_or_bear = df_super["STX17_3.0"].iloc[-1]
+                bull_or_bear = df_okx["direction"].iloc[-1]
                 small_signal = True
             else:
                 reason = "Squee said no"
@@ -181,11 +184,11 @@ def check_exit(df, side, stoploss):
     order_exit = False
     
     if side == "up":
-        if (df_exit["TSI_13_25_13"].iloc[-1] < df_exit["TSI_13_25_13"].iloc[-2]):
+        if ((df_exit["TSI_13_25_13"].iloc[-1]+2) < df_exit["TSI_13_25_13"].iloc[-2]):
             alarm = True
             case = 2
     else:
-        if (df_exit["TSI_13_25_13"].iloc[-1] > df_exit["TSI_13_25_13"].iloc[-2]):
+        if ((df_exit["TSI_13_25_13"].iloc[-1]-2) > df_exit["TSI_13_25_13"].iloc[-2]):
             alarm = True
             case = 2
     if (df["inth"].iloc[-1] >= stoploss and df["intl"].iloc[-1] <= stoploss):
@@ -203,13 +206,14 @@ def check_exit(df, side, stoploss):
     return time, exit_price, order_placed, order_exit, stoploss
     
 def main():
-    # ret = tv.get_hist(symbol='NIFTY',exchange='NSE',interval=Interval.in_5_minute,n_bars=1000)
+    # ret = tv.get_hist(symbol='NIFTY',exchange='NSE',interval=Interval.in_5_minute,n_bars=3000)
         
     file_path = 'Book1.xlsx'
     ret = pd.read_excel(file_path)
     ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
     for col in ohlc:
         ret[col] = ret[col].astype(float)
+        
     
     # token = files_interact.get_token("NSE", "Nifty 50")
     # lastBusDay = datetime.datetime.now()-datetime.timedelta(days=30)
@@ -275,8 +279,10 @@ def main():
         next_row = ret.iloc[[i]]
         temp = pd.concat([temp, next_row], ignore_index=True) 
     
+    
+    # # trade_data =hull_ma.calculate_hma(ret)
     current_directory = os.getcwd()
-    df_comb_file = os.path.join(current_directory, 'testing4.csv')
+    df_comb_file = os.path.join(current_directory, 'plss.csv')
     trade_data.to_csv(df_comb_file, index=True)
     
     
