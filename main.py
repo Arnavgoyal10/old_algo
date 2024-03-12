@@ -212,8 +212,7 @@ def main():
     ret = pd.read_excel(file_path)
     ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
     for col in ohlc:
-        ret[col] = ret[col].astype(float)
-        
+        ret[col] = ret[col].astype(float)   
     
     # token = files_interact.get_token("NSE", "Nifty 50")
     # lastBusDay = datetime.datetime.now()-datetime.timedelta(days=30)
@@ -279,8 +278,6 @@ def main():
         next_row = ret.iloc[[i]]
         temp = pd.concat([temp, next_row], ignore_index=True) 
     
-    
-    # # trade_data =hull_ma.calculate_hma(ret)
     current_directory = os.getcwd()
     df_comb_file = os.path.join(current_directory, 'plss.csv')
     trade_data.to_csv(df_comb_file, index=True)
