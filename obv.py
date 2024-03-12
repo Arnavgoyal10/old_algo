@@ -1,23 +1,67 @@
 import pandas as pd
 import numpy as np
 
-def compute_slope(series, length):
-    x = np.arange(1, length + 1)
-    y = series.values[-length:]
-    slope, intercept = np.polyfit(x, y, 1)
-    return slope
+def calcSlope(src, length):
+    sumX, sumY, sumXSqr, sumXY = 0.0, 0.0, 0.0, 0.0
+    for i in range(1, length + 1):
+        val = src.iloc[length - i]
+        per = i + 1.0
+        sumX += per
+        sumY += val
+        sumXSqr += per * per
+        sumXY += val * per
+    slope = (length * sumXY - sumX * sumY) / (length * sumXSqr - sumX ** 2)
+    average = sumY / length
+    intercept = average - slope * sumX / length + slope
+    return slope, average, intercept
 
-def dema(series, length):
-    ema1 = series.ewm(span=length, adjust=False).mean()
-    ema2 = ema1.ewm(span=length, adjust=False).mean()
-    return 2 * ema1 - ema2
+def add_b5_column(df, column_name="macd", length=2, p=1):
+    src5 = df[column_name]
+    s, _, i = calcSlope(src5, length)
+    tt1 = i + s * (length - 0) # assuming offset is 0
+    
+    df['n5'] = range(len(df))
+    df['a15'] = abs(src5 - src5.shift(1)).cumsum() / df['n5'] * p
+    df['b5'] = np.where(src5 > src5.shift(1) + df['a15'], src5,
+                        np.where(src5 < src5.shift(1) - df['a15'], src5, src5.shift(1)))
+    df['b5'] = df['b5'].fillna(method='ffill')
+    
+    df.drop(columns=['n5', 'a15'], inplace=True) # Cleanup, not required for the final result
+    
+    return df
 
-def compute_exit(df, macd_fast_len=12, macd_slow_len=26, macd_signal_len=9):
-    df['MACD'] = dema(df['intc'], macd_fast_len) - dema(df['intc'], macd_slow_len)
-    df['MACD_Signal'] = df['MACD'].ewm(span=macd_signal_len, adjust=False).mean()
-
-    df['Slope'] = df['MACD'].rolling(window=macd_signal_len).apply(lambda x: compute_slope(x, macd_signal_len), raw=False)
-
-    df['Color'] = np.where(df['Slope'] > 0, 'blue', 'red')
-    df = df.drop("MACD_Signal", axis = 1)
+def calculate_custom_indicators(df):
+    # Ensure the DataFrame has the necessary columns: 'close', 'high', 'low', 'volume'
+    
+    # Constants and Inputs
+    window_len = 28
+    v_len = 14
+    len10 = 1  # OBV Length
+    slow_length = 26  # MACD Slow Length
+    
+    # Calculating price spread and volume modified OBV
+    price_spread = (df['inth'] - df['intl']).rolling(window=window_len).std(ddof=0)
+    df['v1'] = np.sign(df['intc'].diff()).multiply(df['v']).cumsum()
+    smooth = df['v1'].rolling(window=v_len).mean()
+    v_spread = (df['v1'] - smooth).rolling(window=window_len).std()
+    shadow = (df['v1'] - smooth) / v_spread * price_spread
+    
+    df['out'] = np.where(shadow > 0, df['inth'] + shadow, df['intl'] + shadow)
+    
+    # Calculating OBV EMA
+    df['obvema'] = df['out'].ewm(span=len10, adjust=False).mean()
+    
+    # Calculating DEMA
+    def dema(series, length):
+        ema1 = series.ewm(span=length, adjust=False).mean()
+        ema2 = ema1.ewm(span=length, adjust=False).mean()
+        return 2 * ema1 - ema2
+    
+    df['dema'] = dema(df['obvema'], 9)  # Using 9 as an example length for DEMA
+    
+    # MACD calculation
+    slow_ma = df['intc'].ewm(span=slow_length, adjust=False).mean()
+    df['macd'] = df['dema'] - slow_ma
+    
+    df = add_b5_column(df)
     return df
