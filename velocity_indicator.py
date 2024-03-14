@@ -10,4 +10,3 @@ def calculate(df, lookback=14, ema_length=20):
     df['smooth_velocity'] = df['velocity'].ewm(span=ema_length, adjust=False).mean()
 
     return df
-
