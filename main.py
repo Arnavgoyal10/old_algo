@@ -122,7 +122,7 @@ def check_trade(df):
             reason = "super_trend_ said no"
      
         if (supertrend_signal == True and df_range["in range"].iloc[-1] == False):
-            if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and (df_squeeze["psi"].iloc[-1]-1.0) < df_squeeze["psi"].iloc[-2]):
+            if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and (df_squeeze["psi"].iloc[-1]-2.0) < df_squeeze["psi"].iloc[-2]):
                 # bull_or_bear = df_super["STX17_1.5"].iloc[-1]
                 # bull_or_bear = df_okx["direction"].iloc[-1]
                 if df_velocity["smooth_velocity"].iloc[-1] < 0:
@@ -132,7 +132,7 @@ def check_trade(df):
                 small_signal = True
             else:
                 reason = "Squee said no"
-        else:
+        elif (df_range["in range"].iloc[-1] == True):
             reason = "inrange said no"
         if (df_impulse["ImpulseMACD"].iloc[-1] != 0 and small_signal == True): 
             if (bull_or_bear == "up"):
@@ -149,9 +149,8 @@ def check_trade(df):
                 impulse_signal = True
             else:
                 reason = "impulse said no"
-        else:
-            reason = "impulse is 0 no"
-
+        elif(df_impulse["ImpulseMACD"].iloc[-1] == 0):
+            reason = "impulse is 0"
         if (impulse_signal == True or impulse_waiting == True):
             if (bull_or_bear == "up"):
                 tsi_temp1 = (df_tsi["TSI_13_25_13"].iloc[-1]) - (df_tsi["TSIs_13_25_13"].iloc[-1])
