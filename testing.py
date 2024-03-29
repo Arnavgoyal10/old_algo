@@ -1,7 +1,6 @@
 import datetime
 import pandas as pd 
 import files_interact
-import login
 import supertrend
 import impulsemacd
 import tsi
@@ -10,7 +9,7 @@ import os
 import argparse
 
 data_dict = files_interact.extract()      
-client=login.login()
+# client=login.login()
 
 def strat():
     print("print")
