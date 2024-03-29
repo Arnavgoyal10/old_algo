@@ -10,10 +10,8 @@ import argparse
 import hhll_indicator
 import velocity_indicator
 import hull_ma
-import okx
 import squeeze
 import ranged
-import okxfinal
 import obv
 import okxfinal
 import okx
