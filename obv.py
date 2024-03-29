@@ -30,15 +30,9 @@ def add_b5_column(df, column_name="macd", length=2, p=1):
     
     return df
 
-def calculate_custom_indicators(df):
+def calculate_custom_indicators(df, window_len, v_len, len10, slow_length):
     # Ensure the DataFrame has the necessary columns: 'close', 'high', 'low', 'volume'
-    
-    # Constants and Inputs
-    window_len = 28
-    v_len = 14
-    len10 = 1  # OBV Length
-    slow_length = 26  # MACD Slow Length
-    
+        
     # Calculating price spread and volume modified OBV
     price_spread = (df['inth'] - df['intl']).rolling(window=window_len).std(ddof=0)
     df['v1'] = np.sign(df['intc'].diff()).multiply(df['v']).cumsum()

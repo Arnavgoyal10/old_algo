@@ -9,12 +9,12 @@ import os
 import argparse
 import hhll_indicator
 import velocity_indicator
-import hull_ma
+# import hull_ma
 import squeeze
 import ranged
 import obv
-import okxfinal
-import okx
+# import okxfinal
+# import okx
 ohlc=['into', 'inth', 'intl', 'intc']
 
 
@@ -30,17 +30,56 @@ reason = "nothing"
 price_threshold = 0
 order_count = 0 
 
+
+stoploss_config = 10
+super_trend_period = 17
+super_trend_multiplier = 3
+squee_config  = 2
+
+# veloctity_order settings
+lookback_config=14
+ema_length_config=20
+
+# squee_order settings
+conv_config = 50
+length_config = 20
+
+# range_order settings
+length_config = 20
+mult_config = 1.0
+atr_length_config = 500
+
+# impulse_order settings
+lengthMA_config = 34
+lengthSignal_config = 9
+
+# tsi_order settings
+fast_config = 13
+slow_config = 25
+signal_config = 13
+
+# tsi_confirmation settings
+fast_config1 = 13
+slow_config1 = 25
+signal_config1 = 13
+
+# obv_exit settings
+window_len_config = 28
+v_len_config = 14
+len10_config = 1
+slow_length_config = 26 
+
 def set_stoploss(temp, side, stoploss):
     num = 0.0
     if side == "up":
-        num = temp["intl"].iloc[-1] - 10
+        num = temp["intl"].iloc[-1] - stoploss_config
         print(num)
         if (num > stoploss or stoploss == 0):
             stoploss = num
             print("stoploss_set at")
             print(temp["time"].iloc[-1])
     else:
-        num = temp["inth"].iloc[-1] + 10
+        num = temp["inth"].iloc[-1] + stoploss_config
         print(num)
         if (num < stoploss or stoploss == 0):
             stoploss = num
@@ -61,9 +100,9 @@ def append_value(dataframe, column_name, value, index):
 
 def confirmation(df, side):
     # df_okx = okx.add_trading_signals(df)
-    df_super = supertrend.SuperTrend(df, period= 17, multiplier=3, ohlc=ohlc)
+    df_super = supertrend.SuperTrend(df, period= super_trend_period, multiplier= super_trend_multiplier, ohlc=ohlc)
     df_tsi = df[['intc']]
-    df_tsi = tsi.tsi(df_tsi)
+    df_tsi = tsi.tsi(df_tsi, fast = fast_config1, slow = slow_config1, signal = signal_config1)
     order_signal = False
     stoploss = 0
     price_threshold = 0
@@ -103,13 +142,13 @@ def check_trade(df):
     
     # df_okx = okx.add_trading_signals(df)
     # df_super = supertrend.SuperTrend(df, period= 17, multiplier=1.5, ohlc=ohlc)
-    df_velocity = velocity_indicator.calculate(df)
-    df_squeeze = squeeze.squeeze_index(df)
-    df_range = ranged.in_range_detector(df)
+    df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
+    df_squeeze = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
+    df_range = ranged.in_range_detector(df,length=length_config, mult= mult_config , atr_length= atr_length_config)
     df_impulse = df[['time', 'inth', 'intl', 'intc']]
-    df_impulse = impulsemacd.macd(df_impulse)
+    df_impulse = impulsemacd.macd(df_impulse, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
     df_tsi = df[['intc']]
-    df_tsi = tsi.tsi(df_tsi)
+    df_tsi = tsi.tsi(df_tsi, fast = fast_config, slow = slow_config, signal = signal_config)
     current_time = df["time"].iloc[-1]
     comparison_time = current_time.replace(hour=15, minute=00, second=0, microsecond=0)
     bull_or_bear = None
@@ -128,7 +167,7 @@ def check_trade(df):
             reason = "super_trend_ said no"
      
         if (supertrend_signal == True and df_range["in range"].iloc[-1] == False):
-            if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and (df_squeeze["psi"].iloc[-1]-2.0) < df_squeeze["psi"].iloc[-2]):
+            if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and (df_squeeze["psi"].iloc[-1]-squee_config) < df_squeeze["psi"].iloc[-2]):
                 # bull_or_bear = df_super["STX17_1.5"].iloc[-1]
                 # bull_or_bear = df_okx["direction"].iloc[-1]
                 if df_velocity["smooth_velocity"].iloc[-1] < 0:
@@ -210,7 +249,7 @@ def place_order(df, bull_or_bear, stoploss):
     return time, entry_price, order_signal, order_placed, stoploss
 
 def check_exit(df, side, stoploss):
-    df_exit = obv.calculate_custom_indicators(df)
+    df_exit = obv.calculate_custom_indicators(df, window_len = window_len_config, v_len =v_len_config,len10= len10_config, slow_length = slow_length_config)
     # df_exit = df[['intc']]
     # df_exit = tsi.tsi(df_exit)
     exit_price = 0

@@ -3,10 +3,6 @@ import pandas as pd
 import numpy as np
 import talib as tl
 
-
-lengthMA: int = 34
-lengthSignal: int = 9
-
 def calc_smma(src: np.ndarray, length: int) -> np.ndarray:
 
     smma = np.full_like(src, fill_value=np.nan)
@@ -29,7 +25,7 @@ def calc_zlema(src: np.ndarray, length: int) -> np.ndarray:
     return ema1 + d
 
 
-def macd(data):
+def macd(data, lengthMA, lengthSignal):
     src = (
         data["inth"].to_numpy(dtype=np.double)
         + data["intl"].to_numpy(dtype=np.double)

@@ -11,7 +11,7 @@ def calculate_atr(df, atr_length):
     atr = true_range.rolling(window=atr_length).mean()
     return atr
 
-def in_range_detector(df, length=20, mult=1.0, atr_length=500):
+def in_range_detector(df, length, mult, atr_length):
     '''Add "in range" column to df indicating if price is within the calculated range'''
 
     df['ma'] = df['intc'].rolling(window=length).mean()

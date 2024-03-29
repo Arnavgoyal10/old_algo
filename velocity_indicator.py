@@ -1,6 +1,6 @@
 import pandas as pd
 
-def calculate(df, lookback=14, ema_length=20):
+def calculate(df, lookback, ema_length):
     velocity_list = []
     for i in range(1, lookback + 1):
         velocity_i = (df['intc'] - df['intc'].shift(i)) / i
