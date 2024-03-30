@@ -13,8 +13,9 @@ import velocity_indicator
 import squeeze
 import ranged
 import obv
-# import okxfinal
-# import okx
+import okxfinal
+import okx
+import hull_ma
 ohlc=['into', 'inth', 'intl', 'intc']
 
 
@@ -68,6 +69,16 @@ window_len_config = 28
 v_len_config = 14
 len10_config = 1
 slow_length_config = 26 
+
+#  okx config
+entryLength_config = 10
+
+#  okx_final config
+entryLength_final_config = 10
+exitLength_final_config = 10
+
+# hull ma config
+length_hull_config = 60
 
 def set_stoploss(temp, side, stoploss):
     num = 0.0
@@ -140,8 +151,10 @@ def check_trade(df):
     small_signal = False
     price_threshold = 0
     
-    # df_okx = okx.add_trading_signals(df)
+    # df_okx = okx.add_trading_signals(df, entryLength=entryLength_config)
+    # df_okx = okxfinal.add_trading_signals(df, entryLength = entryLength_final_config, exitLength = exitLength_final_config)
     # df_super = supertrend.SuperTrend(df, period= 17, multiplier=1.5, ohlc=ohlc)
+    # df_hull = hull_ma.calculate_hma(df, length=length_hull_config)
     df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
     df_squeeze = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
     df_range = ranged.in_range_detector(df,length=length_config, mult= mult_config , atr_length= atr_length_config)

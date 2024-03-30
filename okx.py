@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
 
-def add_trading_signals(df):
-    entryLength = 10
-    exitLength = 10  # Assuming you might also need this for alignment with Pine Script logic
+def add_trading_signals(df, entryLength):
+    # Assuming you might also need this for alignment with Pine Script logic
 
     # Calculate the highest high and lowest low over the entryLength
     df['highest_high'] = df['inth'].rolling(window=entryLength).max()

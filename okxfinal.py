@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def add_trading_signals(df):
-    entryLength = 10
-    exitLength = 10
+def add_trading_signals(df, entryLength, exitLength):
 
     # Calculate highest and lowest values over specified windows
     df['upper'] = df['inth'].rolling(window=entryLength).max()

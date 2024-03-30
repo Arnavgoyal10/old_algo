@@ -6,7 +6,7 @@ def wma(weights):
         return np.sum(weights * x) / np.sum(weights)
     return calc
 
-def calculate_hma(df, length=60):
+def calculate_hma(df, length):
     if 'intc' not in df.columns:
         raise ValueError("DataFrame must contain a 'intc' column.")
     
