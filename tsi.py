@@ -45,8 +45,8 @@ def tsi(dataframe, fast, slow, signal, scalar=None, mamode=None, drift=None, off
         tsi_signal.fillna(method=kwargs["fill_method"], inplace=True)
 
     # Name and Categorize it
-    tsi.name = f"TSI_{fast}_{slow}_{signal}"
-    tsi_signal.name = f"TSIs_{fast}_{slow}_{signal}"
+    tsi.name = f"TSI"
+    tsi_signal.name = f"TSIs"
     tsi.category = tsi_signal.category =  "momentum"
 
     df = pd.DataFrame({tsi.name: tsi, tsi_signal.name: tsi_signal})

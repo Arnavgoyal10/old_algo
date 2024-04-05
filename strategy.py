@@ -119,8 +119,8 @@ def confirmation(df, side):
     price_threshold = 0
 
     if (df_super["STX17_3.0"].iloc[-1] == df_super["STX17_3.0"].iloc[-2]):
-        temp1 = df_tsi["TSI_13_25_13"].iloc[-1] - df_tsi["TSI_13_25_13"].iloc[-2]
-        temp2 = df_tsi["TSI_13_25_13"].iloc[-2] - df_tsi["TSI_13_25_13"].iloc[-3]
+        temp1 = df_tsi["TSI"].iloc[-1] - df_tsi["TSI"].iloc[-2]
+        temp2 = df_tsi["TSI"].iloc[-2] - df_tsi["TSI"].iloc[-3]
         if side == "up":
             if temp1 > temp2:
                 order_signal = True
@@ -211,11 +211,11 @@ def check_trade(df):
             reason = "impulse is 0"
         if (impulse_signal == True or impulse_waiting == True):
             if (bull_or_bear == "up"):
-                tsi_temp1 = (df_tsi["TSI_13_25_13"].iloc[-1]) - (df_tsi["TSIs_13_25_13"].iloc[-1])
-                tsi_temp2 = (df_tsi["TSI_13_25_13"].iloc[-2]) - (df_tsi["TSIs_13_25_13"].iloc[-2])              
+                tsi_temp1 = (df_tsi["TSI"].iloc[-1]) - (df_tsi["TSIs"].iloc[-1])
+                tsi_temp2 = (df_tsi["TSI"].iloc[-2]) - (df_tsi["TSIs"].iloc[-2])              
             else:
-                tsi_temp1 = (df_tsi["TSIs_13_25_13"].iloc[-1]) - (df_tsi["TSI_13_25_13"].iloc[-1])
-                tsi_temp2 = (df_tsi["TSIs_13_25_13"].iloc[-2]) - (df_tsi["TSI_13_25_13"].iloc[-2])
+                tsi_temp1 = (df_tsi["TSIs"].iloc[-1]) - (df_tsi["TSI"].iloc[-1])
+                tsi_temp2 = (df_tsi["TSIs"].iloc[-2]) - (df_tsi["TSI"].iloc[-2])
             
             if (tsi_temp2 < 0 and tsi_temp1 > 0):
                 tsi_waiting = True
@@ -295,9 +295,35 @@ def check_exit(df, side, stoploss):
         stoploss = set_stoploss(df, side, stoploss)
     return time, exit_price, order_placed, order_exit, stoploss
 
-def final(temp, entry_frame_data, trade_data):
+def final(temp, entry_frame_data, trade_data, hyperparameter):
     global order_placed, order_signal, confirmation_waiting, entry_number, bull_or_bear, order_exit, order_flag_count, stoploss
     global reason, price_threshold, order_count, exit_time, exit_price, entry_time, entry_price
+    
+    global stoploss_config, super_trend_period_config, super_trend_multiplier_config, squee_config
+    global lookback_config, ema_length_config, conv_config, length_config, mult_config, atr_length_config
+    global lengthMA_config, lengthSignal_config, fast_config, slow_config, signal_config, window_len_config, v_len_config
+    global len10_config, slow_length_config
+    
+    
+    stoploss_config = hyperparameter['stoploss']
+    super_trend_period_config = hyperparameter['super_trend_period']
+    super_trend_multiplier_config = hyperparameter['super_trend_multiplier']
+    squee_config = hyperparameter['squee']
+    lookback_config = hyperparameter['lookback']
+    ema_length_config = hyperparameter['ema_length']
+    conv_config = hyperparameter['conv']
+    length_config = hyperparameter['length']
+    mult_config = hyperparameter['mult']
+    atr_length_config = hyperparameter['atr_length']
+    lengthMA_config = hyperparameter['lengthMA']
+    lengthSignal_config = hyperparameter['lengthSignal']
+    fast_config = hyperparameter['fast']
+    slow_config = hyperparameter['slow']
+    signal_config = hyperparameter['signal']
+    window_len_config = hyperparameter['window_len']
+    v_len_config = hyperparameter['v_len']
+    len10_config = hyperparameter['len10']
+    slow_length_config = hyperparameter['slow_length']
     
     
     if (order_placed == True and order_signal == False and confirmation_waiting == False):
