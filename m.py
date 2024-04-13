@@ -24,8 +24,6 @@ def append_value(dataframe, column_name, value, index):
         dataframe.at[index, column_name] = value
     return dataframe
 
-
-
 def loop_function(range_start, range_end):
         
     net_profit_columns = [
@@ -153,8 +151,6 @@ def loop_function(range_start, range_end):
                                                                                 df_comb_file = os.path.join(current_directory, f'netprofit_{range_start}.csv')
                                                                                 net_profit.to_csv(df_comb_file, index=True)
                                                                                     
-                                                                                
-
 def main():
     
     # ret = tv.get_hist(symbol='NIFTY',exchange='NSE',interval=Interval.in_5_minute,n_bars=3000)
