@@ -31,11 +31,15 @@ def program(count):
 
 def main():
     print("ok")
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('--int-value', type=int, help='An integer value')
-    # args = parser.parse_args()
-    # print('Received integer:', args.int_value)
-    # program(args.int_value)
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--int-value', type=int, help='An integer value')
+    args = parser.parse_args()
+    print('Received integer:', args.int_value)
+    program(args.int_value)
+
+
+
 
 
     

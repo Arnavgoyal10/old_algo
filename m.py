@@ -25,8 +25,9 @@ def append_value(dataframe, column_name, value, index):
     return dataframe
 
 
-def main():
-    
+
+def loop_function(range_start, range_end):
+        
     net_profit_columns = [
     'stoploss',
     'super_trend_period',
@@ -53,9 +54,7 @@ def main():
     net_profit = pd.DataFrame(columns=net_profit_columns)
     hyperparameter_count = 0
     
-    # ret = tv.get_hist(symbol='NIFTY',exchange='NSE',interval=Interval.in_5_minute,n_bars=3000)
-
-    for stoploss in range(5, 21):
+    for stoploss in range(range_start, range_end):
         for super_trend_period in range(8, 26):
             for super_trend_multiplier in [x * 0.1 for x in range(15, 38)]:
                 for squee in range(1, 5):
@@ -73,7 +72,7 @@ def main():
                                                                 for window_len in range(25, 40):
                                                                     for v_len in range(8, 19):
                                                                         for len10 in [x * 0.1 for x in range(2, 16)]:
-                                                                            for slow_length in range(20, 33):                
+                                                                            for slow_length in range(20, 33):
                                                                                 file_path = 'Book1.xlsx'
                                                                                 ret = pd.read_excel(file_path)
                                                                                 ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
@@ -151,9 +150,31 @@ def main():
                                                                                 entry_frame_data.to_csv(df_comb_file, index=True)
                                                                                 trade_data1 = os.path.join(current_directory, 'trade_data1.csv')
                                                                                 trade_data.to_csv(trade_data1, index=True)
-                                                                                df_comb_file = os.path.join(current_directory, 'netprofit.csv')
+                                                                                df_comb_file = os.path.join(current_directory, f'netprofit_{range_start}.csv')
                                                                                 net_profit.to_csv(df_comb_file, index=True)
                                                                                     
+                                                                                
+
+def main():
+    
+    # ret = tv.get_hist(symbol='NIFTY',exchange='NSE',interval=Interval.in_5_minute,n_bars=3000)
+    
+    stoploss_ranges = [(x, x + 1) for x in range(5, 21)]
+    threads = []
+
+    # Create and start threads
+    for r in stoploss_ranges:
+        thread = threading.Thread(target=loop_function, args=(r[0], r[1]))
+        threads.append(thread)
+        thread.start()
+
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
+
+    print("All threads have completed their execution.")
+    
+                                                    
     
                                                                                                                                                    
 if __name__ == "__main__":
