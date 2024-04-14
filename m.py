@@ -144,9 +144,9 @@ def loop_function(range_start, range_end):
                                                                     
                                                                                 
                                                                                 current_directory = os.getcwd()
-                                                                                df_comb_file = os.path.join(current_directory, 'entries1.csv')
+                                                                                df_comb_file = os.path.join(current_directory, f'entries_{range_start}.csv')
                                                                                 entry_frame_data.to_csv(df_comb_file, index=True)
-                                                                                trade_data1 = os.path.join(current_directory, 'trade_data1.csv')
+                                                                                trade_data1 = os.path.join(current_directory, f'trade_data_{range_start}.csv')
                                                                                 trade_data.to_csv(trade_data1, index=True)
                                                                                 df_comb_file = os.path.join(current_directory, f'netprofit_{range_start}.csv')
                                                                                 net_profit.to_csv(df_comb_file, index=True)
