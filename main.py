@@ -1,7 +1,6 @@
 import datetime
 import pandas as pd
 import tsi
-import threading
 import os
 import argparse
 import strategy
