@@ -65,7 +65,7 @@ def loop_function(multiplier_start, multiplier_end):
                                                                     for v_len in range(8, 19):
                                                                         for len10 in [x * 0.1 for x in range(2, 16)]:
                                                                             for slow_length in range(20, 33):
-                                                                                file_path = 'Book1.xlsx'
+                                                                                file_path = 'nifty_recent.xlsx'
                                                                                 ret = pd.read_excel(file_path)
                                                                                 ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
                                                                                 for col in ohlc:
