@@ -1,6 +1,5 @@
 import datetime
 import pandas as pd
-import files_interact
 import supertrend
 import impulsemacd
 import tsi
@@ -9,7 +8,6 @@ import os
 import argparse
 import hhll_indicator
 import velocity_indicator
-# import hull_ma
 import squeeze
 import ranged
 import obv
@@ -70,15 +68,15 @@ v_len_config = 14
 len10_config = 1
 slow_length_config = 26 
 
-#  okx config
-entryLength_config = 10
+# #  okx config
+# entryLength_config = 10
 
-#  okx_final config
-entryLength_final_config = 10
-exitLength_final_config = 10
+# #  okx_final config
+# entryLength_final_config = 10
+# exitLength_final_config = 10
 
-# hull ma config
-length_hull_config = 60
+# # hull ma config
+# length_hull_config = 60
 
 def set_stoploss(temp, side, stoploss):
     num = 0.0
@@ -112,13 +110,14 @@ def append_value(dataframe, column_name, value, index):
 def confirmation(df, side):
     # df_okx = okx.add_trading_signals(df)
     df_super = supertrend.SuperTrend(df, period= super_trend_period, multiplier= super_trend_multiplier, ohlc=ohlc)
-    df_tsi = df[['intc']]
-    df_tsi = tsi.tsi(df_tsi, fast = fast_config1, slow = slow_config1, signal = signal_config1)
     order_signal = False
     stoploss = 0
     price_threshold = 0
 
     if (df_super["STX17_3.0"].iloc[-1] == df_super["STX17_3.0"].iloc[-2]):
+        df_tsi = df[['intc']]
+        df_tsi = tsi.tsi(df_tsi, fast = fast_config1, slow = slow_config1, signal = signal_config1)
+
         temp1 = df_tsi["TSI"].iloc[-1] - df_tsi["TSI"].iloc[-2]
         temp2 = df_tsi["TSI"].iloc[-2] - df_tsi["TSI"].iloc[-3]
         if side == "up":
@@ -155,13 +154,7 @@ def check_trade(df):
     # df_okx = okxfinal.add_trading_signals(df, entryLength = entryLength_final_config, exitLength = exitLength_final_config)
     # df_super = supertrend.SuperTrend(df, period= 17, multiplier=1.5, ohlc=ohlc)
     # df_hull = hull_ma.calculate_hma(df, length=length_hull_config)
-    df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
-    df_squeeze = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
-    df_range = ranged.in_range_detector(df,length=length_config, mult= mult_config , atr_length= atr_length_config)
-    df_impulse = df[['time', 'inth', 'intl', 'intc']]
-    df_impulse = impulsemacd.macd(df_impulse, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
-    df_tsi = df[['intc']]
-    df_tsi = tsi.tsi(df_tsi, fast = fast_config, slow = slow_config, signal = signal_config)
+    
     current_time = df["time"].iloc[-1]
     comparison_time = current_time.replace(hour=15, minute=00, second=0, microsecond=0)
     bull_or_bear = None
@@ -169,7 +162,18 @@ def check_trade(df):
     reason = "nothing"
     
     
-    if current_time < comparison_time:        
+    if current_time < comparison_time:
+        
+        # # # # # # # # # # # # # # 
+        df_impulse = df[['time', 'inth', 'intl', 'intc']]
+        df_impulse = impulsemacd.macd(df_impulse, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
+        # # # # # # # # # # # # # # 
+        
+        # # # # # # # # # # # # # # 
+        df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config) 
+        df_range = ranged.in_range_detector(df,length=length_config, mult= mult_config , atr_length= atr_length_config)       
+        # # # # # # # # # # # # # # 
+        
         # if (df_super["STX17_1.5"].iloc[-1] != df_super["STX17_1.5"].iloc[-2]):
         # if (df_okx["direction"].iloc[-1] == "up" or df_okx["direction"].iloc[-1] == "down"):
         if(df_velocity["smooth_velocity"].iloc[-1] > 0  and df_velocity["smooth_velocity"].iloc[-2] < 0):
@@ -180,7 +184,12 @@ def check_trade(df):
             reason = "super_trend_ said no"
      
         if (supertrend_signal == True and df_range["in range"].iloc[-1] == False):
-            if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and (df_squeeze["psi"].iloc[-1]-squee_config) < df_squeeze["psi"].iloc[-2]):
+            
+            # # # # # # # # # # # # # # 
+            df_squeeze = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
+            # # # # # # # # # # # # # # 
+
+            if (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and (df_squeeze["psi"].iloc[-1]-squee_config) < df_squeeze["psi"].iloc[-2]): 
                 # bull_or_bear = df_super["STX17_1.5"].iloc[-1]
                 # bull_or_bear = df_okx["direction"].iloc[-1]
                 if df_velocity["smooth_velocity"].iloc[-1] < 0:
@@ -210,6 +219,12 @@ def check_trade(df):
         elif(df_impulse["ImpulseMACD"].iloc[-1] == 0):
             reason = "impulse is 0"
         if (impulse_signal == True or impulse_waiting == True):
+            
+            # # # # # # # # # # # # # # 
+            df_tsi = df[['intc']]
+            df_tsi = tsi.tsi(df_tsi, fast = fast_config, slow = slow_config, signal = signal_config)
+            # # # # # # # # # # # # # # 
+            
             if (bull_or_bear == "up"):
                 tsi_temp1 = (df_tsi["TSI"].iloc[-1]) - (df_tsi["TSIs"].iloc[-1])
                 tsi_temp2 = (df_tsi["TSI"].iloc[-2]) - (df_tsi["TSIs"].iloc[-2])              
@@ -397,4 +412,4 @@ def final(temp, entry_frame_data, trade_data, hyperparameter):
     entry_frame_data = append_value(entry_frame_data, 'bull or bear', bull_or_bear, entry_number)
     entry_number = entry_number + 1
     
-    return entry_frame_data, trade_data
+    return entry_frame_data, trade_data, order_count
