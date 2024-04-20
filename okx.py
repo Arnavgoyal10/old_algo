@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def add_trading_signals(df, entryLength):
     # Assuming you might also need this for alignment with Pine Script logic
 

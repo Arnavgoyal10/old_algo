@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr
 
+
 def squeeze_index(df, conv, length, col='intc'):
     df['max'] = df[col]
     df['min'] = df[col]

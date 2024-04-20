@@ -3,6 +3,7 @@ import os
 import multiprocessing
 import strategy
 
+
 ohlc=['into', 'inth', 'intl', 'intc']
      
 file_path = 'nifty_full.xlsx'

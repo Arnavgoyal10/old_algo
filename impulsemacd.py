@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import talib as tl
 
+
 def calc_smma(src: np.ndarray, length: int) -> np.ndarray:
 
     smma = np.full_like(src, fill_value=np.nan)

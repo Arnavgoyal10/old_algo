@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def calculate_atr(df, atr_length):
     '''Calculate the Average True Range (ATR)'''
     high_low = df['inth'] - df['intl']

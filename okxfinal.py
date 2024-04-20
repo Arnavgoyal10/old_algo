@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def add_trading_signals(df, entryLength, exitLength):
 
     # Calculate highest and lowest values over specified windows

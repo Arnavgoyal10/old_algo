@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def calcSlope(src, length):
     sumX, sumY, sumXSqr, sumXY = 0.0, 0.0, 0.0, 0.0
     for i in range(1, length + 1):

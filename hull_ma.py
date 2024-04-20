@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def wma(weights):
     def calc(x):
         return np.sum(weights * x) / np.sum(weights)

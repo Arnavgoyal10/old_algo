@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def calculate(df, lookback, ema_length):
     velocity_list = []
     for i in range(1, lookback + 1):

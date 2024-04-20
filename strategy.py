@@ -17,6 +17,7 @@ import hull_ma
 ohlc=['into', 'inth', 'intl', 'intc']
 
 
+
 order_placed = False
 order_signal = False
 confirmation_waiting = False

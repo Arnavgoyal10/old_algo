@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def find_pivots(df, lb, rb, ohlc=['open', 'high', 'low', 'close']):
     df['pivot_high'] = df[ohlc[1]].rolling(window=lb+rb+1, center=True).max() == df[ohlc[1]]
     df['pivot_low'] = df[ohlc[2]].rolling(window=lb+rb+1, center=True).min() == df[ohlc[2]]

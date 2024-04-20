@@ -3,6 +3,7 @@ from pandas_ta.overlap import ema, ma
 from pandas_ta.utils import get_drift, get_offset, verify_series
 
 
+
 def tsi(dataframe, fast, slow, signal, scalar=None, mamode=None, drift=None, offset=None, **kwargs):
     
     fast = int(fast) if fast and fast > 0 else 13

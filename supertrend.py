@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 
 
-
 def EMA(df, base, target, period, alpha=False):
     
     con = pd.concat([df[:period][base].rolling(window=period).mean(), df[period:][base]])
