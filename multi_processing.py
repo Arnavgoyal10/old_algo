@@ -56,8 +56,9 @@ def loop_function(multiplier_start, multiplier_end):
     start_index = int((multiplier_start - 1.5) * 10)
     super_trend_multiplier = (start_index + 15)*0.1
     
+    main_folder = "data"
     folder_name = f"multiplier_{super_trend_multiplier}"
-    directory_path = os.path.join(base_directory, folder_name)
+    directory_path = os.path.join(base_directory, main_folder, folder_name)
     os.makedirs(directory_path, exist_ok=True)
 
     for super_trend_period in range(8, 26):

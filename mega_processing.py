@@ -57,9 +57,10 @@ def loop_function(super_1, super_2):
     end_index = int((super_2 - 1.5) * 10)
     super_trend_period = (end_index + 15)* 0.1
     
+    main_folder = "data"
     folder_name = f"multiplier_{super_trend_multiplier}"
     sub_folder_name = f"period_{super_trend_period}" 
-    directory_path = os.path.join(base_directory, folder_name, sub_folder_name)
+    directory_path = os.path.join(base_directory, main_folder, folder_name, sub_folder_name)
     os.makedirs(directory_path, exist_ok=True) 
 
     for stoploss in range(5, 21):
