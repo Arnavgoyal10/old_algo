@@ -1,4 +1,3 @@
-import datetime
 import pandas as pd
 import supertrend
 import impulsemacd
@@ -6,16 +5,13 @@ import tsi
 import threading
 import os
 import argparse
-import hhll_indicator
 import velocity_indicator
 import squeeze
-import ranged
 import obv
 import okxfinal
 import okx
 import hull_ma
 ohlc=['into', 'inth', 'intl', 'intc']
-
 
 
 order_placed = False
@@ -29,11 +25,13 @@ stoploss = 0
 reason = "nothing"
 price_threshold = 0
 order_count = 0 
+exit_time
+exit_price
+entry_time
+entry_price
 
 
 stoploss_config = 10
-super_trend_period = 17
-super_trend_multiplier = 3
 squee_config  = 2
 
 # veloctity_order settings
@@ -44,11 +42,6 @@ ema_length_config=20
 conv_config = 50
 length_config = 20
 
-# range_order settings
-length_config = 20
-mult_config = 1.0
-atr_length_config = 500
-
 # impulse_order settings
 lengthMA_config = 34
 lengthSignal_config = 9
@@ -58,16 +51,12 @@ fast_config = 13
 slow_config = 25
 signal_config = 13
 
-# tsi_confirmation settings
-fast_config1 = 13
-slow_config1 = 25
-signal_config1 = 13
-
 # obv_exit settings
 window_len_config = 28
 v_len_config = 14
 len10_config = 1
 slow_length_config = 26 
+
 
 # #  okx config
 # entryLength_config = 10
@@ -109,35 +98,35 @@ def append_value(dataframe, column_name, value, index):
     return dataframe
 
 def confirmation(df, side):
-    # df_okx = okx.add_trading_signals(df)
-    df_super = supertrend.SuperTrend(df, period= super_trend_period, multiplier= super_trend_multiplier, ohlc=ohlc)
+
     order_signal = False
     stoploss = 0
     price_threshold = 0
 
-    if (df_super["STX17_3.0"].iloc[-1] == df_super["STX17_3.0"].iloc[-2]):
-        df_tsi = df[['intc']]
-        df_tsi = tsi.tsi(df_tsi, fast = fast_config1, slow = slow_config1, signal = signal_config1)
+    df_tsi = df[['intc']]
+    df_tsi = tsi.tsi(df_tsi, fast = fast_config, slow = slow_config, signal = signal_config)
 
-        temp1 = df_tsi["TSI"].iloc[-1] - df_tsi["TSI"].iloc[-2]
-        temp2 = df_tsi["TSI"].iloc[-2] - df_tsi["TSI"].iloc[-3]
-        if side == "up":
-            if temp1 > temp2:
-                order_signal = True
-                stoploss = set_stoploss(df, side, stoploss)
-        else:
-            if temp1 < temp2:
-                order_signal = True
-                stoploss = set_stoploss(df, side, stoploss)
-    else:
-        print("order came in waiting but got canceled")
-    confirmation_waiting = False
+    temp1 = df_tsi["TSI"].iloc[-1] - df_tsi["TSI"].iloc[-2]
+    temp2 = df_tsi["TSI"].iloc[-2] - df_tsi["TSI"].iloc[-3]
     
+    if side == "up":
+        if temp1 > temp2:
+            order_signal = True
+            stoploss = set_stoploss(df, side, stoploss)
+    else:
+        if temp1 < temp2:
+            order_signal = True
+            stoploss = set_stoploss(df, side, stoploss)
+
     if order_signal == True:
         if side == "up":
             price_threshold = df["inth"].iloc[-1]
         else:
             price_threshold = df["intl"].iloc[-1]
+    else:
+        print("order came in waiting but got canceled")
+    
+    confirmation_waiting = False
     
     return order_signal, confirmation_waiting, stoploss, price_threshold
 
@@ -171,8 +160,7 @@ def check_trade(df):
         # # # # # # # # # # # # # # 
         
         # # # # # # # # # # # # # # 
-        df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config) 
-        df_range = ranged.in_range_detector(df,length=length_config, mult= mult_config , atr_length= atr_length_config)       
+        df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)    
         # # # # # # # # # # # # # # 
         
         # if (df_super["STX17_1.5"].iloc[-1] != df_super["STX17_1.5"].iloc[-2]):
@@ -184,7 +172,7 @@ def check_trade(df):
         else:
             reason = "super_trend_ said no"
      
-        if (supertrend_signal == True and df_range["in range"].iloc[-1] == False):
+        if (supertrend_signal == True):
             
             # # # # # # # # # # # # # # 
             df_squeeze = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
@@ -200,8 +188,7 @@ def check_trade(df):
                 small_signal = True
             else:
                 reason = "Squee said no"
-        elif (df_range["in range"].iloc[-1] == True):
-            reason = "inrange said no"
+
         if (df_impulse["ImpulseMACD"].iloc[-1] != 0 and small_signal == True): 
             if (bull_or_bear == "up"):
                 impulse_temp1 = (df_impulse["ImpulseMACD"].iloc[-1]) - (df_impulse["ImpulseMACDCDSignal"].iloc[-1])
@@ -219,6 +206,8 @@ def check_trade(df):
                 reason = "impulse said no"
         elif(df_impulse["ImpulseMACD"].iloc[-1] == 0):
             reason = "impulse is 0"
+        
+        
         if (impulse_signal == True or impulse_waiting == True):
             
             # # # # # # # # # # # # # # 
@@ -311,26 +300,40 @@ def check_exit(df, side, stoploss):
         stoploss = set_stoploss(df, side, stoploss)
     return time, exit_price, order_placed, order_exit, stoploss
 
-def final(temp, entry_frame_data, trade_data, hyperparameter):
-    global order_placed, order_signal, confirmation_waiting, entry_number, bull_or_bear, order_exit, order_flag_count, stoploss
-    global reason, price_threshold, order_count, exit_time, exit_price, entry_time, entry_price
+
+
+def final(temp, entry_frame_data, trade_data, hyperparameter, params):
+    global stoploss_config, squee_config, lookback_config, ema_length_config, conv_config, length_config
+    global lengthMA_config, lengthSignal_config, fast_config, slow_config, signal_config
+    global window_len_config, v_len_config, len10_config, slow_length_config
+
+    global order_placed, order_signal, confirmation_waiting, entry_number, bull_or_bear
+    global order_exit, order_flag_count, stoploss, reason, price_threshold, order_count
+    global exit_time, exit_price, entry_time, entry_price
+
     
-    global stoploss_config, super_trend_period_config, super_trend_multiplier_config, squee_config
-    global lookback_config, ema_length_config, conv_config, length_config, mult_config, atr_length_config
-    global lengthMA_config, lengthSignal_config, fast_config, slow_config, signal_config, window_len_config, v_len_config
-    global len10_config, slow_length_config
-    
-    
+    order_placed = params[0]
+    order_signal = params[1]
+    confirmation_waiting = params[2]
+    entry_number = params[3]
+    bull_or_bear = params[4]
+    order_exit = params[5]
+    order_flag_count = params[6]
+    stoploss = params[7]
+    reason = params[8]
+    price_threshold = params[9]
+    order_count = params[10]
+    exit_time = params[11]
+    exit_price = params[12]
+    entry_time = params[13]
+    entry_price = params[14]
+
     stoploss_config = hyperparameter['stoploss']
-    super_trend_period_config = hyperparameter['super_trend_period']
-    super_trend_multiplier_config = hyperparameter['super_trend_multiplier']
     squee_config = hyperparameter['squee']
     lookback_config = hyperparameter['lookback']
     ema_length_config = hyperparameter['ema_length']
     conv_config = hyperparameter['conv']
     length_config = hyperparameter['length']
-    mult_config = hyperparameter['mult']
-    atr_length_config = hyperparameter['atr_length']
     lengthMA_config = hyperparameter['lengthMA']
     lengthSignal_config = hyperparameter['lengthSignal']
     fast_config = hyperparameter['fast']
@@ -345,8 +348,8 @@ def final(temp, entry_frame_data, trade_data, hyperparameter):
     if (order_placed == True and order_signal == False and confirmation_waiting == False):
         exit_time, exit_price, order_placed, order_exit, stoploss = check_exit(temp, bull_or_bear, stoploss) 
         if order_exit == True:
-            trade_data = append_value(trade_data, 'exit_time', exit_time, order_count)
-            trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
+            # trade_data = append_value(trade_data, 'exit_time', exit_time, order_count)
+            # trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
             if bull_or_bear == "up":
                 profit  = exit_price - entry_price
             else:
@@ -368,8 +371,8 @@ def final(temp, entry_frame_data, trade_data, hyperparameter):
         if order_flag_count < 2:
             if (temp["inth"].iloc[-1] >= price_threshold and temp["intl"].iloc[-1] <= price_threshold):
                 entry_time , entry_price, order_signal, order_placed, stoploss = place_order(temp, bull_or_bear, stoploss)
-                trade_data = append_value(trade_data, 'entry_time', entry_time, order_count)
-                trade_data = append_value(trade_data, 'entry_price', price_threshold, order_count)
+                # trade_data = append_value(trade_data, 'entry_time', entry_time, order_count)
+                # trade_data = append_value(trade_data, 'entry_price', price_threshold, order_count)
                 order_flag_count = 0
             else:
                 order_flag_count = order_flag_count +1
@@ -397,8 +400,8 @@ def final(temp, entry_frame_data, trade_data, hyperparameter):
             order_exit = True
             
     if order_exit == True:
-        trade_data = append_value(trade_data, 'exit_time', temp["time"].iloc[-1], order_count)
-        trade_data = append_value(trade_data, 'exit_price', temp["intc"].iloc[-1], order_count)
+        # trade_data = append_value(trade_data, 'exit_time', temp["time"].iloc[-1], order_count)
+        # trade_data = append_value(trade_data, 'exit_price', temp["intc"].iloc[-1], order_count)
         if bull_or_bear == "up":
             profit  = exit_price - entry_price
         else:
@@ -413,4 +416,22 @@ def final(temp, entry_frame_data, trade_data, hyperparameter):
     entry_frame_data = append_value(entry_frame_data, 'bull or bear', bull_or_bear, entry_number)
     entry_number = entry_number + 1
     
-    return entry_frame_data, trade_data, order_count
+    
+    params[0] = order_placed
+    params[1] = order_signal
+    params[2] = confirmation_waiting
+    params[3] = entry_number
+    params[4] = bull_or_bear
+    params[5] = order_exit
+    params[6] = order_flag_count
+    params[7] = stoploss
+    params[8] = reason
+    params[9] = price_threshold
+    params[10] = order_count
+    params[11] = exit_time
+    params[12] = exit_price
+    params[13] = entry_time
+    params[14] = entry_price
+
+    
+    return entry_frame_data, trade_data, params
