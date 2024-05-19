@@ -1,16 +1,9 @@
 import pandas as pd
-import supertrend
 import impulsemacd
 import tsi
-import threading
-import os
-import argparse
 import velocity_indicator
 import squeeze
 import obv
-import okxfinal
-import okx
-import hull_ma
 
 def append_value(dataframe, column_name, value, index):
     if index >= len(dataframe):
@@ -22,12 +15,13 @@ def append_value(dataframe, column_name, value, index):
         dataframe.at[index, column_name] = value
     return dataframe
 
-    
 ohlc=['into', 'inth', 'intl', 'intc']
 
+current_state = 0
+# 0 == order not placed, 1 == order placed, 2 == confirmation waiting
 
-currect_state = 0
-# 0 == order not placed, 3 == order placed, 2 == confirmation waiting, 1 == order_signal, 4 == exit_signal
+signal = 0
+# 0 == no signal, 1 == order_signal, 2 == confirmation_signal, 3 == exit_signal
 
 market_direction = 0
 # 1 == up, -1 == down, 0 == no direction
@@ -38,8 +32,8 @@ buying_price = 0
 exit_price = 0
 exit_time = 0
 order_flag_count = 0
-
-
+entry_time = 0
+entry_price = 0
 
 ''''''''''''
 
@@ -70,6 +64,19 @@ len10_config = 1
 slow_length_config = 26 
 
 ''''''''''''
+def set_stoploss(df, market_direction, stoploss):
+    temp = 0.0
+    if market_direction == 1:
+        temp = df["intl"].iloc[-1] - stoploss_config
+        if (temp > stoploss or stoploss == 0):
+            stoploss = temp
+    else:
+        temp = df["inth"].iloc[-1] + stoploss_config
+        if (temp < stoploss or stoploss == 0):
+            stoploss = temp
+    # print("Stoploss: ", stoploss)
+    # print(df['time'].iloc[-1])
+    return stoploss
 
 def confirmation(df, market_direction):
     stoploss =0
@@ -82,27 +89,19 @@ def confirmation(df, market_direction):
         if temp1 > temp2:
             buying_price = df["inth"].iloc[-1]
             stoploss = set_stoploss(df, market_direction, stoploss)
+            # print("placing order after confirmation")
             return 1, market_direction, buying_price, stoploss
     else:
         if temp1 < temp2:
             buying_price = df["intl"].iloc[-1]
             stoploss = set_stoploss(df, market_direction, stoploss)
+            # print("placing order after confirmation")
             return 1, market_direction, buying_price, stoploss
         
+    # print("No confirmation")
     return 0, 0, 0, 0
-    # return state, market_direction, buying_price, stoploss
-    
-def set_stoploss(df, market_direction, stoploss):
-    temp = 0.0
-    if market_direction == 1:
-        temp = df["intl"].iloc[-1] - stoploss_config
-        if (temp > stoploss or stoploss == 0):
-            stoploss = temp
-    else:
-        temp = df["inth"].iloc[-1] + stoploss_config
-        if (temp < stoploss or stoploss == 0):
-            stoploss = temp
-    return stoploss
+    # return signal, market_direction, buying_price, stoploss
+# returns 0,0,0,0 or 1,other in yes condition
 
 def check_exit(df, market_direction, stoploss):
     df_exit = obv.calculate_custom_indicators(df, window_len = window_len_config, v_len =v_len_config,len10= len10_config, slow_length = slow_length_config)
@@ -112,19 +111,19 @@ def check_exit(df, market_direction, stoploss):
     if market_direction == 1:
         if ((df_exit["b5"].iloc[-1]) < df_exit["b5"].iloc[-2]):
             exit_price = df["intc"].iloc[-1]
-            return 4, exit_price, exit_time, stoploss
+            return 3, exit_price, exit_time, stoploss
     else:
         if ((df_exit["b5"].iloc[-1]) > df_exit["b5"].iloc[-2]):
             exit_price = df["intc"].iloc[-1]
-            return 4, exit_price, exit_time, stoploss
+            return 3, exit_price, exit_time, stoploss
         
     if (df["inth"].iloc[-1] >= stoploss and df["intl"].iloc[-1] <= stoploss):
         exit_price = stoploss
-        return 4, exit_price, exit_time, stoploss
+        return 3, exit_price, exit_time, stoploss
 
     stoploss = set_stoploss(df, market_direction, stoploss)
-    return 3, exit_price, exit_time, stoploss
-        
+    return 0, exit_price, exit_time, stoploss
+
 def check_trade(df):
     buying_price = 0
     waiting = 0
@@ -136,11 +135,10 @@ def check_trade(df):
     
     if current_time > comparison_time:
         return 0, 0 , 0, 0
-        # return state, market_direction, buying_price, stoploss
     
     df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config) 
     
-    if(df_velocity["smooth_velocity"].iloc[-1] > 0  and df_velocity["smooth_velocity"].iloc[-2] > 0 or df_velocity["smooth_velocity"].iloc[-1] < 0  and df_velocity["smooth_velocity"].iloc[-2] < 0):
+    if not ((df_velocity["smooth_velocity"].iloc[-1] > 0  and df_velocity["smooth_velocity"].iloc[-2] < 0) or (df_velocity["smooth_velocity"].iloc[-1] < 0  and df_velocity["smooth_velocity"].iloc[-2] > 0)):
         return 0, 0 , 0, 0
     
     df_squeeze = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
@@ -156,7 +154,7 @@ def check_trade(df):
     df_impulse = df[['time', 'inth', 'intl', 'intc']]
     df_impulse = impulsemacd.macd(df_impulse, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
     
-    if df_impulse["macd"].iloc[-1] == 0:
+    if df_impulse["ImpulseMACD"].iloc[-1] == 0:
         return 0, 0 , 0, 0
         
     if (market_direction == 1):
@@ -168,7 +166,6 @@ def check_trade(df):
     
     if (impulse_temp2 < 0 and impulse_temp1 > 0):
         waiting = 1
-    # elif (impulse_temp1 > impulse_temp2 and abs(impulse_temp1) > 4):
     elif not (impulse_temp1 > impulse_temp2):
         return 0, 0 , 0, 0
     
@@ -191,7 +188,8 @@ def check_trade(df):
         waiting = 1
     
     if waiting == 1:
-        return 2, 0 , 0, 0
+        # print("order going in waiting")
+        return 2, market_direction , 0, 0
     else:
         stoploss = set_stoploss(df, market_direction, stoploss)
         
@@ -199,37 +197,84 @@ def check_trade(df):
             buying_price = df["inth"].iloc[-1]
         else:
             buying_price = df["intl"].iloc[-1]
+        # print("order ready for placing")
         return 1, market_direction, buying_price, stoploss
     
-def final(temp, trade_data, hyper_parameters, senario):
+def final(temp, trade_data, hyper_parameters):
+   
     global stoploss_config, squee_config, lookback_config, ema_length_config, conv_config, length_config
     global lengthMA_config, lengthSignal_config, fast_config, slow_config, signal_config
     global window_len_config, v_len_config, len10_config, slow_length_config
     
-    global currect_state, market_direction, stoploss, order_count, buying_price, exit_time, exit_price, order_flag_count
+    global current_state, signal, market_direction, stoploss, order_count, buying_price, exit_time
+    global exit_price, order_flag_count, entry_time, entry_price
     
-    
-    # Unpacking scenario list
-    (currect_state, market_direction, stoploss, order_count, buying_price, 
-    exit_time, exit_price) = senario
-
     # Unpacking hyper_parameters list
     (stoploss_config, squee_config, lookback_config, ema_length_config, conv_config, 
     length_config, lengthMA_config, lengthSignal_config, fast_config, slow_config, 
     signal_config, window_len_config, v_len_config, len10_config, slow_length_config) = hyper_parameters
 
+
+    if current_state == 1:
+        signal, exit_price, exit_time, stoploss = check_exit(temp, market_direction, stoploss)
+        # signal =0 , exit_price = 0, exit_time = 0, stoploss = stoploss
+        if signal == 3:
+            #  signal =3 , exit_price = exit_price, exit_time = exit_time, stoploss = stoploss
+            if market_direction == 1:
+                profit  = exit_price - entry_price
+            else:
+                profit  = entry_price - exit_price
+            # print("Order exited at: ", exit_time ,"at price: ", exit_price, "with profit: ", profit)
+            trade_data = append_value(trade_data, 'profit', profit, order_count)
+            trade_data = append_value(trade_data, 'exit_time', exit_time, order_count)
+            trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
+            order_count = order_count+1
+            current_state = 0
+            market_direction = 0
+            signal = 0
+            # signal = 0, market_direction = 0, buying_price = 0, stoploss = 0
     
-    new_currect_state, new_market_direction, new_buying_price, new_stoploss = check_trade(temp)
-    if market_direction != new_market_direction:
-        if currect_state == 3:
+    elif current_state == 2:
+        signal, market_direction, buying_price, stoploss = confirmation(temp, market_direction)
+        # signal = 1, market_direction = market_direction, buying_price = buying_price, stoploss = stoploss
+        # signal = 0, market_direction = 0, buying_price = 0, stoploss = 0
+    
+    elif current_state == 0 and signal == 1:
+        if order_flag_count < 2:
+            if (temp["inth"].iloc[-1] >= buying_price and temp["intl"].iloc[-1] <= buying_price):
+                current_state = 1
+                entry_time = temp["time"].iloc[-1]
+                entry_price = buying_price
+                stoploss = set_stoploss(temp, market_direction, stoploss)
+                # print("Order placed at: ", entry_time ,"at price: ", entry_price, "with stoploss: ", stoploss)
+                trade_data = append_value(trade_data, 'entry_time', entry_time, order_count)
+                trade_data = append_value(trade_data, 'entry_price', entry_price, order_count)
+                order_flag_count = 0
+                
+            else:
+                order_flag_count = order_flag_count +1
+        else:
+            order_flag_count = 0
+            market_direction = 0
+            signal = 0
+
+    new_signal, new_market_direction, new_buying_price, new_stoploss = check_trade(temp)
+    # new_signal = 0, new_market_direction = 0, new_buying_price = 0, new_stoploss = 0
+    # new_signal = 1, new_market_direction = market_direction, new_buying_price = buying_price, new_stoploss = stoploss
+    # new_signal = 2, new_market_direction = market_direction, new_buying_price = 0, new_stoploss = 0
+
+    if (market_direction == 0 or (market_direction == 1 and new_market_direction == -1) or (market_direction == -1 and new_market_direction == 1)):
+        if current_state == 1:
+            exit_price = temp["intc"].iloc[-1]
             if market_direction == 1:
                 profit  = exit_price - entry_price
             else:
                 profit  = entry_price - exit_price
             trade_data = append_value(trade_data, 'profit', profit, order_count)
+            trade_data = append_value(trade_data, 'exit_time', temp["time"].iloc[-1], order_count)
+            trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
             order_count = order_count+1
-
-        currect_state, market_direction, buying_price, stoploss = new_currect_state, new_market_direction, new_buying_price, new_stoploss
+            order_flag_count = 0
+        signal, market_direction, buying_price, stoploss = new_signal, new_market_direction, new_buying_price, new_stoploss
         order_flag_count = 0
-    
-    
+    return trade_data
