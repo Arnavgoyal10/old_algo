@@ -1,15 +1,15 @@
 import os
 from tvDatafeed import TvDatafeed, Interval
 import pandas as pd
-import refracted
+import refracted1
 
 def trading_view():
     tv = TvDatafeed(username='arnavgoyal63774', password='fAC@6kjug8tgqM-')
     tv = TvDatafeed()
 
-    ret = tv.get_hist(symbol='NIFTY',exchange='NSE',interval=Interval.in_5_minute,n_bars=10000)                                          
+    ret = tv.get_hist(symbol='BANKNIFTY',exchange='NSE',interval=Interval.in_1_minute,n_bars=20000)                                          
     current_directory = os.getcwd()
-    df_comb_file = os.path.join(current_directory, 'nifty_full1.csv')
+    df_comb_file = os.path.join(current_directory, 'bank_nifty_full1.csv')
     ret.to_csv(df_comb_file, index=True)
 
 
@@ -27,6 +27,8 @@ base_directory = os.getcwd()
 
 
 def main():
+    # trading_view()
+    
     global ret
 
     trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
@@ -39,7 +41,7 @@ def main():
                                                        
     for i in range(0, len(ret)):
                                                             
-        trade_data = refracted.final(temp, trade_data, hyper_params)        
+        trade_data = refracted1.final(temp, trade_data, hyper_params)        
         
         if (i%150 == 0):
             print(f'"working fine {i}"')
@@ -49,8 +51,10 @@ def main():
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.iloc[-110:].reset_index(drop=True)
     
-    df_comb_file = os.path.join(base_directory, 'trade_data.csv')
+    df_comb_file = os.path.join(base_directory, 'trade_data1.csv')
     trade_data.to_csv(df_comb_file, index=True)
+
+
                                                                                                                  
 if __name__ == "__main__":
     main()
