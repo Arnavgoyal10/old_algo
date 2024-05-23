@@ -1,7 +1,7 @@
 import os
 from tvDatafeed import TvDatafeed, Interval
 import pandas as pd
-import refracted1
+import refracted
 
 def trading_view():
     tv = TvDatafeed(username='arnavgoyal63774', password='fAC@6kjug8tgqM-')
@@ -34,14 +34,14 @@ def main():
     trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
     trade_data = pd.DataFrame(columns=trade_columns)
     
-    hyper_params = [10,2,14,20,50,20,34,9,13,25,13,28,14,1,26]
+    hyper_params = [10,2,14,20,50,20,34,9,13,25,13]
     temp = pd.DataFrame()
     temp = ret.iloc[:200].copy()
     ret = ret[200:]
                                                        
     for i in range(0, len(ret)):
                                                             
-        trade_data = refracted1.final(temp, trade_data, hyper_params)        
+        trade_data = refracted.final(temp, trade_data, hyper_params)        
         
         if (i%150 == 0):
             print(f'"working fine {i}"')

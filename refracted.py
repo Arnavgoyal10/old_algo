@@ -3,7 +3,6 @@ import impulsemacd
 import tsi
 import velocity_indicator
 import squeeze
-import obv
 
 def append_value(dataframe, column_name, value, index):
     if index >= len(dataframe):
@@ -58,10 +57,10 @@ slow_config = 25
 signal_config = 13
 
 # obv_exit settings
-window_len_config = 28
-v_len_config = 14
-len10_config = 1
-slow_length_config = 26 
+# window_len_config = 28
+# v_len_config = 14
+# len10_config = 1
+# slow_length_config = 26 
 
 ''''''''''''
 def set_stoploss(df, market_direction, stoploss):
@@ -104,16 +103,19 @@ def confirmation(df, market_direction):
 # returns 0,0,0,0 or 1,other in yes condition
 
 def check_exit(df, market_direction, stoploss):
-    df_exit = obv.calculate_custom_indicators(df, window_len = window_len_config, v_len =v_len_config,len10= len10_config, slow_length = slow_length_config)
+    # df_exit = obv.calculate_custom_indicators(df, window_len = window_len_config, v_len =v_len_config,len10= len10_config, slow_length = slow_length_config)
+    df_exit = tsi.tsi(df, fast = fast_config, slow = slow_config, signal = signal_config)
     exit_price = 0
     exit_time = df["time"].iloc[-1]
     
     if market_direction == 1:
-        if ((df_exit["b5"].iloc[-1]) < df_exit["b5"].iloc[-2]):
+        # if ((df_exit["b5"].iloc[-1]) < df_exit["b5"].iloc[-2]):
+        if ((df_exit["TSI"].iloc[-1]) < df_exit["TSI"].iloc[-1]):
             exit_price = df["intc"].iloc[-1]
             return 3, exit_price, exit_time, stoploss
     else:
-        if ((df_exit["b5"].iloc[-1]) > df_exit["b5"].iloc[-2]):
+        # if ((df_exit["b5"].iloc[-1]) > df_exit["b5"].iloc[-2]):
+        if ((df_exit["TSI"].iloc[-1]) < df_exit["TSI"].iloc[-1]):
             exit_price = df["intc"].iloc[-1]
             return 3, exit_price, exit_time, stoploss
         
@@ -136,20 +138,31 @@ def check_trade(df):
     if current_time > comparison_time:
         return 0, 0 , 0, 0
     
+    # df_super = supertrend.SuperTrend(df, period= 17, multiplier=3, ohlc=ohlc)
     df_velocity = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config) 
+    # df_okx = okx.add_trading_signals(df, entryLength=10)
+    
+    # if not (df_super["STX17_3.0"].iloc[-1] == "up" or df_super["STX17_3.0"].iloc[-1] == "down"):
+    #     return 0, 0 , 0, 0
     
     if not ((df_velocity["smooth_velocity"].iloc[-1] > 0  and df_velocity["smooth_velocity"].iloc[-2] < 0) or (df_velocity["smooth_velocity"].iloc[-1] < 0  and df_velocity["smooth_velocity"].iloc[-2] > 0)):
         return 0, 0 , 0, 0
-    
+
+    # if not (df_okx["direction"].iloc[-1] == "up" or df_okx["direction"].iloc[-1] == "down"):
+    #     return 0, 0 , 0, 0
+            
     df_squeeze = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
     
     if not (df_squeeze["psi"].iloc[-1] < 80 and df_squeeze["psi"].iloc[-2] < 80 and (df_squeeze["psi"].iloc[-1] - squee_config) < df_squeeze["psi"].iloc[-2]):
         return 0, 0 , 0, 0
-        
+    
+    # if (df_okx["direction"].iloc[-1] == "up"):
     if df_velocity["smooth_velocity"].iloc[-1] < 0:
+    # if df_super["STX17_3.0"].iloc[-1] == "down":
         market_direction = -1
     else:
         market_direction = 1
+    
         
     df_impulse = df[['time', 'inth', 'intl', 'intc']]
     df_impulse = impulsemacd.macd(df_impulse, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
@@ -204,7 +217,6 @@ def final(temp, trade_data, hyper_parameters):
    
     global stoploss_config, squee_config, lookback_config, ema_length_config, conv_config, length_config
     global lengthMA_config, lengthSignal_config, fast_config, slow_config, signal_config
-    global window_len_config, v_len_config, len10_config, slow_length_config
     
     global current_state, signal, market_direction, stoploss, order_count, buying_price, exit_time
     global exit_price, order_flag_count, entry_time, entry_price
@@ -212,7 +224,7 @@ def final(temp, trade_data, hyper_parameters):
     # Unpacking hyper_parameters list
     (stoploss_config, squee_config, lookback_config, ema_length_config, conv_config, 
     length_config, lengthMA_config, lengthSignal_config, fast_config, slow_config, 
-    signal_config, window_len_config, v_len_config, len10_config, slow_length_config) = hyper_parameters
+    signal_config) = hyper_parameters
 
 
     if current_state == 1:
