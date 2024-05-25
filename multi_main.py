@@ -65,9 +65,9 @@ def working(ret, hyper_parameters, counter):
         for j in range(0, len(df)):
             trade_data = refracted.final(temp,trade_data, hyper_parameters[i])        
             
-            if (j%150 == 0):
-                print(f'"working fine {j}"')
-                print(temp["time"].iloc[-1])
+            # if (j%150 == 0):
+            #     print(f'"working fine {j}"')
+            #     print(temp["time"].iloc[-1])
             
             next_row = df.iloc[[j]]
             temp = pd.concat([temp, next_row], ignore_index=True)
