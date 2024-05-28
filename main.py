@@ -34,7 +34,7 @@ def main():
     trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
     trade_data = pd.DataFrame(columns=trade_columns)
     
-    hyper_params = [10,2,14,20,50,20,34,9,13,25,13]
+    hyper_params = [10,6,16,16,44,24,30,9,16,20,10]
     temp = pd.DataFrame()
     temp = ret.iloc[:200].copy()
     ret = ret[200:]
@@ -51,7 +51,7 @@ def main():
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.iloc[-110:].reset_index(drop=True)
     
-    df_comb_file = os.path.join(base_directory, 'trade_data1.csv')
+    df_comb_file = os.path.join(base_directory, 'trade_data_new.csv')
     trade_data.to_csv(df_comb_file, index=True)
 
 

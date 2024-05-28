@@ -9,7 +9,7 @@ ohlc=['into', 'inth', 'intl', 'intc']
      
 
 base_directory = os.getcwd()
-data_directory = os.path.join(base_directory, "data")
+data_directory = os.path.join(base_directory, "data1")
 
 hyperparameters = [
     [7, 10, 12],
@@ -110,7 +110,7 @@ def main():
 
     total_combinations = len(all_combinations)
 
-    num_lists = 50
+    num_lists = 208
     size_of_each_list = total_combinations // num_lists
     remainder = total_combinations % num_lists
 
