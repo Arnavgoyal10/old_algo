@@ -7,9 +7,7 @@ import current_indicators.squeeze as squeeze
 def append_value(dataframe, column_name, value, index):
     if index >= len(dataframe):
         new_row = pd.DataFrame([{col: (value if col == column_name else None) for col in dataframe.columns}])
-        if not new_row.empty and not new_row.isna().all().all():
-            new_row = new_row.dropna(axis=1, how='all')
-            dataframe = pd.concat([dataframe, new_row], ignore_index=True)
+        dataframe = pd.concat([dataframe, new_row], ignore_index=True)
     else:
         dataframe.at[index, column_name] = value
     return dataframe
@@ -74,17 +72,10 @@ def confirmation(df, market_direction):
 def check_exit(df, market_direction, stoploss):
     exit_price = 0
     exit_time = df["time"].iloc[-1]
-    
-    if market_direction == 1:
-        if ((df["TSI"].iloc[-1]) < df["TSI"].iloc[-1]):
-            exit_price = df["intc"].iloc[-1]
-            return 3, exit_price, exit_time, stoploss
-    else:
-        if ((df["TSI"].iloc[-1]) < df["TSI"].iloc[-1]):
-            exit_price = df["intc"].iloc[-1]
-            return 3, exit_price, exit_time, stoploss
+    inth_last = df["inth"].iloc[-1]
+    intl_last = df["intl"].iloc[-1]
         
-    if (df["inth"].iloc[-1] >= stoploss and df["intl"].iloc[-1] <= stoploss):
+    if inth_last >= stoploss and intl_last <= stoploss:
         exit_price = stoploss
         return 3, exit_price, exit_time, stoploss
 
@@ -103,13 +94,19 @@ def check_trade(df):
     if current_time > comparison_time:
         return 0, 0 , 0, 0
         
-    if not ((df["smooth_velocity"].iloc[-1] > 0  and df["smooth_velocity"].iloc[-2] < 0) or (df["smooth_velocity"].iloc[-1] < 0  and df["smooth_velocity"].iloc[-2] > 0)):
+    smooth = df["smooth_velocity"].iloc[-1]
+    smooth2 = df["smooth_velocity"].iloc[-2]
+    
+    if not ((smooth > 0  and smooth2 < 0) or (smooth < 0  and smooth2 > 0)):
         return 0, 0 , 0, 0
 
-    if not (df["psi"].iloc[-1] < 80 and df["psi"].iloc[-2] < 80 and (df["psi"].iloc[-1] - squee_config) < df["psi"].iloc[-2]):
+    psi1 = df["psi"].iloc[-1]
+    psi2 = df["psi"].iloc[-2]
+    
+    if not (psi1 < 80 and psi2 < 80 and (psi1 - squee_config) < psi2):
         return 0, 0 , 0, 0
     
-    if df["smooth_velocity"].iloc[-1] < 0:
+    if smooth < 0:
         market_direction = -1
     else:
         market_direction = 1
@@ -117,25 +114,26 @@ def check_trade(df):
     if df["ImpulseMACD"].iloc[-1] == 0:
         return 0, 0 , 0, 0
         
-    if (market_direction == 1):
-        impulse_temp1 = (df["ImpulseMACD"].iloc[-1]) - (df["ImpulseMACDCDSignal"].iloc[-1])
-        impulse_temp2 = (df["ImpulseMACD"].iloc[-2]) - (df["ImpulseMACDCDSignal"].iloc[-2])           
-    else:
-        impulse_temp1 = (df["ImpulseMACDCDSignal"].iloc[-1]) - (df["ImpulseMACD"].iloc[-1])
-        impulse_temp2 = (df["ImpulseMACDCDSignal"].iloc[-2]) - (df["ImpulseMACD"].iloc[-2])
+    impulse_temp1 = df["ImpulseMACD"].iloc[-1] - df["ImpulseMACDCDSignal"].iloc[-1]
+    impulse_temp2 = df["ImpulseMACD"].iloc[-2] - df["ImpulseMACDCDSignal"].iloc[-2]
+
+    if market_direction != 1:
+        impulse_temp1 = -impulse_temp1
+        impulse_temp2 = -impulse_temp2
+
     
     if (impulse_temp2 < 0 and impulse_temp1 > 0):
         waiting = 1
     elif not (impulse_temp1 > impulse_temp2):
         return 0, 0 , 0, 0
     
-    if (market_direction == 1):
-        tsi_temp1 = (df["TSI"].iloc[-1]) - (df["TSIs"].iloc[-1])
-        tsi_temp2 = (df["TSI"].iloc[-2]) - (df["TSIs"].iloc[-2])              
-    else:
-        tsi_temp1 = (df["TSIs"].iloc[-1]) - (df["TSI"].iloc[-1])
-        tsi_temp2 = (df["TSIs"].iloc[-2]) - (df["TSI"].iloc[-2])
-            
+    tsi_temp1 = df["TSI"].iloc[-1] - df["TSIs"].iloc[-1]
+    tsi_temp2 = df["TSI"].iloc[-2] - df["TSIs"].iloc[-2]
+
+    if market_direction != 1:
+        tsi_temp1 = -tsi_temp1
+        tsi_temp2 = -tsi_temp2
+
     if (tsi_temp2 < 0 and tsi_temp1 > 0):
         waiting = 1
     elif not (tsi_temp1 > tsi_temp2):
@@ -156,7 +154,6 @@ def check_trade(df):
             buying_price = df["intl"].iloc[-1]
         return 1, market_direction, buying_price, stoploss
     
-
 def final(temp, trade_data, hyper_parameters):
     global stoploss_config, squee_config
     

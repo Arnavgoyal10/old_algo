@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr
+from numba import jit
 
 
-def squeeze_index(df, conv, length, col='intc'):
+def squeeze_original(df, conv, length, col='intc'):
     df['max'] = df[col]
     df['min'] = df[col]
 
@@ -23,5 +24,70 @@ def squeeze_index(df, conv, length, col='intc'):
         df.loc[i, 'psi'] = -50 * corr + 50
 
     df.drop(['max', 'min', 'diff', 'log_diff'], axis=1, inplace=True)
+    
+    return df
+
+# def compute_max_min(df_col, conv):
+#     max_col = df_col.copy()
+#     min_col = df_col.copy()
+#     for i in range(1, len(df_col)):
+#         max_col[i] = max(max_col[i], max_col[i-1] - (max_col[i-1] - max_col[i]) / conv)
+#         min_col[i] = min(min_col[i], min_col[i-1] + (min_col[i] - min_col[i-1]) / conv)
+#     return max_col, min_col
+
+# def squeeze_index2(df, conv, length, col='intc'):
+#     df_col = df[col].values
+#     max_col, min_col = compute_max_min(df_col, conv)
+    
+#     diff = max_col - min_col
+#     diff[diff <= 0] = np.nan
+#     log_diff = np.log(diff)
+    
+#     seq = np.arange(length)
+#     log_diff_series = pd.Series(log_diff)
+#     rolling_windows = log_diff_series.rolling(window=length)
+    
+#     def compute_psi(window):
+#         if window.isnull().any():
+#             return np.nan
+#         corr = np.corrcoef(window, seq)[0, 1]
+#         return -50 * corr + 50
+    
+#     psi = rolling_windows.apply(compute_psi, raw=False)
+#     df['psi'] = psi
+    
+#     return df
+
+
+
+def compute_max_min(df_col, conv):
+    max_col = df_col.copy()
+    min_col = df_col.copy()
+    for i in range(1, len(df_col)):
+        max_col[i] = max(max_col[i], max_col[i-1] - (max_col[i-1] - max_col[i]) / conv)
+        min_col[i] = min(min_col[i], min_col[i-1] + (min_col[i] - min_col[i-1]) / conv)
+    return max_col, min_col
+
+def compute_psi_array(log_diff, length):
+    psi = np.full(log_diff.shape, np.nan)
+    seq = np.arange(length)
+    for i in range(length - 1, len(log_diff)):
+        window = log_diff[i - length + 1: i + 1]
+        if np.any(np.isnan(window)):
+            continue
+        corr = np.corrcoef(window, seq)[0, 1]
+        psi[i] = -50 * corr + 50
+    return psi
+
+def squeeze_index2(df, conv, length, col='intc'):
+    df_col = df[col].values
+    max_col, min_col = compute_max_min(df_col, conv)
+    
+    diff = max_col - min_col
+    diff[diff <= 0] = np.nan
+    log_diff = np.log(diff)
+    
+    psi = compute_psi_array(log_diff, length)
+    df['psi'] = psi
     
     return df

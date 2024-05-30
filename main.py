@@ -9,8 +9,6 @@ import current_indicators.squeeze as squeeze
 import current_indicators.impulsemacd as impulsemacd
 import current_indicators.tsi as tsi
 
-
-
 def trading_view():
     tv = TvDatafeed(username='arnavgoyal63774', password='fAC@6kjug8tgqM-')
     tv = TvDatafeed()
@@ -19,8 +17,6 @@ def trading_view():
     current_directory = os.getcwd()
     df_comb_file = os.path.join(current_directory, 'bank_nifty_full1.csv')
     ret.to_csv(df_comb_file, index=True)
-
-
 
 ohlc=['into', 'inth', 'intl', 'intc']
      
@@ -43,7 +39,7 @@ def calculate_indicators(df, hyperparamas):
     df = df.copy()
     
     df = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
-    df = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
+    df = squeeze.squeeze_index2(df,conv=conv_config, length=length_config)
     
     df_macd = impulsemacd.macd(df, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
     df[['ImpulseMACD', 'ImpulseMACDCDSignal']] = df_macd[['ImpulseMACD', 'ImpulseMACDCDSignal']]
@@ -73,13 +69,13 @@ def main():
         for i in range(0, len(df)):
             trade_data = refracted.final(temp, trade_data, parse)        
             
-            if (i%150 == 0):
-                print(f'"working fine {i}"')
-                print(temp["time"].iloc[-1])
+            # if (i%150 == 0):
+            #     print(f'"working fine {i}"')
+            #     print(temp["time"].iloc[-1])
                     
             next_row = df.iloc[[i]]
             temp = pd.concat([temp, next_row], ignore_index=True)
-            temp = temp.tail(110).reset_index(drop=True)
+            temp = temp.tail(110)
     
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)

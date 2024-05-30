@@ -22,7 +22,7 @@ def calculate_indicators(df, hyperparamas):
     df = df.copy()
     
     df = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
-    df = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
+    df = squeeze.squeeze_index2(df,conv=conv_config, length=length_config)
     
     df_macd = impulsemacd.macd(df, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
     df[['ImpulseMACD', 'ImpulseMACDCDSignal']] = df_macd[['ImpulseMACD', 'ImpulseMACDCDSignal']]
@@ -35,9 +35,7 @@ def calculate_indicators(df, hyperparamas):
 def append_value(dataframe, column_name, value, index):
     if index >= len(dataframe):
         new_row = pd.DataFrame([{col: (value if col == column_name else None) for col in dataframe.columns}])
-        if not new_row.empty and not new_row.isna().all().all():
-            new_row = new_row.dropna(axis=1, how='all')
-            dataframe = pd.concat([dataframe, new_row], ignore_index=True)
+        dataframe = pd.concat([dataframe, new_row], ignore_index=True)
     else:
         dataframe.at[index, column_name] = value
     return dataframe
@@ -82,7 +80,7 @@ def working(ret, hyper_parameters, counter):
             
             next_row = df.iloc[[j]]
             temp = pd.concat([temp, next_row], ignore_index=True)
-            temp = temp.iloc[-110:].reset_index(drop=True)
+            temp = temp.iloc[-110:]
         
         net_profit = append_value(net_profit, 'stoploss', parse2[0], i)
         net_profit = append_value(net_profit, 'squee', parse2[1], i)

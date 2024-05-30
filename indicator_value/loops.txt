@@ -1,0 +1,11 @@
+for stoploss in range(range_start, range_end):
+        for squee in range(1, 5):
+            for lookback in range(9, 19):
+                for ema_length in range(14, 27):
+                    for conv in range(40, 66):
+                        for length in range(8, 29):
+                            for lengthMA in range(25, 40):
+                                for lengthSignal in range(6, 15):
+                                    for fast in range(8, 18):
+                                        for slow in range(18, 32):
+                                            for signal in range(8, 19):
