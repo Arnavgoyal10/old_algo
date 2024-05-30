@@ -1,0 +1,4 @@
+,stoploss,squee,lookback,ema_length,conv,length,lengthMA,lengthSignal,fast,slow,signal,net_profit
+0,8,2,14,20,50,20,34,9,13,25,13,310.55000000000655
+1,9,2,14,20,50,20,34,9,13,25,13,297.55000000000655
+2,10,2,14,20,50,20,34,9,13,25,13,362.1000000000058

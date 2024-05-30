@@ -1,15 +1,19 @@
 import os
 import pandas as pd
-import refracted
+import refracted_advance as refracted
 import multiprocessing
 import itertools
+import cProfile
+import pstats
+import current_indicators.velocity_indicator as velocity_indicator
+import current_indicators.squeeze as squeeze
+import current_indicators.impulsemacd as impulsemacd
+import current_indicators.tsi as tsi
 
 
 ohlc=['into', 'inth', 'intl', 'intc']
-     
-
 base_directory = os.getcwd()
-data_directory = os.path.join(base_directory, "data1")
+data_directory = os.path.join(base_directory, "data_multi_main")
 
 hyperparameters = [
     [7, 10, 12],
@@ -25,6 +29,25 @@ hyperparameters = [
     [10, 13, 16]
 ]
  
+def calculate_indicators(df, hyperparamas):
+    
+    (lookback_config, ema_length_config, conv_config, 
+    length_config, lengthMA_config, lengthSignal_config, fast_config, slow_config, 
+    signal_config) = hyperparamas
+    
+    df = df.copy()
+    
+    df = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
+    df = squeeze.squeeze_index(df,conv=conv_config, length=length_config)
+    
+    df_macd = impulsemacd.macd(df, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
+    df[['ImpulseMACD', 'ImpulseMACDCDSignal']] = df_macd[['ImpulseMACD', 'ImpulseMACDCDSignal']]
+    
+    df_tsi = tsi.tsi(df, fast = fast_config, slow = slow_config, signal = signal_config)
+    df[['TSI', 'TSIs']] = df_tsi[['TSI', 'TSIs']]
+    
+    return df
+
 def append_value(dataframe, column_name, value, index):
     if index >= len(dataframe):
         new_row = pd.DataFrame([{col: (value if col == column_name else None) for col in dataframe.columns}])
@@ -58,12 +81,16 @@ def working(ret, hyper_parameters, counter):
         
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
         trade_data = pd.DataFrame(columns=trade_columns)
+        parse1 = hyper_parameters[i][2:]
+        parse2 = hyper_parameters[i][:2]
+        
+        df = calculate_indicators(ret, parse1)
         temp = pd.DataFrame()
-        temp = ret.iloc[:200].copy()
-        df = ret[200:]
+        temp = df.iloc[:200].copy()
+        df = df[200:]
         
         for j in range(0, len(df)):
-            trade_data = refracted.final(temp,trade_data, hyper_parameters[i])        
+            trade_data = refracted.final(temp,trade_data, parse2)        
             
             # if (j%150 == 0):
             #     print(f'"working fine {j}"')
@@ -73,17 +100,17 @@ def working(ret, hyper_parameters, counter):
             temp = pd.concat([temp, next_row], ignore_index=True)
             temp = temp.iloc[-110:].reset_index(drop=True)
         
-        net_profit = append_value(net_profit, 'stoploss', hyper_parameters[i][0], i)
-        net_profit = append_value(net_profit, 'squee', hyper_parameters[i][1], i)
-        net_profit = append_value(net_profit, 'lookback', hyper_parameters[i][2], i)
-        net_profit = append_value(net_profit, 'ema_length', hyper_parameters[i][3], i)
-        net_profit = append_value(net_profit, 'conv', hyper_parameters[i][4], i)
-        net_profit = append_value(net_profit, 'length', hyper_parameters[i][5], i)
-        net_profit = append_value(net_profit, 'lengthMA', hyper_parameters[i][6], i)
-        net_profit = append_value(net_profit, 'lengthSignal', hyper_parameters[i][7], i)
-        net_profit = append_value(net_profit, 'fast', hyper_parameters[i][8], i)
-        net_profit = append_value(net_profit, 'slow', hyper_parameters[i][9], i)
-        net_profit = append_value(net_profit, 'signal', hyper_parameters[i][10], i)
+        net_profit = append_value(net_profit, 'stoploss', parse2[0], i)
+        net_profit = append_value(net_profit, 'squee', parse2[1], i)
+        net_profit = append_value(net_profit, 'lookback', parse1[0], i)
+        net_profit = append_value(net_profit, 'ema_length', parse1[1], i)
+        net_profit = append_value(net_profit, 'conv', parse1[2], i)
+        net_profit = append_value(net_profit, 'length', parse1[3], i)
+        net_profit = append_value(net_profit, 'lengthMA', parse1[4], i)
+        net_profit = append_value(net_profit, 'lengthSignal', parse1[5], i)
+        net_profit = append_value(net_profit, 'fast', parse1[6], i)
+        net_profit = append_value(net_profit, 'slow', parse1[7], i)
+        net_profit = append_value(net_profit, 'signal', parse1[8], i)
         net_profit_1 = trade_data['profit'].sum()
         net_profit = append_value(net_profit, 'net_profit', net_profit_1, i)
     
@@ -98,42 +125,48 @@ def worker(ret, hyper_parameters, counter):
     
 
 def main():
-    print("starting")
-    file_path = 'nifty_full_feb.xlsx'
-    ret = pd.read_excel(file_path)
-    ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
-    for col in ohlc:
-        ret[col] = ret[col].astype(float) 
     
-
-    all_combinations = list(itertools.product(*hyperparameters))
-
-    total_combinations = len(all_combinations)
-
-    num_lists = 208
-    size_of_each_list = total_combinations // num_lists
-    remainder = total_combinations % num_lists
-
-    separate_lists = []
-    
-    for i in range(num_lists):
-        start_index = i * size_of_each_list
-        end_index = start_index + size_of_each_list
-        if i == num_lists - 1:
-            end_index += remainder
-        separate_lists.append(all_combinations[start_index:end_index])
+    with cProfile.Profile() as pr:
         
-    processes = []
+        file_path = 'excel_files/nifty_full_feb.xlsx'
+        ret = pd.read_excel(file_path)
+        ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
+        for col in ohlc:
+            ret[col] = ret[col].astype(float) 
+        
+
+        all_combinations = list(itertools.product(*hyperparameters))
+
+        total_combinations = len(all_combinations)
+
+        num_lists = 208
+        size_of_each_list = total_combinations // num_lists
+        remainder = total_combinations % num_lists
+
+        separate_lists = []
+        
+        for i in range(num_lists):
+            start_index = i * size_of_each_list
+            end_index = start_index + size_of_each_list
+            if i == num_lists - 1:
+                end_index += remainder
+            separate_lists.append(all_combinations[start_index:end_index])
+            
+        processes = []
+        
+        for i, hyper_parameters in enumerate(separate_lists):
+            p = multiprocessing.Process(target=worker, args=(ret, hyper_parameters, i))
+            processes.append(p)
+            p.start()
+        
+        for p in processes:
+            p.join()
+        
+        print("All workers finished")
     
-    for i, hyper_parameters in enumerate(separate_lists):
-        p = multiprocessing.Process(target=worker, args=(ret, hyper_parameters, i))
-        processes.append(p)
-        p.start()
-    
-    for p in processes:
-        p.join()
-    
-    print("All workers finished")
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.dump_stats("profile_multi_main.prof")
     
     
                                                                                                                  

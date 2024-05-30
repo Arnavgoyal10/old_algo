@@ -7,7 +7,7 @@ def squeeze_index(df, conv, length, col='intc'):
     df['max'] = df[col]
     df['min'] = df[col]
 
-    for i in range(1, len(df)):
+    for i in df.index[1:]:
         df.loc[i, 'max'] = max(df.loc[i, col], df.loc[i-1, 'max'] - (df.loc[i-1, 'max'] - df.loc[i, col]) / conv)
         df.loc[i, 'min'] = min(df.loc[i, col], df.loc[i-1, 'min'] + (df.loc[i, col] - df.loc[i-1, 'min']) / conv)
     
