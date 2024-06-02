@@ -91,3 +91,41 @@ def squeeze_index2(df, conv, length, col='intc'):
     df['psi'] = psi
     
     return df
+
+
+
+
+
+
+def compute_max_min_float(df_col, conv):
+    max_col = df_col.copy()
+    min_col = df_col.copy()
+    for i in range(1, len(df_col)):
+        max_col[i] = max(max_col[i], max_col[i-1] - (max_col[i-1] - max_col[i]) / conv)
+        min_col[i] = min(min_col[i], min_col[i-1] + (min_col[i] - min_col[i-1]) / conv)
+    return max_col, min_col
+
+def compute_psi_array_float(log_diff, length):
+    psi = np.full(log_diff.shape, np.nan)
+    int_length = int(length)
+    seq = np.linspace(0, int_length - 1, int_length)
+    for i in range(int_length - 1, len(log_diff)):
+        window = log_diff[int(i - int_length + 1): int(i + 1)]
+        if np.any(np.isnan(window)):
+            continue
+        corr = np.corrcoef(window, seq)[0, 1]
+        psi[i] = -50 * corr + 50
+    return psi
+
+def squeeze_index2_float(df, conv, length, col='intc'):
+    df_col = df[col].values
+    max_col, min_col = compute_max_min_float(df_col, conv)
+    
+    diff = max_col - min_col
+    diff[diff <= 0] = np.nan
+    log_diff = np.log(diff)
+    
+    psi = compute_psi_array_float(log_diff, length)
+    df['psi'] = psi
+    
+    return df
