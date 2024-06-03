@@ -1,0 +1,1146 @@
+Worker started  206
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  206
+Worker started  193
+Optimization terminated successfully.
+         Current function value: -359.000000
+         Iterations: 30
+         Function evaluations: 214
+Worker finished  193
+Worker started  176
+Optimization terminated successfully.
+         Current function value: -190.850000
+         Iterations: 26
+         Function evaluations: 212
+Worker finished  176
+Worker started  171
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  171
+Worker started  182
+Optimization terminated successfully.
+         Current function value: -218.600000
+         Iterations: 54
+         Function evaluations: 247
+Worker finished  182
+Worker started  167
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  167
+Worker started  162
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  162
+Worker started  192
+Optimization terminated successfully.
+         Current function value: -361.343626
+         Iterations: 92
+         Function evaluations: 325
+Worker finished  192
+Worker started  172
+Optimization terminated successfully.
+         Current function value: -79.600000
+         Iterations: 66
+         Function evaluations: 253
+Worker finished  172
+Worker started  121
+Optimization terminated successfully.
+         Current function value: 25.000000
+         Iterations: 24
+         Function evaluations: 217
+Worker finished  121
+Worker started  152
+Optimization terminated successfully.
+         Current function value: -2.950000
+         Iterations: 45
+         Function evaluations: 232
+Worker finished  152
+Worker started  136
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  136
+Worker started  135
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  135
+Worker started  132
+Optimization terminated successfully.
+         Current function value: -1.900000
+         Iterations: 17
+         Function evaluations: 209
+Worker finished  132
+Worker started  126
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  126
+Worker started  185
+Optimization terminated successfully.
+         Current function value: -94.113654
+         Iterations: 153
+         Function evaluations: 400
+Worker finished  185
+Worker started  119
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  119
+Worker started  168
+Optimization terminated successfully.
+         Current function value: -474.939216
+         Iterations: 108
+         Function evaluations: 328
+Worker finished  168
+Worker started  199
+Optimization terminated successfully.
+         Current function value: -86.550000
+         Iterations: 251
+         Function evaluations: 530
+Worker finished  199
+Worker started  120
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 35
+         Function evaluations: 215
+Worker finished  120
+Worker started  127
+Optimization terminated successfully.
+         Current function value: -566.850000
+         Iterations: 53
+         Function evaluations: 239
+Worker finished  127
+Worker started  108
+Optimization terminated successfully.
+         Current function value: -264.050000
+         Iterations: 19
+         Function evaluations: 212
+Worker finished  108
+Worker started  79
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  79
+Worker started  125
+Optimization terminated successfully.
+         Current function value: 10.500000
+         Iterations: 77
+         Function evaluations: 270
+Worker finished  125
+Worker started  29
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  29
+Worker started  202
+Optimization terminated successfully.
+         Current function value: -280.389007
+         Iterations: 126
+         Function evaluations: 713
+Worker finished  202
+Worker started  98
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 58
+         Function evaluations: 242
+Worker finished  98
+Worker started  64
+Optimization terminated successfully.
+         Current function value: 54.900000
+         Iterations: 17
+         Function evaluations: 209
+Worker finished  64
+Worker started  118
+Optimization terminated successfully.
+         Current function value: -77.600000
+         Iterations: 78
+         Function evaluations: 279
+Worker finished  118
+Worker started  56
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  56
+Worker started  62
+Optimization terminated successfully.
+         Current function value: 6.850000
+         Iterations: 21
+         Function evaluations: 215
+Worker finished  62
+Worker started  47
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  47
+Worker started  12
+Optimization terminated successfully.
+         Current function value: -24.800000
+         Iterations: 22
+         Function evaluations: 217
+Worker finished  12
+Worker started  66
+Optimization terminated successfully.
+         Current function value: -217.400000
+         Iterations: 36
+         Function evaluations: 218
+Worker finished  66
+Worker started  38
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  38
+Worker started  37
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  37
+Worker started  44
+Optimization terminated successfully.
+         Current function value: -85.800000
+         Iterations: 17
+         Function evaluations: 209
+Worker finished  44
+Worker started  117
+Optimization terminated successfully.
+         Current function value: -77.500000
+         Iterations: 131
+         Function evaluations: 352
+Worker finished  117
+Worker started  36
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  36
+Worker started  32
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  32
+Worker started  113
+Optimization terminated successfully.
+         Current function value: -555.200000
+         Iterations: 70
+         Function evaluations: 280
+Worker finished  113
+Worker started  198
+Optimization terminated successfully.
+         Current function value: -479.600000
+         Iterations: 383
+         Function evaluations: 726
+Worker finished  198
+Worker started  17
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  17
+Worker started  16
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  16
+Worker started  42
+Optimization terminated successfully.
+         Current function value: -62.300000
+         Iterations: 25
+         Function evaluations: 224
+Worker finished  42
+Worker started  9
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  9
+Worker started  7
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  7
+Worker started  8
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  8
+Worker started  93
+Optimization terminated successfully.
+         Current function value: -101.700000
+         Iterations: 68
+         Function evaluations: 274
+Worker finished  93
+Worker started  6
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 16
+         Function evaluations: 207
+Worker finished  6
+Worker started  40
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 49
+         Function evaluations: 232
+Worker finished  40
+Worker started  203
+Optimization terminated successfully.
+         Current function value: 29.500000
+         Iterations: 459
+         Function evaluations: 845
+Worker finished  203
+Worker started  104
+Optimization terminated successfully.
+         Current function value: -76.700000
+         Iterations: 90
+         Function evaluations: 304
+Worker finished  104
+Worker started  27
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 44
+         Function evaluations: 226
+Worker finished  27
+Worker started  191
+Optimization terminated successfully.
+         Current function value: -116.545569
+         Iterations: 145
+         Function evaluations: 724
+Worker finished  191
+Worker started  183
+Optimization terminated successfully.
+         Current function value: -100.848835
+         Iterations: 99
+         Function evaluations: 652
+Worker finished  183
+Worker started  58
+Optimization terminated successfully.
+         Current function value: -97.700000
+         Iterations: 66
+         Function evaluations: 251
+Worker finished  58
+Worker started  84
+Optimization terminated successfully.
+         Current function value: -135.500000
+         Iterations: 70
+         Function evaluations: 281
+Worker finished  84
+Worker started  59
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 58
+         Function evaluations: 254
+Worker finished  59
+Worker started  52
+Optimization terminated successfully.
+         Current function value: 0.000000
+         Iterations: 65
+         Function evaluations: 260
+Worker finished  52
+Worker started  200
+Optimization terminated successfully.
+         Current function value: -250.800000
+         Iterations: 475
+         Function evaluations: 918
+Worker finished  200
+Worker started  195
+Optimization terminated successfully.
+         Current function value: -104.000000
+         Iterations: 436
+         Function evaluations: 840
+Worker finished  195
+Worker started  179
+Optimization terminated successfully.
+         Current function value: -336.350000
+         Iterations: 408
+         Function evaluations: 797
+Worker finished  179
+Worker started  197
+Optimization terminated successfully.
+         Current function value: -335.250000
+         Iterations: 462
+         Function evaluations: 910
+Worker finished  197
+Worker started  130
+Optimization terminated successfully.
+         Current function value: -250.915520
+         Iterations: 128
+         Function evaluations: 432
+Worker finished  130
+Worker started  186
+Optimization terminated successfully.
+         Current function value: -270.400000
+         Iterations: 488
+         Function evaluations: 950
+Worker finished  186
+Worker started  188
+Optimization terminated successfully.
+         Current function value: -295.650000
+         Iterations: 430
+         Function evaluations: 852
+Worker finished  188
+Worker started  180
+Optimization terminated successfully.
+         Current function value: -140.100000
+         Iterations: 421
+         Function evaluations: 768
+Worker finished  180
+Worker started  173
+Optimization terminated successfully.
+         Current function value: -295.695644
+         Iterations: 144
+         Function evaluations: 707
+Worker finished  173
+Worker started  196
+Optimization terminated successfully.
+         Current function value: -82.650000
+         Iterations: 461
+         Function evaluations: 965
+Worker finished  196
+Worker started  41
+Optimization terminated successfully.
+         Current function value: -80.600000
+         Iterations: 81
+         Function evaluations: 291
+Worker finished  41
+Worker started  155
+Optimization terminated successfully.
+         Current function value: -298.395449
+         Iterations: 145
+         Function evaluations: 654
+Worker finished  155
+Worker started  189
+Optimization terminated successfully.
+         Current function value: -153.750000
+         Iterations: 494
+         Function evaluations: 971
+Worker finished  189
+Worker started  194
+Optimization terminated successfully.
+         Current function value: -129.050000
+         Iterations: 534
+         Function evaluations: 1037
+Worker finished  194
+Worker started  205
+Optimization terminated successfully.
+         Current function value: -359.950000
+         Iterations: 640
+         Function evaluations: 1188
+Worker finished  205
+Worker started  110
+Optimization terminated successfully.
+         Current function value: -256.200000
+         Iterations: 266
+         Function evaluations: 564
+Worker finished  110
+Worker started  181
+Optimization terminated successfully.
+         Current function value: -204.600000
+         Iterations: 479
+         Function evaluations: 924
+Worker finished  181
+Worker started  1
+Optimization terminated successfully.
+         Current function value: -237.950000
+         Iterations: 83
+         Function evaluations: 287
+Worker finished  1
+Worker started  178
+Optimization terminated successfully.
+         Current function value: -209.950000
+         Iterations: 466
+         Function evaluations: 944
+Worker finished  178
+Worker started  161
+Optimization terminated successfully.
+         Current function value: -371.600000
+         Iterations: 481
+         Function evaluations: 908
+Worker finished  161
+Worker started  150
+Optimization terminated successfully.
+         Current function value: -333.200000
+         Iterations: 426
+         Function evaluations: 863
+Worker finished  150
+Worker started  175
+Optimization terminated successfully.
+         Current function value: -256.750000
+         Iterations: 586
+         Function evaluations: 1099
+Worker finished  175
+Worker started  174
+Optimization terminated successfully.
+         Current function value: -234.400000
+         Iterations: 565
+         Function evaluations: 1058
+Worker finished  174
+Worker started  166
+Optimization terminated successfully.
+         Current function value: -371.250000
+         Iterations: 485
+         Function evaluations: 893
+Worker finished  166
+Worker started  184
+Optimization terminated successfully.
+         Current function value: -315.350000
+         Iterations: 599
+         Function evaluations: 1068
+Worker finished  184
+Worker started  160
+Optimization terminated successfully.
+         Current function value: -239.350000
+         Iterations: 427
+         Function evaluations: 857
+Worker finished  160
+Worker started  154
+Optimization terminated successfully.
+         Current function value: -98.650000
+         Iterations: 419
+         Function evaluations: 831
+Worker finished  154
+Worker started  201
+Optimization terminated successfully.
+         Current function value: -360.950000
+         Iterations: 760
+         Function evaluations: 1338
+Worker finished  201
+Worker started  159
+Optimization terminated successfully.
+         Current function value: -195.500000
+         Iterations: 568
+         Function evaluations: 1083
+Worker finished  159
+Worker started  134
+Optimization terminated successfully.
+         Current function value: -322.800000
+         Iterations: 374
+         Function evaluations: 726
+Worker finished  134
+Worker started  207
+Optimization terminated successfully.
+         Current function value: -370.600000
+         Iterations: 899
+         Function evaluations: 1550
+Worker finished  207
+Worker started  149
+Optimization terminated successfully.
+         Current function value: -380.000000
+         Iterations: 460
+         Function evaluations: 898
+Worker finished  149
+Worker started  158
+Optimization terminated successfully.
+         Current function value: -358.950000
+         Iterations: 534
+         Function evaluations: 1004
+Worker finished  158
+Worker started  122
+Optimization terminated successfully.
+         Current function value: -200.900000
+         Iterations: 363
+         Function evaluations: 729
+Worker finished  122
+Worker started  109
+Optimization terminated successfully.
+         Current function value: -304.750000
+         Iterations: 413
+         Function evaluations: 805
+Worker finished  109
+Worker started  144
+Optimization terminated successfully.
+         Current function value: -569.800000
+         Iterations: 569
+         Function evaluations: 1035
+Worker finished  144
+Worker started  133
+Optimization terminated successfully.
+         Current function value: -69.450000
+         Iterations: 402
+         Function evaluations: 837
+Worker finished  133
+Worker started  153
+Optimization terminated successfully.
+         Current function value: -343.050000
+         Iterations: 515
+         Function evaluations: 1006
+Worker finished  153
+Worker started  145
+Optimization terminated successfully.
+         Current function value: -294.050000
+         Iterations: 483
+         Function evaluations: 937
+Worker finished  145
+Worker started  187
+Optimization terminated successfully.
+         Current function value: -177.078960
+         Iterations: 827
+         Function evaluations: 1365
+Worker finished  187
+Worker started  70
+Optimization terminated successfully.
+         Current function value: -214.200000
+         Iterations: 275
+         Function evaluations: 558
+Worker finished  70
+Worker started  146
+Optimization terminated successfully.
+         Current function value: -364.850000
+         Iterations: 515
+         Function evaluations: 966
+Worker finished  146
+Worker started  140
+Optimization terminated successfully.
+         Current function value: -348.050000
+         Iterations: 475
+         Function evaluations: 921
+Worker finished  140
+Worker started  169
+Optimization terminated successfully.
+         Current function value: -389.600000
+         Iterations: 776
+         Function evaluations: 1334
+Worker finished  169
+Worker started  35
+Optimization terminated successfully.
+         Current function value: -269.550000
+         Iterations: 231
+         Function evaluations: 495
+Worker finished  35
+Worker started  131
+Optimization terminated successfully.
+         Current function value: -392.450000
+         Iterations: 457
+         Function evaluations: 878
+Worker finished  131
+Worker started  128
+Optimization terminated successfully.
+         Current function value: -252.350000
+         Iterations: 410
+         Function evaluations: 863
+Worker finished  128
+Worker started  190
+Optimization terminated successfully.
+         Current function value: -303.637423
+         Iterations: 891
+         Function evaluations: 1479
+Worker finished  190
+Worker started  164
+Optimization terminated successfully.
+         Current function value: -389.600000
+         Iterations: 721
+         Function evaluations: 1251
+Worker finished  164
+Worker started  124
+Optimization terminated successfully.
+         Current function value: -127.650000
+         Iterations: 473
+         Function evaluations: 926
+Worker finished  124
+Worker started  111
+Optimization terminated successfully.
+         Current function value: -351.150000
+         Iterations: 441
+         Function evaluations: 861
+Worker finished  111
+Worker started  165
+Optimization terminated successfully.
+         Current function value: -173.550000
+         Iterations: 757
+         Function evaluations: 1306
+Worker finished  165
+Worker started  137
+Optimization terminated successfully.
+         Current function value: -626.250000
+         Iterations: 572
+         Function evaluations: 1016
+Worker finished  137
+Worker started  148
+Optimization terminated successfully.
+         Current function value: -605.750000
+         Iterations: 629
+         Function evaluations: 1138
+Worker finished  148
+Worker started  14
+Optimization terminated successfully.
+         Current function value: -254.900000
+         Iterations: 257
+         Function evaluations: 546
+Worker finished  14
+Worker started  50
+Optimization terminated successfully.
+         Current function value: -223.600000
+         Iterations: 319
+         Function evaluations: 648
+Worker finished  50
+Worker started  91
+Optimization terminated successfully.
+         Current function value: -308.250000
+         Iterations: 402
+         Function evaluations: 834
+Worker finished  91
+Worker started  61
+Optimization terminated successfully.
+         Current function value: -327.750000
+         Iterations: 328
+         Function evaluations: 700
+Worker finished  61
+Worker started  89
+Optimization terminated successfully.
+         Current function value: -229.200000
+         Iterations: 431
+         Function evaluations: 835
+Worker finished  89
+Worker started  103
+Optimization terminated successfully.
+         Current function value: -328.150000
+         Iterations: 517
+         Function evaluations: 956
+Worker finished  103
+Worker started  81
+Optimization terminated successfully.
+         Current function value: -96.800000
+         Iterations: 414
+         Function evaluations: 844
+Worker finished  81
+Worker started  73
+Optimization terminated successfully.
+         Current function value: -266.150000
+         Iterations: 417
+         Function evaluations: 806
+Worker finished  73
+Worker started  46
+Optimization terminated successfully.
+         Current function value: -142.150000
+         Iterations: 440
+         Function evaluations: 882
+Worker finished  46
+Worker started  19
+Optimization terminated successfully.
+         Current function value: -74.900000
+         Iterations: 382
+         Function evaluations: 799
+Worker finished  19
+Worker started  90
+Optimization terminated successfully.
+         Current function value: -215.450000
+         Iterations: 504
+         Function evaluations: 956
+Worker finished  90
+Worker started  116
+Optimization terminated successfully.
+         Current function value: -507.850000
+         Iterations: 579
+         Function evaluations: 1092
+Worker finished  116
+Worker started  13
+Optimization terminated successfully.
+         Current function value: -384.713877
+         Iterations: 197
+         Function evaluations: 783
+Worker finished  13
+Worker started  57
+Optimization terminated successfully.
+         Current function value: -273.600000
+         Iterations: 428
+         Function evaluations: 822
+Worker finished  57
+Worker started  76
+Optimization terminated successfully.
+         Current function value: -352.050000
+         Iterations: 486
+         Function evaluations: 894
+Worker finished  76
+Worker started  30
+Optimization terminated successfully.
+         Current function value: -88.800000
+         Iterations: 394
+         Function evaluations: 772
+Worker finished  30
+Worker started  86
+Optimization terminated successfully.
+         Current function value: -232.600000
+         Iterations: 471
+         Function evaluations: 958
+Worker finished  86
+Worker started  94
+Optimization terminated successfully.
+         Current function value: -267.900000
+         Iterations: 512
+         Function evaluations: 993
+Worker finished  94
+Worker started  95
+Optimization terminated successfully.
+         Current function value: -390.200000
+         Iterations: 553
+         Function evaluations: 1010
+Worker finished  95
+Worker started  63
+Optimization terminated successfully.
+         Current function value: -385.600000
+         Iterations: 410
+         Function evaluations: 865
+Worker finished  63
+Worker started  88
+Optimization terminated successfully.
+         Current function value: -252.300000
+         Iterations: 516
+         Function evaluations: 952
+Worker finished  88
+Worker started  71
+Optimization terminated successfully.
+         Current function value: -241.850000
+         Iterations: 456
+         Function evaluations: 902
+Worker finished  71
+Worker started  53
+Optimization terminated successfully.
+         Current function value: -304.350000
+         Iterations: 401
+         Function evaluations: 839
+Worker finished  53
+Worker started  157
+Optimization terminated successfully.
+         Current function value: -74.600000
+         Iterations: 866
+         Function evaluations: 1519
+Worker finished  157
+Worker started  75
+Optimization terminated successfully.
+         Current function value: -388.500000
+         Iterations: 478
+         Function evaluations: 930
+Worker finished  75
+Worker started  67
+Optimization terminated successfully.
+         Current function value: -368.550000
+         Iterations: 468
+         Function evaluations: 906
+Worker finished  67
+Worker started  65
+Optimization terminated successfully.
+         Current function value: -343.750000
+         Iterations: 442
+         Function evaluations: 897
+Worker finished  65
+Worker started  100
+Optimization terminated successfully.
+         Current function value: -311.100000
+         Iterations: 558
+         Function evaluations: 1085
+Worker finished  100
+Worker started  28
+Optimization terminated successfully.
+         Current function value: -107.800000
+         Iterations: 389
+         Function evaluations: 821
+Worker finished  28
+Worker started  92
+Optimization terminated successfully.
+         Current function value: -272.200000
+         Iterations: 564
+         Function evaluations: 1057
+Worker finished  92
+Worker started  51
+Optimization terminated successfully.
+         Current function value: -274.150000
+         Iterations: 466
+         Function evaluations: 886
+Worker finished  51
+Worker started  20
+Optimization terminated successfully.
+         Current function value: -35.300000
+         Iterations: 395
+         Function evaluations: 814
+Worker finished  20
+Worker started  96
+Optimization terminated successfully.
+         Current function value: -386.350000
+         Iterations: 568
+         Function evaluations: 1094
+Worker finished  96
+Worker started  21
+Optimization terminated successfully.
+         Current function value: -430.100000
+         Iterations: 417
+         Function evaluations: 811
+Worker finished  21
+Worker started  45
+Optimization terminated successfully.
+         Current function value: -363.550000
+         Iterations: 528
+         Function evaluations: 1010
+Worker finished  45
+Worker started  99
+Optimization terminated successfully.
+         Current function value: -627.650000
+         Iterations: 613
+         Function evaluations: 1111
+Worker finished  99
+Worker started  11
+Optimization terminated successfully.
+         Current function value: -362.650000
+         Iterations: 429
+         Function evaluations: 913
+Worker finished  11
+Worker started  115
+Optimization terminated successfully.
+         Current function value: -279.800000
+         Iterations: 708
+         Function evaluations: 1258
+Worker finished  115
+Worker started  48
+Optimization terminated successfully.
+         Current function value: -590.600000
+         Iterations: 450
+         Function evaluations: 895
+Worker finished  48
+Worker started  112
+Optimization terminated successfully.
+         Current function value: -146.570275
+         Iterations: 733
+         Function evaluations: 1259
+Worker finished  112
+Worker started  72
+Optimization terminated successfully.
+         Current function value: -194.700000
+         Iterations: 543
+         Function evaluations: 1017
+Worker finished  72
+Worker started  114
+Optimization terminated successfully.
+         Current function value: -322.250000
+         Iterations: 726
+         Function evaluations: 1267
+Worker finished  114
+Worker started  97
+Optimization terminated successfully.
+         Current function value: -306.666812
+         Iterations: 688
+         Function evaluations: 1155
+Worker finished  97
+Worker started  87
+Optimization terminated successfully.
+         Current function value: -181.516060
+         Iterations: 673
+         Function evaluations: 1121
+Worker finished  87
+Worker started  23
+Optimization terminated successfully.
+         Current function value: -336.350000
+         Iterations: 434
+         Function evaluations: 882
+Worker finished  23
+Worker started  5
+Optimization terminated successfully.
+         Current function value: -255.600000
+         Iterations: 466
+         Function evaluations: 954
+Worker finished  5
+Worker started  15
+Optimization terminated successfully.
+         Current function value: -63.850000
+         Iterations: 459
+         Function evaluations: 881
+Worker finished  15
+Worker started  0
+Optimization terminated successfully.
+         Current function value: -301.200000
+         Iterations: 455
+         Function evaluations: 925
+Worker finished  0
+Worker started  78
+Optimization terminated successfully.
+         Current function value: -589.550000
+         Iterations: 549
+         Function evaluations: 1065
+Worker finished  78
+Worker started  24
+Optimization terminated successfully.
+         Current function value: -427.050000
+         Iterations: 464
+         Function evaluations: 918
+Worker finished  24
+Worker started  156
+Optimization terminated successfully.
+         Current function value: -455.198529
+         Iterations: 936
+         Function evaluations: 1601
+Worker finished  156
+Worker started  31
+Optimization terminated successfully.
+         Current function value: -230.450000
+         Iterations: 494
+         Function evaluations: 950
+Worker finished  31
+Worker started  33
+Optimization terminated successfully.
+         Current function value: -107.800000
+         Iterations: 532
+         Function evaluations: 998
+Worker finished  33
+Worker started  25
+Optimization terminated successfully.
+         Current function value: -298.600000
+         Iterations: 479
+         Function evaluations: 942
+Worker finished  25
+Worker started  60
+Optimization terminated successfully.
+         Current function value: -269.050000
+         Iterations: 577
+         Function evaluations: 1062
+Worker finished  60
+Worker started  26
+Optimization terminated successfully.
+         Current function value: -384.900000
+         Iterations: 499
+         Function evaluations: 958
+Worker finished  26
+Worker started  107
+Optimization terminated successfully.
+         Current function value: -121.120171
+         Iterations: 809
+         Function evaluations: 1343
+Worker finished  107
+Worker started  49
+Optimization terminated successfully.
+         Current function value: -399.650000
+         Iterations: 594
+         Function evaluations: 1064
+Worker finished  49
+Worker started  68
+Optimization terminated successfully.
+         Current function value: -537.100000
+         Iterations: 663
+         Function evaluations: 1131
+Worker finished  68
+Worker started  2
+Optimization terminated successfully.
+         Current function value: -388.000000
+         Iterations: 498
+         Function evaluations: 952
+Worker finished  2
+Worker started  10
+Optimization terminated successfully.
+         Current function value: -304.000000
+         Iterations: 538
+         Function evaluations: 991
+Worker finished  10
+Worker started  69
+Optimization terminated successfully.
+         Current function value: -656.843614
+         Iterations: 731
+         Function evaluations: 1192
+Worker finished  69
+Worker started  4
+Optimization terminated successfully.
+         Current function value: -335.650000
+         Iterations: 532
+         Function evaluations: 1026
+Worker finished  4
+Worker started  123
+Optimization terminated successfully.
+         Current function value: -309.099593
+         Iterations: 1027
+         Function evaluations: 1699
+Worker finished  123
+Worker started  102
+Optimization terminated successfully.
+         Current function value: -267.926683
+         Iterations: 889
+         Function evaluations: 1464
+Worker finished  102
+Worker started  55
+Optimization terminated successfully.
+         Current function value: -310.750358
+         Iterations: 740
+         Function evaluations: 1256
+Worker finished  55
+Worker started  39
+Optimization terminated successfully.
+         Current function value: -26.041806
+         Iterations: 685
+         Function evaluations: 1237
+Worker finished  39
+Worker started  82
+Optimization terminated successfully.
+         Current function value: -187.250000
+         Iterations: 832
+         Function evaluations: 1427
+Worker finished  82
+Worker started  77
+Optimization terminated successfully.
+         Current function value: -352.251778
+         Iterations: 908
+         Function evaluations: 1500
+Worker finished  77
+Worker started  83
+Optimization terminated successfully.
+         Current function value: -257.324529
+         Iterations: 1037
+         Function evaluations: 1700
+Worker finished  83
+Worker started  3
+Optimization terminated successfully.
+         Current function value: -398.692405
+         Iterations: 800
+         Function evaluations: 1332
+Worker finished  3
+Worker started  74
+Optimization terminated successfully.
+         Current function value: -493.619230
+         Iterations: 1090
+         Function evaluations: 1780
+Worker finished  74
+Worker started  143
+Optimization terminated successfully.
+         Current function value: -565.540612
+         Iterations: 1320
+         Function evaluations: 2159
+Worker finished  143
+Worker started  163
+Optimization terminated successfully.
+         Current function value: -429.557468
+         Iterations: 1479
+         Function evaluations: 2409
+Worker finished  163
+Worker started  139
+Optimization terminated successfully.
+         Current function value: -389.682589
+         Iterations: 1578
+         Function evaluations: 2570
+Worker finished  139
+Worker started  18
+Optimization terminated successfully.
+         Current function value: -345.475686
+         Iterations: 1390
+         Function evaluations: 2257
+Worker finished  18
+Worker started  85
+Optimization terminated successfully.
+         Current function value: -70.622305
+         Iterations: 1784
+         Function evaluations: 2870
+Worker finished  85
