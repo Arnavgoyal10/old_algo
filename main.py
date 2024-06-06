@@ -38,8 +38,8 @@ def calculate_indicators(df, hyperparamas):
     
     df = df.copy()
     
-    df = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
-    df = squeeze.squeeze_index2(df,conv=conv_config, length=length_config)
+    df = velocity_indicator.calculate_float(df, lookback=lookback_config, ema_length=ema_length_config)
+    df = squeeze.squeeze_index2_float(df,conv=conv_config, length=length_config)
     
     df_macd = impulsemacd.macd(df, lengthMA = lengthMA_config, lengthSignal = lengthSignal_config)
     df[['ImpulseMACD', 'ImpulseMACDCDSignal']] = df_macd[['ImpulseMACD', 'ImpulseMACDCDSignal']]
@@ -60,8 +60,8 @@ def main():
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
         trade_data = pd.DataFrame(columns=trade_columns)
         
-        hyper_params = [16,16,44,24,30,9,16,20,10]
-        parse = [10,6]
+        hyper_params = [10.02,14.72,48.73,27,33.43,9,14.87,31.35,15.1]
+        parse = [2.87,2.12]
         df = calculate_indicators(ret, hyper_params)
         temp = df.iloc[:200].copy()
         df = df[200:]
@@ -69,9 +69,9 @@ def main():
         for i in range(0, len(df)):
             trade_data = refracted.final(temp, trade_data, parse)        
             
-            # if (i%150 == 0):
-            #     print(f'"working fine {i}"')
-            #     print(temp["time"].iloc[-1])
+            if (i%150 == 0):
+                print(f'"working fine {i}"')
+                print(temp["time"].iloc[-1])
                     
             next_row = df.iloc[[i]]
             temp = pd.concat([temp, next_row], ignore_index=True)
