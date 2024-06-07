@@ -23,8 +23,8 @@ def calculate_indicators(df, hyperparameters):
      signal_config) = hyperparameters
 
     df = df.copy()
-    df = velocity_indicator.calculate(df, lookback=lookback_config, ema_length=ema_length_config)
-    df = squeeze.squeeze_index2(df, conv=conv_config, length=length_config)
+    df = velocity_indicator.calculate_float(df, lookback=lookback_config, ema_length=ema_length_config)
+    df = squeeze.squeeze_index2_float(df, conv=conv_config, length=length_config)
     
     df_macd = impulsemacd.macd(df, lengthMA=lengthMA_config, lengthSignal=lengthSignal_config)
     df[['ImpulseMACD', 'ImpulseMACDCDSignal']] = df_macd[['ImpulseMACD', 'ImpulseMACDCDSignal']]
