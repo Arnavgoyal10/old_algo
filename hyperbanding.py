@@ -89,22 +89,36 @@ def main():
         for col in ohlc:
             ret[col] = ret[col].astype(float)
             
-        space = {
-            'stoploss': scope.int(hp.quniform('stoploss', 0, 15, 1)),
-            'squee': scope.int(hp.quniform('squee', 1, 6, 1)),
-            'lookback': scope.int(hp.quniform('lookback', 9, 19, 1)),
-            'ema_length': scope.int(hp.quniform('ema_length', 14, 27, 1)),
-            'conv': scope.int(hp.quniform('conv', 40, 66, 1)),
-            'length': scope.int(hp.quniform('length', 8, 29, 1)),
-            'lengthMA': scope.int(hp.quniform('lengthMA', 25, 40, 1)),
-            'lengthSignal': scope.int(hp.quniform('lengthSignal', 6, 15, 1)),
-            'fast': scope.int(hp.quniform('fast', 8, 18, 1)),
-            'slow': scope.int(hp.quniform('slow', 18, 32, 1)),
-            'signal': scope.int(hp.quniform('signal', 8, 19, 1))
-        }
+        # space = {
+        #     'stoploss': scope.int(hp.quniform('stoploss', 0, 15, 1)),
+        #     'squee': scope.int(hp.quniform('squee', 1, 6, 1)),
+        #     'lookback': scope.int(hp.quniform('lookback', 9, 19, 1)),
+        #     'ema_length': scope.int(hp.quniform('ema_length', 14, 27, 1)),
+        #     'conv': scope.int(hp.quniform('conv', 40, 66, 1)),
+        #     'length': scope.int(hp.quniform('length', 8, 29, 1)),
+        #     'lengthMA': scope.int(hp.quniform('lengthMA', 25, 40, 1)),
+        #     'lengthSignal': scope.int(hp.quniform('lengthSignal', 6, 15, 1)),
+        #     'fast': scope.int(hp.quniform('fast', 8, 18, 1)),
+        #     'slow': scope.int(hp.quniform('slow', 18, 32, 1)),
+        #     'signal': scope.int(hp.quniform('signal', 8, 19, 1))
+        # }
+        
+            space = {
+        'stoploss': hp.uniform('stoploss', 0, 15),
+        'squee': hp.uniform('squee', 1, 6),
+        'lookback': hp.uniform('lookback', 9, 19),
+        'ema_length': hp.uniform('ema_length', 14, 27),
+        'conv': hp.uniform('conv', 40, 66),
+        'length': hp.uniform('length', 8, 29),
+        'lengthMA': hp.uniform('lengthMA', 25, 40),
+        'lengthSignal': hp.uniform('lengthSignal', 6, 15),
+        'fast': hp.uniform('fast', 8, 18),
+        'slow': hp.uniform('slow', 18, 32),
+        'signal': hp.uniform('signal', 8, 19)
+    }
         
         trials = Trials()
-        best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=416, trials=trials)
+        best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=2800, trials=trials)
         
         print("Best hyperparameters found were: ", best)
         
@@ -114,14 +128,14 @@ def main():
         
         # Export to CSV
         columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-        with open("best_hyperparameters.csv", "w", newline='') as csvfile:
+        with open("best_hyperparameters_2.csv", "w", newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=columns)
             writer.writeheader()
             writer.writerow(best)
         
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats("profile_multi_hyper_trial.prof")
+    stats.dump_stats("profile_multi_hyper_trial_2.prof")
 
 if __name__ == "__main__":
     main()
