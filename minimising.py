@@ -117,6 +117,10 @@ def worker(hyper_parameters):
         #     print(f'"working fine {j}"')
         #     print(temp["time"].iloc[-1])
         
+        if len(trade_data) >= 3 and (trade_data['profit'].tail(3) < 0).all():
+            if trade_data['profit'].tail(3).sum() < -40:
+                break
+
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.iloc[-110:]
