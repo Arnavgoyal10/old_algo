@@ -1,5 +1,4 @@
 import os
-# from tvDatafeed import TvDatafeed, Interval
 import pandas as pd
 import refracted_advance as refracted
 import cProfile
@@ -9,14 +8,6 @@ import current_indicators.squeeze as squeeze
 import current_indicators.impulsemacd as impulsemacd
 import current_indicators.tsi as tsi
 
-# def trading_view():
-#     tv = TvDatafeed(username='arnavgoyal63774', password='fAC@6kjug8tgqM-')
-#     tv = TvDatafeed()
-
-#     ret = tv.get_hist(symbol='BANKNIFTY',exchange='NSE',interval=Interval.in_1_minute,n_bars=20000)                                          
-#     current_directory = os.getcwd()
-#     df_comb_file = os.path.join(current_directory, 'bank_nifty_full1.csv')
-#     ret.to_csv(df_comb_file, index=True)
 
 ohlc=['into', 'inth', 'intl', 'intc']
      
@@ -51,9 +42,6 @@ def calculate_indicators(df, hyperparamas):
     
 
 def main():
-    
-
-    # trading_view()
     
     with cProfile.Profile() as pr:
         

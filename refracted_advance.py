@@ -178,7 +178,7 @@ def final(temp, trade_data, hyper_parameters):
                 agg_profit = 100
             elif profit < 10:
                 agg_profit = 0
-            else
+            else:
                 agg_profit = profit
             trade_data = append_value(trade_data, 'agg_profit', agg_profit, order_count)
             order_count = order_count+1
@@ -227,7 +227,7 @@ def final(temp, trade_data, hyper_parameters):
                 agg_profit = 100
             elif profit < 10:
                 agg_profit = 0
-            else
+            else:
                 agg_profit = profit
             trade_data = append_value(trade_data, 'agg_profit', agg_profit, order_count)
             order_count = order_count+1

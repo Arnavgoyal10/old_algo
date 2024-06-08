@@ -12,6 +12,7 @@ import refracted_advance as refracted
 import csv
 from hyperopt import hp, fmin, tpe, Trials
 from hyperopt.pyll.base import scope
+from datetime import datetime
 
 ohlc = ['into', 'inth', 'intl', 'intc']
 base_directory = os.getcwd()
@@ -77,7 +78,7 @@ def worker(params):
     return -net_profit  # Hyperopt minimizes the objective function
 
 def main():
-    
+    print(datetime.now())
     file_path = 'excel_files/nifty_full_feb.xlsx'
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
@@ -120,6 +121,7 @@ def main():
     best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=2800, trials=trials)
     
     print("Best hyperparameters found were: ", best)
+    print(datetime.now())
     
     
     best_net_profit = -trials.best_trial['result']['loss']
