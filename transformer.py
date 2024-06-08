@@ -2,7 +2,6 @@ import pandas as pd
 import torch
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, confusion_matrix
 from transformers import BertTokenizer, BertForSequenceClassification, Trainer, TrainingArguments
 from torch.utils.data import Dataset

@@ -5,8 +5,7 @@ import current_indicators.impulsemacd as impulsemacd
 import current_indicators.tsi as tsi
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
-import keras
+from sklearn.preprocessing import StandardScaler
 from keras.models import Sequential
 from keras.layers import Dense
 import seaborn as sns

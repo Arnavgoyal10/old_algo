@@ -1,8 +1,4 @@
 import pandas as pd
-import current_indicators.impulsemacd as impulsemacd
-import current_indicators.tsi as tsi
-import current_indicators.velocity_indicator as velocity_indicator
-import current_indicators.squeeze as squeeze
 
 def append_value(dataframe, column_name, value, index):
     if index >= len(dataframe):
