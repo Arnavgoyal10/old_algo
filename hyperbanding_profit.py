@@ -135,6 +135,3 @@ def final(name):
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         writer.writeheader()
         writer.writerows(top_results)
-
-# if __name__ == "__main__":
-#     main()
