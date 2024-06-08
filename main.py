@@ -59,7 +59,11 @@ def main():
         df = df[200:]
                                                        
         for i in range(0, len(df)):
-            trade_data = refracted.final(temp, trade_data, parse)        
+            trade_data = refracted.final(temp, trade_data, parse)
+            
+            if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
+                if trade_data['profit'].tail(3).sum() < -40:
+                    break
             
             if (i%150 == 0):
                 print(f'"working fine {i}"')

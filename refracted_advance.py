@@ -176,7 +176,7 @@ def final(temp, trade_data, hyper_parameters):
             trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
             if profit > 120:
                 agg_profit = 100
-            elif profit < 10:
+            elif profit < 10 and profit > 0:
                 agg_profit = 0
             else:
                 agg_profit = profit
@@ -225,7 +225,7 @@ def final(temp, trade_data, hyper_parameters):
             trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
             if profit > 120:
                 agg_profit = 100
-            elif profit < 10:
+            elif profit < 10 and profit > 0:
                 agg_profit = 0
             else:
                 agg_profit = profit

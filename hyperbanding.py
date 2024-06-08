@@ -10,10 +10,6 @@ from hyperopt import hp, fmin, tpe, Trials
 from hyperopt.pyll.base import scope
 from datetime import datetime
 
-ohlc = ['into', 'inth', 'intl', 'intc']
-base_directory = os.getcwd()
-data_directory = os.path.join(base_directory, "data_multi")
-
 def calculate_indicators(df, hyperparameters):
     (lookback_config, ema_length_config, conv_config, length_config, 
      lengthMA_config, lengthSignal_config, fast_config, slow_config, 
@@ -75,6 +71,7 @@ def worker(params):
 
 def main():
     print(datetime.now())
+    ohlc = ['into', 'inth', 'intl', 'intc']
     file_path = 'excel_files/nifty_full_feb.xlsx'
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
@@ -119,16 +116,23 @@ def main():
     print("Best hyperparameters found were: ", best)
     print(datetime.now())
     
+    # Sort trials by loss and get top 10
+    top_trials = sorted(trials.trials, key=lambda x: x['result']['loss'])[:10]
     
-    best_net_profit = -trials.best_trial['result']['loss']
-    best['net_profit'] = best_net_profit
+    top_results = []
+    for trial in top_trials:
+        result = trial['result']
+        params = trial['misc']['vals']
+        params = {k: v[0] for k, v in params.items()}  # Extract single values from lists
+        params['net_profit'] = -result['loss']
+        top_results.append(params)
     
     # Export to CSV
     columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-    with open("best_hyperparameters_2.csv", "w", newline='') as csvfile:
+    with open("top_10_hyperparameters.csv", "w", newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         writer.writeheader()
-        writer.writerow(best)
+        writer.writerows(top_results)
 
 if __name__ == "__main__":
     main()
