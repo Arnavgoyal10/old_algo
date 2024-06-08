@@ -62,8 +62,10 @@ def main():
         
         # hyper_params = [10.02,14.72,48.73,27,33.43,9,14.87,31.35,15.1]
         # parse = [2.87,2.12]
-        hyper_params = [17,14,57,28,27,8,12,23,11]
-        parse = [15,6]
+        # hyper_params = [17,14,57,28,27,8,12,23,11]
+        # parse = [15,6]
+        hyper_params = [10.72740199049976,21.56172802641109,53.86925039859429,27.30444844762037,26.80676167638364,10.341523498671714,8.23714265547763,27.768953722873672,17.387886215194328]
+        parse = [11.764129926796599,5.988097510978682]
         df = calculate_indicators(ret, hyper_params)
         temp = df.iloc[:200].copy()
         df = df[200:]
@@ -81,9 +83,9 @@ def main():
     
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats("profile1.prof")
+    stats.dump_stats("profile2.prof")
     
-    df_comb_file = os.path.join(base_directory, 'trade_data_new_test1.csv')
+    df_comb_file = os.path.join(base_directory, 'trade_data_new_test2.csv')
     trade_data.to_csv(df_comb_file, index=True)
 
 
