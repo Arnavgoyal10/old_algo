@@ -48,12 +48,9 @@ def main():
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
         
-        # hyper_params = [10.02,14.72,48.73,27,33.43,9,14.87,31.35,15.1]
-        # parse = [2.87,2.12]
-        # hyper_params = [17,14,57,28,27,8,12,23,11]
-        # parse = [15,6]
-        hyper_params = [10.72740199049976,21.56172802641109,53.86925039859429,27.30444844762037,26.80676167638364,10.341523498671714,8.23714265547763,27.768953722873672,17.387886215194328]
-        parse = [11.764129926796599,5.988097510978682]
+        hyper_params = [16.041917247297274,15.320523103841708,41.04780663473374,18.482562040866295,31.478961215172188,9.382782998485993,12.711221098798884,18.64550035252773,14.408691653758103]
+        parse  = [3.055179731108132,5.632012105972655]
+        
         df = calculate_indicators(ret, hyper_params)
         temp = df.iloc[:200].copy()
         df = df[200:]
@@ -75,7 +72,7 @@ def main():
     
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats("profile2.prof")
+    stats.dump_stats("snakeviz/main.prof")
     
     df_comb_file = os.path.join(base_directory, 'trade_data_new_test2.csv')
     trade_data.to_csv(df_comb_file, index=True)
