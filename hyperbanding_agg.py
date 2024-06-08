@@ -84,6 +84,17 @@ def final(name):
     for col in ohlc:
         ret[col] = ret[col].astype(float)
         
+                # Get the last 5 rows
+    last_5_rows = ret.tail(5)
+
+    # Get the highest "inth" within the last 5 rows
+    highest_inth = last_5_rows['inth'].max()
+
+    # Get the smallest "intl" within the last 5 rows
+    smallest_intl = last_5_rows['intl'].min()
+    
+    stoploss_high = (highest_inth - smallest_intl) * 0.7
+        
     # space = {
     #     'stoploss': scope.int(hp.quniform('stoploss', 0, 15, 1)),
     #     'squee': scope.int(hp.quniform('squee', 1, 6, 1)),
@@ -98,8 +109,8 @@ def final(name):
     #     'signal': scope.int(hp.quniform('signal', 8, 19, 1))
     # }
     
-        space = {
-    'stoploss': hp.uniform('stoploss', 0, 15),
+    space = {
+    'stoploss': hp.uniform('stoploss', 0, stoploss_high),
     'squee': hp.uniform('squee', 1, 6),
     'lookback': hp.uniform('lookback', 9, 19),
     'ema_length': hp.uniform('ema_length', 14, 27),
