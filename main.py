@@ -20,7 +20,7 @@ import current_indicators.tsi as tsi
 
 ohlc=['into', 'inth', 'intl', 'intc']
      
-file_path = 'excel_files/nifty_full.xlsx'
+file_path = 'excel_files/nifty_full_feb.xlsx'
 ret = pd.read_excel(file_path)
 ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
 for col in ohlc:
@@ -57,7 +57,7 @@ def main():
     
     with cProfile.Profile() as pr:
         
-        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
+        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
         
         # hyper_params = [10.02,14.72,48.73,27,33.43,9,14.87,31.35,15.1]

@@ -77,7 +77,7 @@ def working(ret, hyper_parameters, counter):
     
     for i in range(0, len(hyper_parameters)):
         
-        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
+        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
         parse1 = hyper_parameters[i][2:]
         parse2 = hyper_parameters[i][:2]
@@ -124,47 +124,43 @@ def worker(ret, hyper_parameters, counter):
 
 def main():
     
-    with cProfile.Profile() as pr:
         
-        file_path = 'excel_files/nifty_full_feb.xlsx'
-        ret = pd.read_excel(file_path)
-        ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
-        for col in ohlc:
-            ret[col] = ret[col].astype(float) 
-        
-
-        all_combinations = list(itertools.product(*hyperparameters))
-
-        total_combinations = len(all_combinations)
-
-        num_lists = 208
-        size_of_each_list = total_combinations // num_lists
-        remainder = total_combinations % num_lists
-
-        separate_lists = []
-        
-        for i in range(num_lists):
-            start_index = i * size_of_each_list
-            end_index = start_index + size_of_each_list
-            if i == num_lists - 1:
-                end_index += remainder
-            separate_lists.append(all_combinations[start_index:end_index])
-            
-        processes = []
-        
-        for i, hyper_parameters in enumerate(separate_lists):
-            p = multiprocessing.Process(target=worker, args=(ret, hyper_parameters, i))
-            processes.append(p)
-            p.start()
-        
-        for p in processes:
-            p.join()
-        
-        print("All workers finished")
+    file_path = 'excel_files/nifty_full_feb.xlsx'
+    ret = pd.read_excel(file_path)
+    ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
+    for col in ohlc:
+        ret[col] = ret[col].astype(float) 
     
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats("profile_multi_main.prof")
+
+    all_combinations = list(itertools.product(*hyperparameters))
+
+    total_combinations = len(all_combinations)
+
+    num_lists = 208
+    size_of_each_list = total_combinations // num_lists
+    remainder = total_combinations % num_lists
+
+    separate_lists = []
+    
+    for i in range(num_lists):
+        start_index = i * size_of_each_list
+        end_index = start_index + size_of_each_list
+        if i == num_lists - 1:
+            end_index += remainder
+        separate_lists.append(all_combinations[start_index:end_index])
+        
+    processes = []
+    
+    for i, hyper_parameters in enumerate(separate_lists):
+        p = multiprocessing.Process(target=worker, args=(ret, hyper_parameters, i))
+        processes.append(p)
+        p.start()
+    
+    for p in processes:
+        p.join()
+    
+    print("All workers finished")
+
     
     
                                                                                                                  

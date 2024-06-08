@@ -43,7 +43,7 @@ def append_value(dataframe, column_name, value, index):
     return dataframe
 
 def worker(params):    
-    trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
+    trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
     trade_data = pd.DataFrame(columns=trade_columns)
     
     hyperparameters = [
@@ -65,7 +65,7 @@ def worker(params):
     for j in range(0, len(df)):
         trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
         
-        if len(trade_data) >= 3 and (trade_data['profit'].tail(3) < 0).all():
+        if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
             if trade_data['profit'].tail(3).sum() < -40:
                 break
             
@@ -73,69 +73,64 @@ def worker(params):
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.iloc[-110:]
     
-    net_profit = trade_data['profit'].sum()
+    net_profit = trade_data['agg_profit'].sum()
     return -net_profit  # Hyperopt minimizes the objective function
 
 def main():
     
-    with cProfile.Profile() as pr:
-        file_path = 'excel_files/nifty_full_feb.xlsx'
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"The file {file_path} does not exist.")
+    file_path = 'excel_files/nifty_full_feb.xlsx'
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    
+    global ret
+    ret = pd.read_excel(file_path)
+    ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
+    for col in ohlc:
+        ret[col] = ret[col].astype(float)
         
-        global ret
-        ret = pd.read_excel(file_path)
-        ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
-        for col in ohlc:
-            ret[col] = ret[col].astype(float)
-            
-        # space = {
-        #     'stoploss': scope.int(hp.quniform('stoploss', 0, 15, 1)),
-        #     'squee': scope.int(hp.quniform('squee', 1, 6, 1)),
-        #     'lookback': scope.int(hp.quniform('lookback', 9, 19, 1)),
-        #     'ema_length': scope.int(hp.quniform('ema_length', 14, 27, 1)),
-        #     'conv': scope.int(hp.quniform('conv', 40, 66, 1)),
-        #     'length': scope.int(hp.quniform('length', 8, 29, 1)),
-        #     'lengthMA': scope.int(hp.quniform('lengthMA', 25, 40, 1)),
-        #     'lengthSignal': scope.int(hp.quniform('lengthSignal', 6, 15, 1)),
-        #     'fast': scope.int(hp.quniform('fast', 8, 18, 1)),
-        #     'slow': scope.int(hp.quniform('slow', 18, 32, 1)),
-        #     'signal': scope.int(hp.quniform('signal', 8, 19, 1))
-        # }
-        
-            space = {
-        'stoploss': hp.uniform('stoploss', 0, 15),
-        'squee': hp.uniform('squee', 1, 6),
-        'lookback': hp.uniform('lookback', 9, 19),
-        'ema_length': hp.uniform('ema_length', 14, 27),
-        'conv': hp.uniform('conv', 40, 66),
-        'length': hp.uniform('length', 8, 29),
-        'lengthMA': hp.uniform('lengthMA', 25, 40),
-        'lengthSignal': hp.uniform('lengthSignal', 6, 15),
-        'fast': hp.uniform('fast', 8, 18),
-        'slow': hp.uniform('slow', 18, 32),
-        'signal': hp.uniform('signal', 8, 19)
-    }
-        
-        trials = Trials()
-        best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=2800, trials=trials)
-        
-        print("Best hyperparameters found were: ", best)
-        
-        
-        best_net_profit = -trials.best_trial['result']['loss']
-        best['net_profit'] = best_net_profit
-        
-        # Export to CSV
-        columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-        with open("best_hyperparameters_2.csv", "w", newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=columns)
-            writer.writeheader()
-            writer.writerow(best)
-        
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats("profile_multi_hyper_trial_2.prof")
+    # space = {
+    #     'stoploss': scope.int(hp.quniform('stoploss', 0, 15, 1)),
+    #     'squee': scope.int(hp.quniform('squee', 1, 6, 1)),
+    #     'lookback': scope.int(hp.quniform('lookback', 9, 19, 1)),
+    #     'ema_length': scope.int(hp.quniform('ema_length', 14, 27, 1)),
+    #     'conv': scope.int(hp.quniform('conv', 40, 66, 1)),
+    #     'length': scope.int(hp.quniform('length', 8, 29, 1)),
+    #     'lengthMA': scope.int(hp.quniform('lengthMA', 25, 40, 1)),
+    #     'lengthSignal': scope.int(hp.quniform('lengthSignal', 6, 15, 1)),
+    #     'fast': scope.int(hp.quniform('fast', 8, 18, 1)),
+    #     'slow': scope.int(hp.quniform('slow', 18, 32, 1)),
+    #     'signal': scope.int(hp.quniform('signal', 8, 19, 1))
+    # }
+    
+        space = {
+    'stoploss': hp.uniform('stoploss', 0, 15),
+    'squee': hp.uniform('squee', 1, 6),
+    'lookback': hp.uniform('lookback', 9, 19),
+    'ema_length': hp.uniform('ema_length', 14, 27),
+    'conv': hp.uniform('conv', 40, 66),
+    'length': hp.uniform('length', 8, 29),
+    'lengthMA': hp.uniform('lengthMA', 25, 40),
+    'lengthSignal': hp.uniform('lengthSignal', 6, 15),
+    'fast': hp.uniform('fast', 8, 18),
+    'slow': hp.uniform('slow', 18, 32),
+    'signal': hp.uniform('signal', 8, 19)
+}
+    
+    trials = Trials()
+    best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=2800, trials=trials)
+    
+    print("Best hyperparameters found were: ", best)
+    
+    
+    best_net_profit = -trials.best_trial['result']['loss']
+    best['net_profit'] = best_net_profit
+    
+    # Export to CSV
+    columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
+    with open("best_hyperparameters_2.csv", "w", newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=columns)
+        writer.writeheader()
+        writer.writerow(best)
 
 if __name__ == "__main__":
     main()

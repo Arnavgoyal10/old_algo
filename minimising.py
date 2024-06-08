@@ -100,7 +100,7 @@ def optimising(hyper_parameters, counter):
     net_profit.to_csv(df_comb_file, index=True)
     
 def worker(hyper_parameters):
-    trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
+    trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
     trade_data = pd.DataFrame(columns=trade_columns)
     parse1 = hyper_parameters[2:]
     parse2 = hyper_parameters[:2]
@@ -129,46 +129,39 @@ def worker(hyper_parameters):
     return -net_profit_1
     
 def main():
-
         
-    with cProfile.Profile() as pr:
-                
-        num_points = 208
+    num_points = 208
 
-        ranges = {
-            "stoploss": (0, 10),
-            "squee": (1, 5),
-            "lookback": (9, 19),
-            "ema_length": (14, 27),
-            "conv": (40, 66),
-            "length": (8, 29),
-            "lengthMA": (25, 40),
-            "lengthSignal": (6, 15),
-            "fast": (8, 18),
-            "slow": (18, 32),
-            "signal": (8, 19)
-        }
+    ranges = {
+        "stoploss": (0, 10),
+        "squee": (1, 5),
+        "lookback": (9, 19),
+        "ema_length": (14, 27),
+        "conv": (40, 66),
+        "length": (8, 29),
+        "lengthMA": (25, 40),
+        "lengthSignal": (6, 15),
+        "fast": (8, 18),
+        "slow": (18, 32),
+        "signal": (8, 19)
+    }
 
-        hyperparameters_list = [
-            [random.randint(start, end) for start, end in ranges.values()]
-            for _ in range(num_points)
+    hyperparameters_list = [
+        [random.randint(start, end) for start, end in ranges.values()]
+        for _ in range(num_points)
 ]
-        
-        processes = []
-        
-        for i, hyper_parameters in enumerate(hyperparameters_list):
-            p = multiprocessing.Process(target=start_worker, args=(hyper_parameters, i))
-            processes.append(p)
-            p.start()
-        
-        for p in processes:
-            p.join()
-        
-        print("All workers finished")
     
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats("profile_multi_trial.prof")
+    processes = []
+    
+    for i, hyper_parameters in enumerate(hyperparameters_list):
+        p = multiprocessing.Process(target=start_worker, args=(hyper_parameters, i))
+        processes.append(p)
+        p.start()
+    
+    for p in processes:
+        p.join()
+    
+    print("All workers finished")
     
     
 

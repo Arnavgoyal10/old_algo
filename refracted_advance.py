@@ -162,7 +162,7 @@ def final(temp, trade_data, hyper_parameters):
     
     (stoploss_config, squee_config) = hyper_parameters
 
-
+    agg_profit = 0
     if current_state == 1:
         signal, exit_price, exit_time, stoploss = check_exit(temp, market_direction, stoploss)
         if signal == 3:
@@ -174,6 +174,11 @@ def final(temp, trade_data, hyper_parameters):
             trade_data = append_value(trade_data, 'profit', profit, order_count)
             trade_data = append_value(trade_data, 'exit_time', exit_time, order_count)
             trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
+            if profit > 120:
+                agg_profit = 100
+            elif profit < 10:
+                agg_profit = 0
+            trade_data = append_value(trade_data, 'agg_profit', agg_profit, order_count)
             order_count = order_count+1
             current_state = 0
             market_direction = 0
@@ -216,8 +221,14 @@ def final(temp, trade_data, hyper_parameters):
             trade_data = append_value(trade_data, 'profit', profit, order_count)
             trade_data = append_value(trade_data, 'exit_time', temp["time"].iloc[-1], order_count)
             trade_data = append_value(trade_data, 'exit_price', exit_price, order_count)
+            if profit > 120:
+                agg_profit = 100
+            elif profit < 10:
+                agg_profit = 0
+            trade_data = append_value(trade_data, 'agg_profit', agg_profit, order_count)
             order_count = order_count+1
             order_flag_count = 0
+            current_state = 0
         signal, market_direction, buying_price, stoploss = new_signal, new_market_direction, new_buying_price, new_stoploss
         order_flag_count = 0
     return trade_data

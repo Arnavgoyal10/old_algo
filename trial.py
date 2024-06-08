@@ -61,7 +61,7 @@ def working(ret, hyper_parameters, counter):
     
     for i in range(0, len(hyper_parameters)):
         
-        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit']
+        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
         parse1 = hyper_parameters[i][2:]
         parse2 = hyper_parameters[i][:2]
