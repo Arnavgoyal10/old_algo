@@ -1,9 +1,5 @@
 import os
 import pandas as pd
-import random
-import multiprocessing
-import cProfile
-import pstats
 import current_indicators.velocity_indicator as velocity_indicator
 import current_indicators.squeeze as squeeze
 import current_indicators.impulsemacd as impulsemacd
