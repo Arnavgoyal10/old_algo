@@ -1,6 +1,6 @@
 # from tvDatafeed import TvDatafeed, Interval
-# import os
-# import pandas as pd
+import os
+import pandas as pd
 # import time
 
 # def trading_view(symbol):
@@ -10,7 +10,32 @@
 #     df_comb_file = os.path.join(current_directory, f'past/{symbol}.csv')
 #     ret.to_csv(df_comb_file, index=True)
 
-# def main():
+def main():
+    print("starting")
+    
+    directory = "past"
+
+    csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]
+
+    column_rename_mapping = {
+        'datetime': 'time',
+        'open': 'into',
+        'close': 'intc',
+        'high': 'inth',
+        'low': 'intl',
+        'volume': 'v'
+    }
+    columns_to_delete = ['symbol']
+
+    for file_name in csv_files:
+        file_path = os.path.join(directory, file_name)
+        df = pd.read_csv(file_path)
+        
+        df = df.rename(columns=column_rename_mapping)
+        
+        df = df.drop(columns=columns_to_delete)
+        
+        df.to_csv(file_path, index=False)
 
 #     file_path = 'combined_df.csv'
 #     combined_df = pd.read_csv(file_path)
@@ -49,5 +74,5 @@
 #         for error_symbol in error_symbols:
 #             error_file.write(f"{error_symbol}\n")
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()

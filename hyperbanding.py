@@ -69,15 +69,17 @@ def worker(params):
     net_profit = trade_data['agg_profit'].sum()
     return -net_profit  # Hyperopt minimizes the objective function
 
-def main():
+def final(name):
     print(datetime.now())
     ohlc = ['into', 'inth', 'intl', 'intc']
-    file_path = 'excel_files/nifty_full_feb.xlsx'
+    # file_path = 'excel_files/nifty_full_feb.xlsx'
+    file_path = f'past/{name}.csv'
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
     
     global ret
-    ret = pd.read_excel(file_path)
+    # ret = pd.read_excel(file_path)
+    ret = pd.read_csv(file_path)
     ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
     for col in ohlc:
         ret[col] = ret[col].astype(float)
@@ -129,10 +131,10 @@ def main():
     
     # Export to CSV
     columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-    with open("top_10_hyperparameters.csv", "w", newline='') as csvfile:
+    with open(f"values/top_10_{name}.csv", "w", newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         writer.writeheader()
         writer.writerows(top_results)
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
