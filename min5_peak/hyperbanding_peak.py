@@ -68,6 +68,9 @@ def worker(params):
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.iloc[-110:]
     
+    
+    if len(trade_data) < 11:
+        return 50000
     net_profit = trade_data['agg_profit'].sum()
     return -net_profit  # Hyperopt minimizes the objective function
 
