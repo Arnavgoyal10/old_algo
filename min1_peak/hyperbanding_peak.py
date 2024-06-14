@@ -59,10 +59,10 @@ def worker(params):
         
         if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
             if trade_data['profit'].tail(3).sum() < -40:
-                break
+                return 50000  # Arbitrarily large loss to prevent further evaluation
         
         if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -60:
-            break
+            return 50000  # Arbitrarily large loss to prevent further evaluation
         
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)

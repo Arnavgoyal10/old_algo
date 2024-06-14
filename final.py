@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 import multiprocessing
 import min1_agg.hyperbanding as hyperbanding_1min
@@ -38,8 +37,8 @@ def main():
         processes.append(p)
         p.start()
         
-        if i >= 1:
-            break
+        # if i >= 1:
+        #     break
     
     for p in processes:
         p.join()

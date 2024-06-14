@@ -59,7 +59,7 @@ def worker(params):
         
         if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
             if trade_data['profit'].tail(3).sum() < -40:
-                break
+                return 50000  # Arbitrarily large loss to prevent further evaluation
             
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)
