@@ -86,7 +86,7 @@ def final(name):
         ret[col] = ret[col].astype(float)
         
     space = {
-    'stoploss': hp.uniform('stoploss', 0, 30),
+    'stoploss': hp.uniform('stoploss', 0, 50),
     'squee': hp.uniform('squee', 1, 6),
     'lookback': hp.uniform('lookback', 6, 23),
     'ema_length': hp.uniform('ema_length', 11, 30),
