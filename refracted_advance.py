@@ -11,10 +11,10 @@ def append_value(dataframe, column_name, value, index):
 ohlc=['into', 'inth', 'intl', 'intc']
 
 current_state = 0
-# 0 == order not placed, 1 == order placed, 2 == confirmation waiting
+# 0 == order not placed, 1 == order placed
 
 signal = 0
-# 0 == no signal, 1 == order_signal, 2 == confirmation_signal, 3 == exit_signal
+# 0 == no signal, 1 == order_signal, 3 == exit_signal
 
 market_direction = 0
 # 1 == up, -1 == down, 0 == no direction
@@ -46,24 +46,6 @@ def set_stoploss(df, market_direction, stoploss):
         if (temp < stoploss or stoploss == 0):
             stoploss = temp
     return stoploss
-
-def confirmation(df, market_direction):
-    stoploss =0
-    buying_price = 0
-    temp1 = df["TSI"].iloc[-1] - df["TSI"].iloc[-2]
-    temp2 = df["TSI"].iloc[-2] - df["TSI"].iloc[-3]
-    if market_direction == 1:
-        if temp1 > temp2:
-            buying_price = df["inth"].iloc[-1]
-            stoploss = set_stoploss(df, market_direction, stoploss)
-            return 1, market_direction, buying_price, stoploss
-    else:
-        if temp1 < temp2:
-            buying_price = df["intl"].iloc[-1]
-            stoploss = set_stoploss(df, market_direction, stoploss)
-            return 1, market_direction, buying_price, stoploss
-        
-    return 0, 0, 0, 0
 
 def check_exit(df, market_direction, stoploss):
     exit_price = 0
@@ -140,7 +122,7 @@ def check_trade(df):
         waiting = 1
     
     if waiting == 1:
-        return 2, market_direction , 0, 0
+        return 0, market_direction, 0, 0
     else:
         stoploss = set_stoploss(df, market_direction, stoploss)
         
@@ -182,9 +164,6 @@ def final(temp, trade_data, hyper_parameters):
             market_direction = 0
             signal = 0
     
-    elif current_state == 2:
-        signal, market_direction, buying_price, stoploss = confirmation(temp, market_direction)
-    
     elif current_state == 0 and signal == 1:
         if order_flag_count < 2:
             if (temp["inth"].iloc[-1] >= buying_price and temp["intl"].iloc[-1] <= buying_price):
@@ -207,7 +186,6 @@ def final(temp, trade_data, hyper_parameters):
     new_signal, new_market_direction, new_buying_price, new_stoploss = check_trade(temp)
     # new_signal = 0, new_market_direction = 0, new_buying_price = 0, new_stoploss = 0
     # new_signal = 1, new_market_direction = market_direction, new_buying_price = buying_price, new_stoploss = stoploss
-    # new_signal = 2, new_market_direction = market_direction, new_buying_price = 0, new_stoploss = 0
 
     if (market_direction == 0 or (market_direction == 1 and new_market_direction == -1) or (market_direction == -1 and new_market_direction == 1)):
         if current_state == 1:
