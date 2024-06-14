@@ -12,8 +12,8 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
 
-ret = pd.read_excel('excel_files/nifty_full.xlsx')
-df = pd.read_csv('trade_data_new_test.csv')
+ret = pd.read_csv('nifty_data/nifty_feb.csv')
+df = pd.read_csv('nifty_trades/nifty_profit.csv')
 
 
 

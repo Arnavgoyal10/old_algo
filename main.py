@@ -11,9 +11,9 @@ import current_indicators.tsi as tsi
 
 ohlc=['into', 'inth', 'intl', 'intc']
      
-file_path = 'excel_files/nifty_full_feb.xlsx'
-ret = pd.read_excel(file_path)
-ret["time"] = pd.to_datetime(ret["time"], dayfirst=True)
+file_path = 'nifty_data/nifty_feb.csv'
+ret = pd.read_csv(file_path)
+ret["time"] = pd.to_datetime(ret["time"])
 for col in ohlc:
     ret[col] = ret[col].astype(float) 
 
@@ -68,11 +68,11 @@ def main():
                     
             next_row = df.iloc[[i]]
             temp = pd.concat([temp, next_row], ignore_index=True)
-            temp = temp.tail(110)
+            temp = temp.tail(5)
     
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats("snakeviz/main.prof")
+    stats.dump_stats("snakeviz/main1.prof")
     
     df_comb_file = os.path.join(base_directory, 'trade_data_new_test2.csv')
     trade_data.to_csv(df_comb_file, index=True)
