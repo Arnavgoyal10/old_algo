@@ -7,32 +7,16 @@ import min3_agg.hyperbanding as hyperbanding_3min
 import min3_peak.hyperbanding_peak as hyperbanding_peak_3min
 import min5_agg.hyperbanding as hyperbanding_5min
 import min5_peak.hyperbanding_peak as hyperbanding_peak_5min
-import threading
 
 
 
 def working(symbol):
-    # Define the tasks
-    tasks = [
-        hyperbanding_1min.final,
-        hyperbanding_peak_1min.final,
-        hyperbanding_3min.final,
-        hyperbanding_peak_3min.final,
-        hyperbanding_5min.final,
-        hyperbanding_peak_5min.final
-    ]
-
-    threads = []
-    
-    # Create a thread for each task
-    for task in tasks:
-        t = threading.Thread(target=task, args=(symbol,))
-        threads.append(t)
-        t.start()
-
-    # Wait for all threads to complete
-    for t in threads:
-        t.join()
+    hyperbanding_1min.final(symbol)
+    hyperbanding_peak_1min.final(symbol)
+    hyperbanding_3min.final(symbol)
+    hyperbanding_peak_3min.final(symbol)
+    hyperbanding_5min.final(symbol)
+    hyperbanding_peak_5min.final(symbol)
 
 def worker(symbol, counter):
     print("Worker started ", counter)

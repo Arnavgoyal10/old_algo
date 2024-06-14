@@ -100,8 +100,8 @@ def final(name):
 }
     
     trials = Trials()
-    # best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
-    best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=2, trials=trials)
+    best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
+    # best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=2, trials=trials)
     
     print("Best hyperparameters found were: ", best)
     print(datetime.now())
