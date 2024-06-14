@@ -12,7 +12,7 @@ import current_indicators.tsi as tsi
 ohlc=['into', 'inth', 'intl', 'intc']
      
 # file_path = 'nifty_data/nifty_feb.csv'
-file_path = 'Nifty 50.csv'
+file_path = 'data_1min/Nifty 50.csv'
 ret = pd.read_csv(file_path)
 ret["time"] = pd.to_datetime(ret["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
 for col in ohlc:
@@ -48,9 +48,10 @@ def main():
         
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
+
+        hyper_params  = [18.97, 17.65, 60.85, 16.71, 37.52, 8.63, 13.72, 29.11, 14.28]
+        parse = [33.27, 1.12]
         
-        hyper_params = [10.72740199049976,21.56172802641109,53.86925039859429,27.30444844762037,26.80676167638364,10.341523498671714,8.23714265547763,27.768953722873672,17.387886215194328]
-        parse = [11.764129926796599,5.988097510978682]
         
         df = calculate_indicators(ret, hyper_params)
         temp = df.copy()
@@ -58,9 +59,9 @@ def main():
         for i in range(0, len(df)):
             trade_data = refracted.final(temp, trade_data, parse)
             
-            # if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
-            #     if trade_data['profit'].tail(3).sum() < -40:
-            #         break
+            if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
+                if trade_data['profit'].tail(3).sum() < -40:
+                    break
             
             if (i%150 == 0):
                 print(f'"working fine {i}"')
