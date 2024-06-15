@@ -9,6 +9,9 @@ import csv
 from hyperopt import hp, fmin, tpe, Trials
 from hyperopt.pyll.base import scope
 from datetime import datetime
+import threading
+
+lock = threading.Lock()
 
 def calculate_indicators(df, hyperparameters):
     (lookback_config, ema_length_config, conv_config, length_config, 
@@ -27,15 +30,8 @@ def calculate_indicators(df, hyperparameters):
     
     return df
 
-def append_value(dataframe, column_name, value, index):
-    if index >= len(dataframe):
-        new_row = pd.DataFrame([{col: (value if col == column_name else None) for col in dataframe.columns}])
-        dataframe = pd.concat([dataframe, new_row], ignore_index=True)
-    else:
-        dataframe.at[index, column_name] = value
-    return dataframe
 
-def worker(params):    
+def worker(params, ret):    
     trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
     trade_data = pd.DataFrame(columns=trade_columns)
     
@@ -55,7 +51,8 @@ def worker(params):
     temp = df.copy()
     
     for j in range(0, len(df)):
-        trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
+        with lock:
+            trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
         
         if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
             if trade_data['profit'].tail(3).sum() < -40:
@@ -74,13 +71,13 @@ def worker(params):
     return -net_profit
 
 def final(name):
+    
     print(datetime.now())
     ohlc = ['into', 'inth', 'intl', 'intc']
     file_path = f'data_1min/{name}.csv'
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
     
-    global ret
     ret = pd.read_csv(file_path)
     ret["time"] = pd.to_datetime(ret["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
     for col in ohlc:
@@ -103,12 +100,10 @@ def final(name):
 }
     
     trials = Trials()
-    best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
-    # best = fmin(fn=worker, space=space, algo=tpe.suggest, max_evals=2, trials=trials)
+    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
+    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=50, trials=trials)
 
 
-
-    
     print("Best hyperparameters found were: ", best)
     print(datetime.now())
     

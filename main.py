@@ -12,7 +12,7 @@ import current_indicators.tsi as tsi
 ohlc=['into', 'inth', 'intl', 'intc']
      
 # file_path = 'nifty_data/nifty_feb.csv'
-file_path = 'data_1min/Nifty 50.csv'
+file_path = 'data_3min/Nifty 50.csv'
 ret = pd.read_csv(file_path)
 ret["time"] = pd.to_datetime(ret["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
 for col in ohlc:
@@ -48,9 +48,9 @@ def main():
         
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
-        
-        hyper_params   = [15.84, 17.11, 37.47, 19.28, 33.23, 16.34, 6.33, 34, 15.39]
-        parse = [19.95, 3.04]
+
+        hyper_params     = [15.48, 18.46, 48.82, 30.79, 28.7, 4.4, 13.82, 19.02, 14.46]
+        parse = [35.9, 2.51]
         
         
         df = calculate_indicators(ret, hyper_params)
@@ -61,6 +61,7 @@ def main():
             
             if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
                 if trade_data['profit'].tail(3).sum() < -40:
+                    print("50000")
                     break
             
             if (i%150 == 0):
