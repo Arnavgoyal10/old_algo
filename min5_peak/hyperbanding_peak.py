@@ -67,6 +67,14 @@ def worker(params, ret):
     
     if len(trade_data) < 11:
         return 50000
+    
+    less_than_zero = (trade_data['agg_profit'] < 0).sum()
+    greater_than_zero = (trade_data['agg_profit'] > 0).sum()
+    
+    if (greater_than_zero/less_than_zero) < 3.2:
+        return 50000
+    
+    
     net_profit = trade_data['agg_profit'].sum()
     return -net_profit  # Hyperopt minimizes the objective function
 
