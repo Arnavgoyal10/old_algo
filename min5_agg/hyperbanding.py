@@ -57,12 +57,23 @@ def worker(params, ret):
             if trade_data['profit'].tail(3).sum() < -40:
                 return 50000  # Arbitrarily large loss to prevent further evaluation
             
+        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -55:
+            return 50000  # Arbitrarily large loss to prevent further evaluation
+            
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.iloc[-110:]
     
-    if len(trade_data) < 11:
+    if len(trade_data) < 14:
         return 50000
+    
+    
+    months_required = [2, 3, 4, 5, 6]  # Numeric representation of Feb, Mar, Apr, May, Jun, Jul
+    month_counts = trade_data['entry_time'].dt.month.value_counts()
+
+    if not all(month_counts.get(month, 0) >= 2 for month in months_required):
+        return 50000
+        
     
     less_than_zero = (trade_data['agg_profit'] < 0).sum()
     greater_than_zero = (trade_data['agg_profit'] > 0).sum()
