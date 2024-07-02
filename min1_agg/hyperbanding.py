@@ -59,7 +59,7 @@ def worker(params, ret):
             if trade_data['profit'].tail(3).sum() < -40:
                 return 50000  # Arbitrarily large loss to prevent further evaluation
             
-        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -55:
+        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -65:
             return 50000  # Arbitrarily large loss to prevent further evaluation
             
         next_row = df.iloc[[j]]

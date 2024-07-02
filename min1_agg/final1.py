@@ -23,6 +23,9 @@ def main():
         processes.append(p)
         p.start()
         
+        if i >= 1:
+            break
+        
     for p in processes:
         p.join()
     
