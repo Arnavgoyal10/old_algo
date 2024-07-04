@@ -82,8 +82,8 @@ def check_trade(df):
     temp2 = df["hma"].iloc[-2] - df['intc'].iloc[-2]
     
     if market_direction != -1:
-        impulse_temp1 = -impulse_temp1
-        impulse_temp2 = -impulse_temp2
+        temp1 = -temp1
+        temp2 = -temp2
     
     if not (temp1 > temp2):
         return 0, 0 , 0, 0

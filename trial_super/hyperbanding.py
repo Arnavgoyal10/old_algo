@@ -119,7 +119,7 @@ def final(name):
     
     trials = Trials()
     best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
-    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=50, trials=trials)
+    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=5, trials=trials)
     
     print("Best hyperparameters found were: ", best)
     print(datetime.now())
@@ -136,7 +136,7 @@ def final(name):
         top_results.append(params)
     
     # Export to CSV
-    columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
+    columns = ["stoploss", "squee", "period", "multiplier", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
     with open(f"trial_super/{name}_agg.csv", "w", newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         writer.writeheader()

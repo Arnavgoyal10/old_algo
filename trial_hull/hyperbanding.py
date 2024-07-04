@@ -15,12 +15,12 @@ lock = threading.Lock()
 
 def calculate_indicators(df, hyperparameters):
     
-    (length, conv_config, length_config, 
+    (length_super, conv_config, length_config, 
      lengthMA_config, lengthSignal_config, fast_config, slow_config, 
      signal_config) = hyperparameters
 
     df = df.copy()
-    df = hull_ma.calculate_hma(df, length=length)
+    df = hull_ma.calculate_hma(df, length=length_super)
     df = squeeze.squeeze_index2_float(df, conv=conv_config, length=length_config)
     
     df_macd = impulsemacd.macd(df, lengthMA=lengthMA_config, lengthSignal=lengthSignal_config)
@@ -37,7 +37,7 @@ def worker(params, ret):
     trade_data = pd.DataFrame(columns=trade_columns)
     
     hyperparameters = [
-        params['length'],
+        params['length_super'],
         params['conv'],
         params['length'],
         params['lengthMA'],
@@ -105,7 +105,7 @@ def final(name):
     space = {
     'stoploss': hp.uniform('stoploss', 0, 50),
     'squee': hp.uniform('squee', 1, 6),
-    'length': hp.uniform('length', 40, 70),
+    'length_super': hp.uniform('length_super', 40, 70),
     'conv': hp.uniform('conv', 35, 72),
     'length': hp.uniform('length', 5, 33),
     'lengthMA': hp.uniform('lengthMA', 20, 45),
@@ -117,7 +117,7 @@ def final(name):
     
     trials = Trials()
     best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
-    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=50, trials=trials)
+    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=5, trials=trials)
     
     print("Best hyperparameters found were: ", best)
     print(datetime.now())
@@ -134,7 +134,7 @@ def final(name):
         top_results.append(params)
     
     # Export to CSV
-    columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
+    columns = ["stoploss", "squee", "length_super", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
     with open(f"trial_hull/{name}_agg.csv", "w", newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         writer.writeheader()
