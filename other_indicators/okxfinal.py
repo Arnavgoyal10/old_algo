@@ -1,16 +1,15 @@
 import pandas as pd
 import numpy as np
 
-
 def add_trading_signals(df, entryLength, exitLength):
 
     # Calculate highest and lowest values over specified windows
-    df['upper'] = df['inth'].rolling(window=entryLength).max()
-    df['lower'] = df['intl'].rolling(window=entryLength).min()
-    df['up'] = df['inth'].rolling(window=entryLength).max()
-    df['down'] = df['intl'].rolling(window=entryLength).min()
-    df['sup'] = df['inth'].rolling(window=exitLength).max()
-    df['sdown'] = df['intl'].rolling(window=exitLength).min()
+    df['upper'] = df['inth'].rolling(window=int(entryLength)).max()
+    df['lower'] = df['intl'].rolling(window=int(entryLength)).min()
+    df['up'] = df['inth'].rolling(window=int(entryLength)).max()
+    df['down'] = df['intl'].rolling(window=int(entryLength)).min()
+    df['sup'] = df['inth'].rolling(window=int(exitLength)).max()
+    df['sdown'] = df['intl'].rolling(window=int(exitLength)).min()
 
     # Define crossover function
     def crossover(series1, series2):
@@ -39,7 +38,6 @@ def add_trading_signals(df, entryLength, exitLength):
     df['exitBarssinceBuy'] = barssince(df['buyExit'].shift(1))
     df['exitBarssinceSell'] = barssince(df['sellExit'].shift(1))
 
-    
     # ENTER_LONG and ENTER_SHORT signals
     df['ENTER_LONG'] = df['buySignal'] & (df['exitBarssinceBuy'] < df['entryBarssinceBuy'].shift(1))
     df['ENTER_SHORT'] = df['sellSignal'] & (df['exitBarssinceSell'] < df['entryBarssinceSell'].shift(1))
@@ -50,8 +48,8 @@ def add_trading_signals(df, entryLength, exitLength):
                                       axis=1)
 
     drop_columns = ['upper', 'lower', 'up', 'down', 'sup', 'sdown', 
-                    'barssince_up', 'barssince_down', 'buySignal', 'sellSignal', 'buyExit', 'sellExit', 'entryBarssinceBuy','entryBarssinceSell','exitBarssinceBuy', 'exitBarssinceSell' ]
+                    'barssince_up', 'barssince_down', 'buySignal', 'sellSignal', 'buyExit', 'sellExit', 
+                    'entryBarssinceBuy', 'entryBarssinceSell', 'exitBarssinceBuy', 'exitBarssinceSell', 'ENTER_LONG', 'ENTER_SHORT']
     df.drop(columns=drop_columns, inplace=True)
-
 
     return df
