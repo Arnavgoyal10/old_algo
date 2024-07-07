@@ -118,7 +118,7 @@ def final(name):
 }
     
     trials = Trials()
-    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
+    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=10000, trials=trials)
     # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=5, trials=trials)
     
     print("Best hyperparameters found were: ", best)
