@@ -56,10 +56,10 @@ def worker(params, ret):
             trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
        
         if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
-            if trade_data['profit'].tail(3).sum() < -65:
+            if trade_data['profit'].tail(3).sum() < -85:
                 return 50000  # Arbitrarily large loss to prevent further evaluation
             
-        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -65:
+        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -85:
             return 50000  # Arbitrarily large loss to prevent further evaluation
             
         next_row = df.iloc[[j]]

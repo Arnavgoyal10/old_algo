@@ -6,8 +6,7 @@ import current_indicators.impulsemacd as impulsemacd
 import current_indicators.tsi as tsi
 import refracted_advance as refracted
 import csv
-from hyperopt import hp, fmin, tpe, Trials
-from hyperopt.pyll.base import scope
+from bayes_opt import BayesianOptimization
 from datetime import datetime
 import threading
 
@@ -29,7 +28,6 @@ def calculate_indicators(df, hyperparameters):
     df[['TSI', 'TSIs']] = df_tsi[['TSI', 'TSIs']]
     
     return df
-
 
 def worker(params, ret):    
     trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
@@ -68,31 +66,26 @@ def worker(params, ret):
     if len(trade_data) < 14:
         return 50000
     
-    
-    months_required = [2, 3, 4, 5, 6]  # Numeric representation of Feb, Mar, Apr, May, Jun, Jul
+    months_required = [2, 3, 4, 5, 6]  # Numeric representation of Feb, Mar, Apr, May, Jun
     month_counts = trade_data['entry_time'].dt.month.value_counts()
 
     if not all(month_counts.get(month, 0) >= 2 for month in months_required):
         return 50000
         
-    
     less_than_zero = (trade_data['agg_profit'] < 0).sum()
     greater_than_zero = (trade_data['agg_profit'] > 0).sum()
     
     if (greater_than_zero/less_than_zero) < 3.2:
         return 50000
     
-    
-    
     net_profit = trade_data['agg_profit'].sum()
-    return -net_profit  # Hyperopt minimizes the objective function
+    return -net_profit  # BayesianOptimization minimizes the objective function
 
 def final(name):
-    
     print(datetime.now())
     ohlc = ['into', 'inth', 'intl', 'intc']
 
-    file_path = f'data_3min/{name}.csv'
+    file_path = f'data_1min/{name}.csv'
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
     
@@ -101,42 +94,52 @@ def final(name):
     for col in ohlc:
         ret[col] = ret[col].astype(float)
         
+    def optimize_function(stoploss, squee, lookback, ema_length, conv, length, lengthMA, lengthSignal, fast, slow, signal):
+        params = {
+            'stoploss': stoploss,
+            'squee': squee,
+            'lookback': lookback,
+            'ema_length': ema_length,
+            'conv': conv,
+            'length': length,
+            'lengthMA': lengthMA,
+            'lengthSignal': lengthSignal,
+            'fast': fast,
+            'slow': slow,
+            'signal': signal
+        }
+        return worker(params, ret)
     
-    space = {
-    'stoploss': hp.uniform('stoploss', 0, 50),
-    'squee': hp.uniform('squee', 0, 10),
-    'lookback': hp.uniform('lookback', 5, 30),
-    'ema_length': hp.uniform('ema_length', 6, 35),
-    'conv': hp.uniform('conv', 28, 75),
-    'length': hp.uniform('length', 2, 40),
-    'lengthMA': hp.uniform('lengthMA', 14, 52),
-    'lengthSignal': hp.uniform('lengthSignal', 2, 28),
-    'fast': hp.uniform('fast', 2, 27),
-    'slow': hp.uniform('slow', 8, 42),
-    'signal': hp.uniform('signal', 2, 30)
-}
+    pbounds = {
+        'stoploss': (0, 50),
+        'squee': (0, 10),
+        'lookback': (5, 30),
+        'ema_length': (6, 35),
+        'conv': (28, 75),
+        'length': (2, 40),
+        'lengthMA': (14, 52),
+        'lengthSignal': (2, 28),
+        'fast': (2, 27),
+        'slow': (8, 42),
+        'signal': (2, 30)
+    }
     
-    trials = Trials()
-    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
-    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=20, trials=trials)
+    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=11)
+    optimizer.maximize(init_points=1000, n_iter=25)
     
-    print("Best hyperparameters found were: ", best)
+    print("Best hyperparameters found were: ", optimizer.max)
     print(datetime.now())
     
-    # Sort trials by loss and get top 10
-    top_trials = sorted(trials.trials, key=lambda x: x['result']['loss'])[:5]
-    
     top_results = []
-    for trial in top_trials:
-        result = trial['result']
-        params = trial['misc']['vals']
-        params = {k: v[0] for k, v in params.items()}  # Extract single values from lists
-        params['net_profit'] = -result['loss']
-        top_results.append(params)
+    for i, res in enumerate(optimizer.res):
+        if i < 5:
+            params = res['params']
+            params['net_profit'] = -res['target']
+            top_results.append(params)
     
-    # Export to CSV
     columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-    with open(f"min3_agg/{name}_agg.csv", "w", newline='') as csvfile:
+    with open(f"min1_prof/{name}_agg.csv", "w", newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         writer.writeheader()
         writer.writerows(top_results)
+

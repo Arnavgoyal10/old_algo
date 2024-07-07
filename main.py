@@ -49,8 +49,11 @@ def main():
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
 
-        hyper_params     = [15.923617502107277,20.74092418115655,48.69763754932589,26.423868207117494,30.522490827984534,6.022950291540738,13.127021769538057,34.5678756760113,21.381032573200393]
-        parse = [22.059387008716673,2.119323795593763]
+        # hyper_params     = [15.923617502107277,20.74092418115655,48.69763754932589,26.423868207117494,30.522490827984534,6.022950291540738,13.127021769538057,34.5678756760113,21.381032573200393]
+        # parse = [22.059387008716673,2.119323795593763]
+        
+        hyper_params = [15.92, 20.74, 48.7, 26.42 , 30.52, 6.02 ,13.13 , 34.57, 21.38]
+        parse = [22.06,2.12]
         
         
         df = calculate_indicators(ret, hyper_params)
@@ -59,10 +62,10 @@ def main():
         for i in range(0, len(df)):
             trade_data = refracted.final(temp, trade_data, parse)
             
-            if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
-                if trade_data['profit'].tail(3).sum() < -40:
-                    print("50000")
-                    break
+            # if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
+            #     if trade_data['profit'].tail(3).sum() < -40:
+            #         print("50000")
+            #         break
             
             if (i%150 == 0):
                 print(f'"working fine {i}"')
