@@ -108,6 +108,8 @@ def final(name):
             'slow': slow,
             'signal': signal
         }
+        result = worker(params, ret)
+        print(f"Evaluated params: {params}, Result: {result}")
         return worker(params, ret)
     
     pbounds = {
