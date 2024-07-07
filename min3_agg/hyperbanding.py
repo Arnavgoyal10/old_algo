@@ -108,17 +108,17 @@ def final(name):
     'lookback': hp.uniform('lookback', 5, 30),
     'ema_length': hp.uniform('ema_length', 6, 35),
     'conv': hp.uniform('conv', 28, 75),
-    'length': hp.uniform('length', 1, 40),
+    'length': hp.uniform('length', 2, 40),
     'lengthMA': hp.uniform('lengthMA', 14, 52),
-    'lengthSignal': hp.uniform('lengthSignal', 1, 28),
-    'fast': hp.uniform('fast', 1, 30),
-    'slow': hp.uniform('slow', 6, 45),
-    'signal': hp.uniform('signal', 1, 30)
+    'lengthSignal': hp.uniform('lengthSignal', 2, 28),
+    'fast': hp.uniform('fast', 2, 27),
+    'slow': hp.uniform('slow', 8, 42),
+    'signal': hp.uniform('signal', 2, 30)
 }
     
     trials = Trials()
     best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=11000, trials=trials)
-    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=50, trials=trials)
+    # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=20, trials=trials)
     
     print("Best hyperparameters found were: ", best)
     print(datetime.now())
