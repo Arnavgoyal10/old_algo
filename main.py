@@ -49,8 +49,8 @@ def main():
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
 
-        hyper_params     = [15.48, 18.46, 48.82, 30.79, 28.7, 4.4, 13.82, 19.02, 14.46]
-        parse = [35.9, 2.51]
+        hyper_params     = [15.923617502107277,20.74092418115655,48.69763754932589,26.423868207117494,30.522490827984534,6.022950291540738,13.127021769538057,34.5678756760113,21.381032573200393]
+        parse = [22.059387008716673,2.119323795593763]
         
         
         df = calculate_indicators(ret, hyper_params)

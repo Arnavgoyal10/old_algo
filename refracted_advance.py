@@ -67,7 +67,7 @@ def check_trade(df):
     stoploss = 0 
     
     current_time = df["time"].iloc[-1]
-    comparison_time = current_time.replace(hour=15, minute=00, second=0, microsecond=0)
+    comparison_time = current_time.replace(hour=14, minute=59, second=0, microsecond=0)
     
     if current_time > comparison_time:
         return 0, 0 , 0, 0

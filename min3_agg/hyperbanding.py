@@ -55,7 +55,7 @@ def worker(params, ret):
             trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
         
         if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
-            if trade_data['profit'].tail(3).sum() < -40:
+            if trade_data['profit'].tail(3).sum() < -65:
                 return 50000  # Arbitrarily large loss to prevent further evaluation
             
         if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -65:
@@ -63,7 +63,7 @@ def worker(params, ret):
             
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)
-        temp = temp.iloc[-110:]
+        temp = temp.tail(5)
     
     if len(trade_data) < 14:
         return 50000
@@ -104,16 +104,16 @@ def final(name):
     
     space = {
     'stoploss': hp.uniform('stoploss', 0, 50),
-    'squee': hp.uniform('squee', 1, 6),
-    'lookback': hp.uniform('lookback', 6, 23),
-    'ema_length': hp.uniform('ema_length', 11, 30),
-    'conv': hp.uniform('conv', 35, 72),
-    'length': hp.uniform('length', 5, 33),
-    'lengthMA': hp.uniform('lengthMA', 20, 45),
-    'lengthSignal': hp.uniform('lengthSignal', 3, 22),
-    'fast': hp.uniform('fast', 5, 23),
-    'slow': hp.uniform('slow', 14, 36),
-    'signal': hp.uniform('signal', 5, 24)
+    'squee': hp.uniform('squee', 0, 10),
+    'lookback': hp.uniform('lookback', 5, 30),
+    'ema_length': hp.uniform('ema_length', 6, 35),
+    'conv': hp.uniform('conv', 28, 75),
+    'length': hp.uniform('length', 1, 40),
+    'lengthMA': hp.uniform('lengthMA', 14, 52),
+    'lengthSignal': hp.uniform('lengthSignal', 1, 28),
+    'fast': hp.uniform('fast', 1, 30),
+    'slow': hp.uniform('slow', 6, 45),
+    'signal': hp.uniform('signal', 1, 30)
 }
     
     trials = Trials()
