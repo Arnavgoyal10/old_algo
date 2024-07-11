@@ -7,6 +7,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+output.txt
+output1.txt
 # C extensions
 *.so
 
