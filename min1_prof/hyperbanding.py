@@ -127,7 +127,7 @@ def final(name):
     }
     
     optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=11)
-    optimizer.maximize(init_points=1000, n_iter=25)
+    optimizer.maximize(init_points=1000, n_iter=3000)
     
     print("Best hyperparameters found were: ", optimizer.max)
     print(datetime.now())
