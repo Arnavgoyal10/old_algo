@@ -74,7 +74,9 @@ def final(name):
     ret["time"] = pd.to_datetime(ret["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
     for col in ohlc:
         ret[col] = ret[col].astype(float)
-        
+    
+    top_results = []
+    
     def optimize_function(stoploss, squee, lookback, ema_length, conv, length, lengthMA, lengthSignal, fast, slow, signal):
         params = {
             'stoploss': stoploss,
@@ -90,8 +92,15 @@ def final(name):
             'signal': signal
         }
         result = worker(params, ret)
-        print(f"Evaluated params: {params}, Result: {result}")
-        return worker(params, ret)
+        params['net_profit'] = -result
+        top_results.append(params)
+        columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
+        
+        with open(f"min5_prof/{name}_agg.csv", "w", newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=columns)
+            writer.writeheader()
+            writer.writerows(top_results)
+        return result
     
     pbounds = {
         'stoploss': (0, 50),
@@ -107,22 +116,8 @@ def final(name):
         'signal': (2, 30)
     }
     
-    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=11)
+    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=2)
     optimizer.maximize(init_points=1000, n_iter=3000)
     
     print("Best hyperparameters found were: ", optimizer.max)
     print(datetime.now())
-    
-    top_results = []
-    for i, res in enumerate(optimizer.res):
-        if i < 5:
-            params = res['params']
-            params['net_profit'] = -res['target']
-            top_results.append(params)
-    
-    columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-    with open(f"min5_prof/{name}_agg.csv", "w", newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=columns)
-        writer.writeheader()
-        writer.writerows(top_results)
-

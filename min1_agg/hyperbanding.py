@@ -114,7 +114,7 @@ def final(name):
 }
     
     trials = Trials()
-    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=8000, trials=trials)
+    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=3000, trials=trials)
     # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=20, trials=trials)
 
     
