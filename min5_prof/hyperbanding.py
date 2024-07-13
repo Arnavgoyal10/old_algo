@@ -52,30 +52,11 @@ def worker(params, ret):
         with lock:
             trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
         
-        if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
-            if trade_data['profit'].tail(3).sum() < -85:
-                return 50000  # Arbitrarily large loss to prevent further evaluation
-            
-        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -85:
-            return 50000  # Arbitrarily large loss to prevent further evaluation
-            
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.tail(5)
     
     if len(trade_data) < 14:
-        return 50000
-    
-    months_required = [2, 3, 4, 5, 6]  # Numeric representation of Feb, Mar, Apr, May, Jun
-    month_counts = trade_data['entry_time'].dt.month.value_counts()
-
-    if not all(month_counts.get(month, 0) >= 2 for month in months_required):
-        return 50000
-        
-    less_than_zero = (trade_data['agg_profit'] < 0).sum()
-    greater_than_zero = (trade_data['agg_profit'] > 0).sum()
-    
-    if (greater_than_zero/less_than_zero) < 3.2:
         return 50000
     
     net_profit = trade_data['agg_profit'].sum()
@@ -93,7 +74,9 @@ def final(name):
     ret["time"] = pd.to_datetime(ret["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
     for col in ohlc:
         ret[col] = ret[col].astype(float)
-        
+    
+    top_results = []
+    
     def optimize_function(stoploss, squee, lookback, ema_length, conv, length, lengthMA, lengthSignal, fast, slow, signal):
         params = {
             'stoploss': stoploss,
@@ -109,8 +92,15 @@ def final(name):
             'signal': signal
         }
         result = worker(params, ret)
-        print(f"Evaluated params: {params}, Result: {result}")
-        return worker(params, ret)
+        params['net_profit'] = -result
+        top_results.append(params)
+        columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
+        
+        with open(f"min5_prof/{name}_agg.csv", "w", newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=columns)
+            writer.writeheader()
+            writer.writerows(top_results)
+        return result
     
     pbounds = {
         'stoploss': (0, 50),
@@ -126,22 +116,8 @@ def final(name):
         'signal': (2, 30)
     }
     
-    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=11)
+    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=2)
     optimizer.maximize(init_points=1000, n_iter=3000)
     
     print("Best hyperparameters found were: ", optimizer.max)
     print(datetime.now())
-    
-    top_results = []
-    for i, res in enumerate(optimizer.res):
-        if i < 5:
-            params = res['params']
-            params['net_profit'] = -res['target']
-            top_results.append(params)
-    
-    columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-    with open(f"min5_prof/{name}_agg.csv", "w", newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=columns)
-        writer.writeheader()
-        writer.writerows(top_results)
-
