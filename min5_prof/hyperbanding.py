@@ -9,6 +9,8 @@ import csv
 from bayes_opt import BayesianOptimization
 from datetime import datetime
 import threading
+from ray import tune
+from ray.tune.schedulers import ASHAScheduler
 
 lock = threading.Lock()
 
@@ -116,8 +118,23 @@ def final(name):
         'signal': (2, 30)
     }
     
-    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=2)
-    optimizer.maximize(init_points=1000, n_iter=3000)
+    scheduler = ASHAScheduler(
+        metric="net_profit",
+        mode="max",
+        max_t=3000,
+        grace_period=10,
+        reduction_factor=2
+    )
     
-    print("Best hyperparameters found were: ", optimizer.max)
+    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=2)
+    
+    analysis = tune.run(
+        tune.with_parameters(optimizer.maximize),
+        config=pbounds,
+        num_samples=1000,
+        scheduler=scheduler,
+        verbose=2,
+    )
+    
+    print("Best hyperparameters found were: ", analysis.best_config)
     print(datetime.now())

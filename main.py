@@ -13,6 +13,7 @@ ohlc=['into', 'inth', 'intl', 'intc']
      
 # file_path = 'nifty_data/nifty_feb.csv'
 file_path = 'data_3min/Nifty 50.csv'
+# file_path = 'Nifty 50.csv'
 ret = pd.read_csv(file_path)
 ret["time"] = pd.to_datetime(ret["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
 for col in ohlc:
@@ -44,21 +45,25 @@ def calculate_indicators(df, hyperparamas):
 
 def main():
     
-    with cProfile.Profile() as pr:
-        
+    with cProfile.Profile() as pr:   
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
 
-        # hyper_params     = [15.923617502107277,20.74092418115655,48.69763754932589,26.423868207117494,30.522490827984534,6.022950291540738,13.127021769538057,34.5678756760113,21.381032573200393]
-        # parse = [22.059387008716673,2.119323795593763]
+        hyper_params     = [15.923617502107277,20.74092418115655,48.69763754932589,26.423868207117494,30.522490827984534,6.022950291540738,13.127021769538057,34.5678756760113,21.381032573200393]
+        parse = [22.059387008716673,2.119323795593763]
         
-        hyper_params = [15.92, 20.74, 48.7, 26.42 , 30.52, 6.02 ,13.13 , 34.57, 21.38]
-        parse = [22.06,2.12]
+
+        # hyper_params = [5.32,19.58,67.16,39.37,19.55,7.41,15.44,13.55,12.59]
+        # parse = [33.93,5.24]
         
         
         df = calculate_indicators(ret, hyper_params)
-        temp = df.copy()
-                                                       
+        # temp = df.copy()
+        temp = df.head(114).copy()
+        # Remove the first 68 rows from df
+        df = df.iloc[114:].reset_index(drop=True)
+        
+                                                            
         for i in range(0, len(df)):
             trade_data = refracted.final(temp, trade_data, parse)
             
@@ -74,12 +79,21 @@ def main():
             next_row = df.iloc[[i]]
             temp = pd.concat([temp, next_row], ignore_index=True)
             temp = temp.tail(5)
+            
+            # current_time = temp["time"].iloc[-1]
+            # comparison_time = current_time.replace(hour=9, minute=15, second=0, microsecond=0)
+        
+            # if temp["time"].eq(comparison_time).any():
+            #     last_occurrence_index = temp["time"].eq(comparison_time)[::-1].idxmax()
+            #     temp = temp.iloc[last_occurrence_index-1:].reset_index(drop=True)
+            # else:
+            #     temp = temp.tail(5).reset_index(drop=True)
     
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
     stats.dump_stats("snakeviz/main1.prof")
     
-    df_comb_file = os.path.join(base_directory, 'trade_data_new_test2.csv')
+    df_comb_file = os.path.join(base_directory, 'trade_data_new_test3.csv')
     trade_data.to_csv(df_comb_file, index=True)
 
 
