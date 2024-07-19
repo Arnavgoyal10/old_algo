@@ -48,8 +48,9 @@ def worker(params, ret):
     ]
     
     df = calculate_indicators(ret, hyperparameters)
-    temp = df.copy()
-    
+    temp = df.head(5).copy()
+    df = df.iloc[5:].reset_index(drop=True)
+
     for j in range(0, len(df)):
         with lock:
             trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
@@ -64,21 +65,14 @@ def worker(params, ret):
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.tail(5)
-    
-    if len(trade_data) < 14:
-        return 50000
-    
-    
-    months_required = [2, 3, 4, 5, 6]  # Numeric representation of Feb, Mar, Apr, May, Jun, Jul
-    month_counts = trade_data['entry_time'].dt.month.value_counts()
-
-    if not all(month_counts.get(month, 0) >= 2 for month in months_required):
-        return 50000
-        
+ 
     
     less_than_zero = (trade_data['agg_profit'] < 0).sum()
     greater_than_zero = (trade_data['agg_profit'] > 0).sum()
     
+    
+    if less_than_zero != 0:
+        less_than_zero = 1
     if (greater_than_zero/less_than_zero) < 3.2:
         return 50000
     
@@ -87,12 +81,27 @@ def worker(params, ret):
     net_profit = trade_data['agg_profit'].sum()
     return -net_profit  # Hyperopt minimizes the objective function
 
-def final(name):
+def final(name, count):
     
+    folder = ""
+    if count == 0:
+        folder = "Jan"
+    elif count == 1:
+        folder = "Feb"
+    elif count == 2:
+        folder = "Mar"
+    elif count == 3:
+        folder = "Apr"
+    elif count == 4:
+        folder = "May"
+    elif count == 5:
+        folder = "Jun"
+
+
     print(datetime.now())
     ohlc = ['into', 'inth', 'intl', 'intc']
 
-    file_path = f'data_3min/{name}.csv'
+    file_path = f'monthly_3min/{folder}/{name}.csv'
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
     
@@ -136,7 +145,7 @@ def final(name):
     
     # Export to CSV
     columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
-    with open(f"min3_agg/{name}_agg.csv", "w", newline='') as csvfile:
+    with open(f"min3/{folder}/{name}_params.csv", "w", newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         writer.writeheader()
         writer.writerows(top_results)

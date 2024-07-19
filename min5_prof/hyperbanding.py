@@ -11,6 +11,7 @@ from datetime import datetime
 import threading
 from ray import tune
 from ray.tune.schedulers import ASHAScheduler
+from ray.air import session  # Import session
 
 lock = threading.Lock()
 
@@ -55,7 +56,7 @@ def worker(params, ret):
             trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
         
         next_row = df.iloc[[j]]
-        temp = pd.concat([temp, next_row], ignore_index=True)
+        temp = pd.concat([temp, next_row.dropna(how='all')], ignore_index=True)  # Handle concatenation properly
         temp = temp.tail(5)
     
     if len(trade_data) < 14:
@@ -65,13 +66,16 @@ def worker(params, ret):
     return -net_profit  # BayesianOptimization minimizes the objective function
 
 def final(name):
-    print(datetime.now())
+    print("Script started at:", datetime.now())
+    print("Current working directory:", os.getcwd())
+    
     ohlc = ['into', 'inth', 'intl', 'intc']
 
     file_path = f'data_5min/{name}.csv'
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
     
+    print(f"Loading data from {file_path}")
     ret = pd.read_csv(file_path)
     ret["time"] = pd.to_datetime(ret["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
     for col in ohlc:
@@ -98,12 +102,19 @@ def final(name):
         top_results.append(params)
         columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
         
-        with open(f"min5_prof/{name}_agg.csv", "w", newline='') as csvfile:
+        output_dir = 'min5_prof'
+        os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+        
+        output_file = os.path.join(output_dir, f"{name}_agg.csv")
+        print(f"Writing results to {output_file}")
+        
+        with open(output_file, "w", newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=columns)
             writer.writeheader()
             writer.writerows(top_results)
-        return result
-    
+        session.report({"net_profit": -result, **params})  # Report the metric and parameters to Ray Tune
+        return -result  # Return the negative result for optimization
+
     pbounds = {
         'stoploss': (0, 50),
         'squee': (0, 10),
@@ -118,23 +129,43 @@ def final(name):
         'signal': (2, 30)
     }
     
+    optimizer = BayesianOptimization(
+        f=optimize_function, 
+        pbounds=pbounds, 
+        verbose=2, 
+        random_state=2
+    )
+    
+    def tune_wrapper(config):
+        return optimizer.maximize(init_points=2, n_iter=4)
+    
     scheduler = ASHAScheduler(
         metric="net_profit",
         mode="max",
-        max_t=3000,
+        max_t=30,
         grace_period=10,
         reduction_factor=2
     )
     
-    optimizer = BayesianOptimization(f=optimize_function, pbounds=pbounds, verbose=2, random_state=2)
-    
     analysis = tune.run(
-        tune.with_parameters(optimizer.maximize),
+        tune.with_parameters(tune_wrapper),
         config=pbounds,
-        num_samples=1000,
+        num_samples=10,
         scheduler=scheduler,
         verbose=2,
     )
     
-    print("Best hyperparameters found were: ", analysis.best_config)
-    print(datetime.now())
+    best_trial = analysis.get_best_trial(metric="net_profit", mode="max")
+    best_config = best_trial.config
+    best_result = best_trial.last_result["net_profit"]
+    
+    # Save best parameters and profit to CSV
+    output_best_file = os.path.join('min5_prof', f"{name}_best_params.csv")
+    with open(output_best_file, "w", newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=list(best_config.keys()) + ["net_profit"])
+        writer.writeheader()
+        best_config["net_profit"] = best_result
+        writer.writerow(best_config)
+    
+    print("Best hyperparameters found were: ", best_config)
+    print("Script ended at:", datetime.now())

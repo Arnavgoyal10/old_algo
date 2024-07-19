@@ -1,16 +1,22 @@
 import pandas as pd
 import multiprocessing
-import min5_agg.hyperbanding as hyperbanding_5min
+import min3.hyperbanding as hyperbanding_3min
+import min3.optimser as optimser
 
 
 
-def working(symbol):
-    hyperbanding_5min.final(symbol)
-
+def working(symbol, count):
+    hyperbanding_3min.final(symbol, count)
+    
+def optimising(symbol, count):
+    optimser.main(symbol, count)
+    
 def worker(symbol, counter):
     print("Worker started ", counter)
-    # print("Working on ", symbol)
-    working(symbol)
+
+    for i in range(0,6):
+        working(symbol, i)
+        optimising(symbol, i)
     print("Worker finished ", counter) 
 
 def main():
@@ -24,10 +30,10 @@ def main():
         p = multiprocessing.Process(target=worker, args=(symbol, i))
         processes.append(p)
         p.start()
-        
+
         if i >= 1:
             break
-    
+        
     for p in processes:
         p.join()
     
