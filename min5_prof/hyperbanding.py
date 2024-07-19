@@ -8,6 +8,7 @@ import refracted_advance as refracted
 import csv
 from datetime import datetime
 import threading
+import ray
 from ray import tune, train
 from ray.tune.search.bayesopt import BayesOptSearch
 from ray.tune.search import ConcurrencyLimiter
@@ -66,6 +67,8 @@ def final(name):
     print("Script started at:", datetime.now())
     print("Current working directory:", os.getcwd())
     
+    ray.init(include_dashboard=False, num_gpus=0, num_cpus=26)
+    
     ohlc = ['into', 'inth', 'intl', 'intc']
 
     file_path = f'data_5min/{name}.csv'
@@ -89,7 +92,7 @@ def final(name):
         top_results.append(params)
         columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
         
-        output_dir = '/Users/arnav/Desktop/workspaces/Old_Algo/min5_prof/out'
+        output_dir = '/home/arnav.goyal_ug2023/old_algo/min5_prof/out'
         os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
         
         output_file = os.path.join(output_dir, f"{name.replace(' ', '')}_agg.csv")

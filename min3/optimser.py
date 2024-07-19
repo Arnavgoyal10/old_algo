@@ -65,9 +65,9 @@ def main(symbol, count):
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
         
-        list = ret.iloc[i].to_list()
-        configs = list[:2]
-        params = list[2:-1]
+        list1 = ret.iloc[i].to_list()
+        configs = list1[:2]
+        params = list1[2:-1]
         net = 0
         ret1["time"] = pd.to_datetime(ret1["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
         for col in ohlc:

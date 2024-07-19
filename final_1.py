@@ -11,6 +11,8 @@ def run_module(module):
 def main():
     modules = [final3_prof, final5_prof]
     
+    print("TEST")
+    
     threads = []
     
     for module in modules:

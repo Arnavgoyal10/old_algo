@@ -126,14 +126,14 @@ def final(name, count):
 }
     
     trials = Trials()
-    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=7000, trials=trials)
+    best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=16400, trials=trials)
     # best = fmin(fn=lambda params: worker(params, ret), space=space, algo=tpe.suggest, max_evals=20, trials=trials)
     
     print("Best hyperparameters found were: ", best)
     print(datetime.now())
     
     # Sort trials by loss and get top 10
-    top_trials = sorted(trials.trials, key=lambda x: x['result']['loss'])[:5]
+    top_trials = sorted(trials.trials, key=lambda x: x['result']['loss'])[:820]
     
     top_results = []
     for trial in top_trials:
