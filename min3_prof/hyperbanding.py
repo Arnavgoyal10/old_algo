@@ -6,12 +6,11 @@ import current_indicators.impulsemacd as impulsemacd
 import current_indicators.tsi as tsi
 import refracted_advance as refracted
 import csv
-from bayes_opt import BayesianOptimization
 from datetime import datetime
 import threading
-from ray import tune
-from ray.tune.schedulers import ASHAScheduler
-from ray.air import session  # Import session
+from ray import tune, train
+from ray.tune.search.bayesopt import BayesOptSearch
+from ray.tune.search import ConcurrencyLimiter
 
 lock = threading.Lock()
 
@@ -59,11 +58,9 @@ def worker(params, ret):
         temp = pd.concat([temp, next_row.dropna(how='all')], ignore_index=True)  # Handle concatenation properly
         temp = temp.tail(5)
     
-    if len(trade_data) < 14:
-        return 50000
     
     net_profit = trade_data['agg_profit'].sum()
-    return -net_profit  # BayesianOptimization minimizes the objective function
+    return net_profit  # BayesianOptimization minimizes the objective function
 
 def final(name):
     print("Script started at:", datetime.now())
@@ -83,88 +80,72 @@ def final(name):
     
     top_results = []
     
-    def optimize_function(stoploss, squee, lookback, ema_length, conv, length, lengthMA, lengthSignal, fast, slow, signal):
-        params = {
-            'stoploss': stoploss,
-            'squee': squee,
-            'lookback': lookback,
-            'ema_length': ema_length,
-            'conv': conv,
-            'length': length,
-            'lengthMA': lengthMA,
-            'lengthSignal': lengthSignal,
-            'fast': fast,
-            'slow': slow,
-            'signal': signal
-        }
+
+    def optimize_function(config):
+
+        params = config
         result = worker(params, ret)
-        params['net_profit'] = -result
+        params['net_profit'] = result
         top_results.append(params)
         columns = ["stoploss", "squee", "lookback", "ema_length", "conv", "length", "lengthMA", "lengthSignal", "fast", "slow", "signal", "net_profit"]
         
-        output_dir = 'min3_prof'
+        output_dir = '/Users/arnav/Desktop/workspaces/Old_Algo/min3_prof/out'
         os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
         
-        output_file = os.path.join(output_dir, f"{name}_agg.csv")
+        output_file = os.path.join(output_dir, f"{name.replace(' ', '')}_agg.csv")
         print(f"Writing results to {output_file}")
         
-        with open(output_file, "w", newline='') as csvfile:
+        exists = os.path.isfile(output_file)
+        
+        with open(output_file, "a") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=columns)
-            writer.writeheader()
+            if not exists:
+                writer.writeheader()
             writer.writerows(top_results)
-        session.report({"net_profit": -result, **params})  # Report the metric and parameters to Ray Tune
-        return -result  # Return the negative result for optimization
+                
+        train.report({"net_profit": result, **params})
+        return {"net_profit": result}
 
     pbounds = {
-        'stoploss': (0, 50),
-        'squee': (0, 10),
-        'lookback': (5, 30),
-        'ema_length': (6, 35),
-        'conv': (28, 75),
-        'length': (2, 40),
-        'lengthMA': (14, 52),
-        'lengthSignal': (2, 28),
-        'fast': (2, 27),
-        'slow': (8, 42),
-        'signal': (2, 30)
+        'stoploss': tune.uniform(0, 50),
+        'squee': tune.uniform(0, 10),
+        'lookback': tune.uniform(5, 30),
+        'ema_length': tune.uniform(6, 35),
+        'conv': tune.uniform(28, 75),
+        'length': tune.uniform(2, 40),
+        'lengthMA': tune.uniform(14, 52),
+        'lengthSignal': tune.uniform(2, 28),
+        'fast': tune.uniform(2, 27),
+        'slow': tune.uniform(8, 42),
+        'signal': tune.uniform(2, 30)
     }
+        
+    algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": 2.5, "xi": 0.0})
+    algo = ConcurrencyLimiter(algo, max_concurrent=40)
     
-    optimizer = BayesianOptimization(
-        f=optimize_function, 
-        pbounds=pbounds, 
-        verbose=2, 
-        random_state=2
+    tuner = tune.Tuner(
+        optimize_function,
+        param_space=pbounds,
+        tune_config=tune.TuneConfig(
+            num_samples=10000,
+            metric="net_profit",
+            mode="max",
+            search_alg=algo
+        )
     )
     
-    def tune_wrapper(config):
-        return optimizer.maximize(init_points=2, n_iter=4)
+    results = tuner.fit()
     
-    scheduler = ASHAScheduler(
-        metric="net_profit",
-        mode="max",
-        max_t=30,
-        grace_period=10,
-        reduction_factor=2
-    )
+    output_best_file = os.path.join('min3_prof', f"{name}_runs.csv")
+    res_df = results.get_dataframe(filter_metric="net_profit", filter_mode="max")
+    res_df.to_csv(output_best_file)
     
-    analysis = tune.run(
-        tune.with_parameters(tune_wrapper),
-        config=pbounds,
-        num_samples=10,
-        scheduler=scheduler,
-        verbose=2,
-    )
-    
-    best_trial = analysis.get_best_trial(metric="net_profit", mode="max")
-    best_config = best_trial.config
-    best_result = best_trial.last_result["net_profit"]
-    
-    # Save best parameters and profit to CSV
+    best_config = results.get_best_result(metric="net_profit", mode="max").config
+
     output_best_file = os.path.join('min3_prof', f"{name}_best_params.csv")
     with open(output_best_file, "w", newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=list(best_config.keys()) + ["net_profit"])
+        writer = csv.DictWriter(csvfile, fieldnames=list(best_config.keys()))
         writer.writeheader()
-        best_config["net_profit"] = best_result
         writer.writerow(best_config)
     
     print("Best hyperparameters found were: ", best_config)
