@@ -99,7 +99,7 @@ def main(symbol, count):
         less_than_zero = (trade_data['agg_profit'] < 0).sum()
         greater_than_zero = (trade_data['agg_profit'] > 0).sum()
         
-        if less_than_zero != 0:
+        if less_than_zero == 0:
             less_than_zero = 1
             
         if (greater_than_zero/less_than_zero) < 3.2:
