@@ -7,7 +7,7 @@ import current_indicators.tsi as tsi
 import threading
 lock = threading.Lock()
 
-stance= [1,3,5]
+stance= [3,5]
 
 
 def calculate_indicators(df, hyperparameters):
@@ -53,28 +53,28 @@ def worker(params, ret, list_1):
                 return -50000  # Arbitrarily large loss to prevent further evaluation
             
         if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -85:
-            return -50000  # Arbitrarily large loss to prevent further evaluation
+            return -40000  # Arbitrarily large loss to prevent further evaluation
             
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row], ignore_index=True)
         temp = temp.tail(5)
     
     if len(trade_data) < 14:
-        return -50000
+        return -30000
     
     
     months_required = [2, 3, 4, 5, 6]  # Numeric representation of Feb, Mar, Apr, May, Jun, Jul
     month_counts = trade_data['entry_time'].dt.month.value_counts()
 
     if not all(month_counts.get(month, 0) >= 2 for month in months_required):
-        return -50000
+        return -20000
         
     
     less_than_zero = (trade_data['agg_profit'] < 0).sum()
     greater_than_zero = (trade_data['agg_profit'] > 0).sum()
     
     if (greater_than_zero/less_than_zero) < 3.2:
-        return -50000
+        return -10000
 
         
     net_profit = trade_data['agg_profit'].sum()
@@ -84,22 +84,22 @@ def worker(params, ret, list_1):
 
 
 for i in stance:
-    # df = pd.read_csv(f'min{i}_prof/Nifty 50_agg.csv')
-    # df1 = pd.read_csv(f'min{i}_prof/Nifty Bank_agg.csv')
+    # df = pd.read_csv(f'min{i}_prof/out/Nifty50_agg.csv')
+    # df1 = pd.read_csv(f'min{i}_prof/out/NiftyBank_agg.csv')
 
     # # Filter out rows with net_profit less than 100
     # filtered_df = df[df['net_profit'] >= 250]
     # fil_df1 = df1[df1['net_profit'] >= 250]
 
-    # # Sort the DataFrame by net_profit in descending order
+    # # # Sort the DataFrame by net_profit in descending order
     # sorted_df = filtered_df.sort_values(by='net_profit', ascending=False)
     # sorted_1 = fil_df1.sort_values(by='net_profit', ascending=False)
     # # Save the sorted and filtered data to a new CSV file
-    # sorted_1.to_csv(f'min{i}_prof/bank_nifty_top.csv', index=False)
-    # sorted_df.to_csv(f'min{i}_prof/Nifty_top50_agg.csv', index=False)
+    # sorted_1.to_csv(f'min{i}_prof/out/banknifty_top.csv', index=False)
+    # sorted_df.to_csv(f'min{i}_prof/out//Nifty_top50_agg.csv', index=False)
 
-    temp1 = pd.read_csv(f'min{i}_prof/Nifty_top50_agg.csv')
-    temp2 = pd.read_csv(f'min{i}_prof/bank_nifty_top.csv')
+    temp1 = pd.read_csv(f'min{i}_prof/out/Nifty_top50_agg.csv')
+    temp2 = pd.read_csv(f'min{i}_prof/out/banknifty_top.csv')
     data1 = pd.read_csv(f'data_{i}min/Nifty 50.csv')
     data2 = pd.read_csv(f'data_{i}min/Nifty Bank.csv')
     
@@ -128,6 +128,3 @@ for i in stance:
         temp1["final_net_profit"] = net_profit
         temp1.to_csv(f'min{i}_prof/Nifty_top50_agg_corrected.csv', index=False)
         print(f"Completed {j+1} of {len(temp1)}")
-    
-
-    
