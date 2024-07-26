@@ -81,7 +81,7 @@ def worker(params, ret, list_1):
                 postive_counter += 1
     
     if negative_counter != 0:
-        if ((positive_sum)/postive_counter)/((negative_sum)/(negative_counter)) < 2:
+        if ((positive_sum)/postive_counter)/((abs(negative_sum))/(negative_counter)) < 2:
             return -10000
     
     net_profit = trade_data['agg_profit'].sum()
