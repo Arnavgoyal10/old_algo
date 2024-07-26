@@ -13,6 +13,37 @@ lock = threading.Lock()
 stance= [3,5,3,5]
 trial = [1,2,1,2]
 
+def before(i):
+    df = pd.read_csv(f'min{i}_prof/out/Nifty 50_agg.csv')
+    df1 = pd.read_csv(f'min{i}_prof/out/Nifty Bank_agg.csv')
+
+    # Filter out rows with net_profit less than 100
+    filtered_df = df[df['net_profit'] >= 250]
+    fil_df1 = df1[df1['net_profit'] >= 250]
+
+    # Sort the DataFrame by net_profit in descending order
+    sorted_df = filtered_df.sort_values(by='net_profit', ascending=False)
+    sorted_1 = fil_df1.sort_values(by='net_profit', ascending=False)
+    # Save the sorted and filtered data to a new CSV file
+    sorted_1.to_csv(f'min{i}_prof/before/bank_nifty_top.csv', index=False)
+    sorted_df.to_csv(f'min{i}_prof/before/Nifty_top50_agg.csv', index=False)
+
+def after(i):
+    df = pd.read_csv(f'min{i}_prof/corrected/Nifty_top50_agg_corrected.csv')
+    df1 = pd.read_csv(f'min{i}_prof/corrected/bank_nifty_top_corrected.csv')
+
+    # Filter out rows with net_profit less than 100
+    filtered_df = df[df['final_net_profit'] >= 250]
+    fil_df1 = df1[df1['final_net_profit'] >= 250]
+
+    # Sort the DataFrame by net_profit in descending order
+    sorted_df = filtered_df.sort_values(by='final_net_profit', ascending=False)
+    sorted_1 = fil_df1.sort_values(by='final_net_profit', ascending=False)
+    # Save the sorted and filtered data to a new CSV file
+    sorted_1.to_csv(f'min{i}_prof/after/bank_nifty_top.csv', index=False)
+    sorted_df.to_csv(f'min{i}_prof/after/Nifty_top50_agg.csv', index=False)
+
+
 def calculate_indicators(df, hyperparameters):
     lookback_config = hyperparameters[0]
     ema_length_config = hyperparameters[1]
@@ -113,7 +144,7 @@ def doing(args):
             list1 = params[2:]  # All remaining elements
             net_profit = worker(list1, data1, list2)
             temp1.at[j, "final_net_profit"] = net_profit 
-            temp1.to_csv(f'min{i}_prof/Nifty_top50_agg_corrected.csv', index=False)
+            temp1.to_csv(f'min{i}_prof/corrected/Nifty_top50_agg_corrected.csv', index=False)
             print(f"Completed {j+1} of {len(temp1)}")
         
         return
@@ -132,11 +163,15 @@ def doing(args):
             list1 = params[2:]
             net_profit = worker(list1, data2, list2)
             temp2.at[j, "final_net_profit"] = net_profit 
-            temp2.to_csv(f'min{i}_prof/bank_nifty_top_corrected.csv', index=False)
+            temp2.to_csv(f'min{i}_prof/corrected/bank_nifty_top_corrected.csv', index=False)
             print(f"Completed {j+1} of {len(temp2)}")
         
 
 def main():
+    
+    before(3)
+    before(5)
+        
     # Create a list of all (stance, trial) combinations
     combinations = [(stance, trial) for stance in [3, 5] for trial in [2, 1]]
     
@@ -145,6 +180,9 @@ def main():
         pool.map(doing, combinations)
     
     print("Completed all combinations")
+    
+    after(3)
+    after(5)
 
 
 if __name__ == "__main__":
