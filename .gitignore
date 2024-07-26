@@ -9,6 +9,7 @@ __pycache__/
 
 output.txt
 output1.txt
+output2.txt
 # C extensions
 *.so
 
