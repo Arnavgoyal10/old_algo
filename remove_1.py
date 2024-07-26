@@ -10,8 +10,6 @@ import os
 
 lock = threading.Lock()
 
-stance= [3,5,3,5]
-trial = [1,2,1,2]
 
 def calculate_indicators(df, hyperparameters):
     lookback_config = hyperparameters[0]
@@ -93,14 +91,10 @@ def doing(args):
     stance, trial = args
 
     ohlc = ['into', 'inth', 'intl', 'intc']
-    if stance == 3:
-        i = 3
-    elif stance == 5:
-        i = 5
     
     if trial == 1:
-        temp1 = pd.read_csv(f'min{i}_prof/out/Nifty_top50_agg.csv')
-        data1 = pd.read_csv(f'data_{i}min/Nifty 50.csv')
+        temp1 = pd.read_csv(f'{stance}_trial/Nifty_top50_agg.csv')
+        data1 = pd.read_csv(f'data_{stance}min/Nifty 50.csv')
         data1["time"] = pd.to_datetime(data1["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
         
         for col in ohlc:
@@ -112,14 +106,14 @@ def doing(args):
             list1 = params[2:]  # All remaining elements
             net_profit = worker(list1, data1, list2)
             temp1.at[j, "final_net_profit"] = net_profit 
-            temp1.to_csv(f'min{i}_prof/Nifty_top50_agg_corrected.csv', index=False)
+            temp1.to_csv(f'{stance}_trial/Nifty_top50_agg_corrected.csv', index=False)
             print(f"Completed {j+1} of {len(temp1)}")
         
         return
         
-    else:
-        temp2 = pd.read_csv(f'min{i}_prof/out/banknifty_top.csv')
-        data2 = pd.read_csv(f'data_{i}min/Nifty Bank.csv')
+    elif trial == 2:
+        temp2 = pd.read_csv(f'{stance}_trial/banknifty_top.csv')
+        data2 = pd.read_csv(f'data_{stance}min/Nifty Bank.csv')
         data2["time"] = pd.to_datetime(data2["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
         
         for col in ohlc:
@@ -131,13 +125,13 @@ def doing(args):
             list1 = params[2:]
             net_profit = worker(list1, data2, list2)
             temp2.at[j, "final_net_profit"] = net_profit 
-            temp2.to_csv(f'min{i}_prof/bank_nifty_top_corrected.csv', index=False)
+            temp2.to_csv(f'{stance}_trial/bank_nifty_top_corrected.csv', index=False)
             print(f"Completed {j+1} of {len(temp2)}")
         
 
 def main():
     # Create a list of all (stance, trial) combinations
-    combinations = [(stance, trial) for stance in [3, 5] for trial in [2, 1]]
+    combinations = [(stance, trial) for stance in [1, 3, 5] for trial in [2,1]]
     
     # Use multiprocessing Pool to run the combinations concurrently
     with Pool(processes=min(len(combinations), cpu_count())) as pool:
