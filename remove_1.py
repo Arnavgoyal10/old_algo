@@ -72,12 +72,13 @@ def worker(params, ret, list_1):
     postive_counter = 0
     negative_counter = 0
     for i in range(0, len(trade_data)):
-        if trade_data['agg_profit'].iloc[i] < 0:
-            negative_sum += trade_data['agg_profit'].iloc[i]
-            negative_counter += 1
-        else:
-            positive_sum += trade_data['agg_profit'].iloc[i]
-            postive_counter += 1
+        if pd.notna(trade_data['agg_profit'].iloc[i]) and trade_data['agg_profit'].iloc[i] is not None:
+            if trade_data['agg_profit'].iloc[i] < 0:
+                negative_sum += trade_data['agg_profit'].iloc[i]
+                negative_counter += 1
+            else:
+                positive_sum += trade_data['agg_profit'].iloc[i]
+                postive_counter += 1
     
     if negative_counter != 0:
         if ((positive_sum)/postive_counter)/((negative_sum)/(negative_counter)) < 2:
