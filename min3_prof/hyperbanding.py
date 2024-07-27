@@ -124,13 +124,13 @@ def final(name):
     }
         
     algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": 2.5, "xi": 0.0})
-    algo = ConcurrencyLimiter(algo, max_concurrent=40)
+    algo = ConcurrencyLimiter(algo, max_concurrent=90)
     
     tuner = tune.Tuner(
         optimize_function,
         param_space=pbounds,
         tune_config=tune.TuneConfig(
-            num_samples=10000,
+            num_samples=4100,
             metric="net_profit",
             mode="max",
             search_alg=algo
