@@ -10,38 +10,19 @@ import os
 
 lock = threading.Lock()
 
-stance= [3,5,3,5]
-trial = [1,2,1,2]
 
-def before(i):
-    df = pd.read_csv(f'min{i}_prof/out/Nifty 50_agg.csv')
-    df1 = pd.read_csv(f'min{i}_prof/out/Nifty Bank_agg.csv')
-
-    # Filter out rows with net_profit less than 100
+def before(i, symbol):
+    symbol1 = symbol.replace(' ', '')
+    df = pd.read_csv(f'min{i}_prof/out/{symbol1}_agg.csv')
     filtered_df = df[df['net_profit'] >= 250]
-    fil_df1 = df1[df1['net_profit'] >= 250]
-
-    # Sort the DataFrame by net_profit in descending order
     sorted_df = filtered_df.sort_values(by='net_profit', ascending=False)
-    sorted_1 = fil_df1.sort_values(by='net_profit', ascending=False)
-    # Save the sorted and filtered data to a new CSV file
-    sorted_1.to_csv(f'min{i}_prof/before/bank_nifty_top.csv', index=False)
-    sorted_df.to_csv(f'min{i}_prof/before/Nifty_top50_agg.csv', index=False)
+    sorted_df.to_csv(f'min{i}_prof/before/{symbol}_before.csv', index=False)
 
-def after(i):
-    df = pd.read_csv(f'min{i}_prof/corrected/Nifty_top50_agg_corrected.csv')
-    df1 = pd.read_csv(f'min{i}_prof/corrected/bank_nifty_top_corrected.csv')
-
-    # Filter out rows with net_profit less than 100
+def after(i, symbol):
+    df = pd.read_csv(f'min{i}_prof/corrected/{symbol}_corrected.csv')
     filtered_df = df[df['final_net_profit'] >= 250]
-    fil_df1 = df1[df1['final_net_profit'] >= 250]
-
-    # Sort the DataFrame by net_profit in descending order
     sorted_df = filtered_df.sort_values(by='final_net_profit', ascending=False)
-    sorted_1 = fil_df1.sort_values(by='final_net_profit', ascending=False)
-    # Save the sorted and filtered data to a new CSV file
-    sorted_1.to_csv(f'min{i}_prof/after/bank_nifty_top.csv', index=False)
-    sorted_df.to_csv(f'min{i}_prof/after/Nifty_top50_agg.csv', index=False)
+    sorted_df.to_csv(f'min{i}_prof/after/{symbol}_after.csv', index=False)
 
 
 def calculate_indicators(df, hyperparameters):
@@ -81,10 +62,10 @@ def worker(params, ret, list_1):
         with lock:
             trade_data = refracted.final(temp, trade_data, [list_1[0], list_1[1]])
         if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
-            if trade_data['profit'].tail(3).sum() < -85:
+            if trade_data['profit'].tail(3).sum() < -75:
                 return -50000  # Arbitrarily large loss to prevent further evaluation
             
-        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -85:
+        if len(trade_data) > 0 and pd.notna(trade_data['profit'].iloc[-1]) and trade_data['profit'].iloc[-1] is not None and trade_data['profit'].iloc[-1] < -75:
             return -40000  # Arbitrarily large loss to prevent further evaluation
             
         next_row = df.iloc[[j]]
@@ -122,67 +103,47 @@ def worker(params, ret, list_1):
 
 
 def doing(args):
-    stance, trial = args
+    stance, symbol= args
 
     ohlc = ['into', 'inth', 'intl', 'intc']
-    if stance == 3:
-        i = 3
-    elif stance == 5:
-        i = 5
     
-    if trial == 1:
-        temp1 = pd.read_csv(f'min{i}_prof/out/Nifty_top50_agg.csv')
-        data1 = pd.read_csv(f'data_{i}min/Nifty 50.csv')
-        data1["time"] = pd.to_datetime(data1["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
-        
-        for col in ohlc:
-            data1[col] = data1[col].astype(float)
-            
-        for j in range(len(temp1)):
-            params = temp1.iloc[j][:-1].tolist()
-            list2 = params[:2]  # First and second elements
-            list1 = params[2:]  # All remaining elements
-            net_profit = worker(list1, data1, list2)
-            temp1.at[j, "final_net_profit"] = net_profit 
-            temp1.to_csv(f'min{i}_prof/corrected/Nifty_top50_agg_corrected.csv', index=False)
-            print(f"Completed {j+1} of {len(temp1)}")
-        
-        return
-        
-    else:
-        temp2 = pd.read_csv(f'min{i}_prof/out/banknifty_top.csv')
-        data2 = pd.read_csv(f'data_{i}min/Nifty Bank.csv')
-        data2["time"] = pd.to_datetime(data2["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
-        
-        for col in ohlc:
-            data2[col] = data2[col].astype(float)
+    temp1 = pd.read_csv(f'min{stance}_prof/before/{symbol}_before.csv')
+    data1 = pd.read_csv(f'data_{stance}min/{symbol}.csv')
+    data1["time"] = pd.to_datetime(data1["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
     
-        for j in range(len(temp2)):
-            params = temp2.iloc[j][:-1].tolist()
-            list2 = params[:2]
-            list1 = params[2:]
-            net_profit = worker(list1, data2, list2)
-            temp2.at[j, "final_net_profit"] = net_profit 
-            temp2.to_csv(f'min{i}_prof/corrected/bank_nifty_top_corrected.csv', index=False)
-            print(f"Completed {j+1} of {len(temp2)}")
+    for col in ohlc:
+        data1[col] = data1[col].astype(float)
+        
+    for j in range(len(temp1)):
+        params = temp1.iloc[j][:-1].tolist()
+        list2 = params[:2]  # First and second elements
+        list1 = params[2:]  # All remaining elements
+        net_profit = worker(list1, data1, list2)
+        temp1.at[j, "final_net_profit"] = net_profit 
+        temp1.to_csv(f'min{stance}_prof/corrected/{symbol}_corrected.csv', index=False)
+        print(f"Completed {j+1} of {len(temp1)}")
+    
+    return
         
 
 def main():
     
-    before(3)
-    before(5)
-        
-    # Create a list of all (stance, trial) combinations
-    combinations = [(stance, trial) for stance in [3, 5] for trial in [2, 1]]
+    before(3, 'Nifty 50')
+    before(3, 'Nifty Bank')
+    before(5, 'Nifty 50')
+    before(5, 'Nifty Bank')     
+
+    combinations = [(stance, symbol) for stance in [3, 5] for symbol in ['Nifty 50','Nifty Bank']]
     
-    # Use multiprocessing Pool to run the combinations concurrently
     with Pool(processes=min(len(combinations), cpu_count())) as pool:
         pool.map(doing, combinations)
     
     print("Completed all combinations")
     
-    after(3)
-    after(5)
+    after(3, 'Nifty 50')
+    after(3, 'Nifty Bank')
+    after(5, 'Nifty 50')
+    after(5, 'Nifty Bank')
 
 
 if __name__ == "__main__":
