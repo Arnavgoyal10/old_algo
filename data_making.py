@@ -33,8 +33,8 @@ def calculate_indicators(df, hyperparamas):
     return df
 
 
-ret = pd.read_csv('Nifty Bank_after.csv')
-ret1 = pd.read_csv('data_5min/Nifty Bank.csv')
+ret = pd.read_csv('Nifty 50_after.csv')
+ret1 = pd.read_csv('data_5min/Nifty 50.csv')
 
 os.makedirs("data", exist_ok=True)
 
@@ -45,7 +45,7 @@ def main():
         ret1[col] = ret1[col].astype(float)
     
     for i in range(len(ret)):
-        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
+        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit', 'trade_flag', 'buy', 'sell']
         trade_data = pd.DataFrame(columns=trade_columns)
         states = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         
@@ -64,8 +64,42 @@ def main():
             temp = pd.concat([temp, next_row], ignore_index=True)
             temp = temp.tail(5)
             
-            trade_data.to_csv(f"data/trade_data_{i}.csv", index=False)
-            
+        trade_data['stoploss'] = configs[0]
+        trade_data['squee'] = configs[1]
+        trade_data['lookback'] = params[0]
+        trade_data['ema_length'] = params[1]
+        trade_data['conv'] = params[2]
+        trade_data['length'] = params[3]
+        trade_data['lengthMA'] = params[4]
+        trade_data['lengthSignal'] = params[5]
+        trade_data['fast'] = params[6]
+        trade_data['slow'] = params[7]
+        trade_data['signal'] = params[8]
+
+        for k in range(0, len(trade_data)):
+            if trade_data['agg_profit'][k] is not None:
+                if trade_data["agg_profit"][k] > 0:
+                    trade_data["trade_flag"][k] = 1
+                    if trade_data["entry_price"][k] > trade_data["exit_price"][k]:
+                        trade_data["buy"][k] = 0
+                        trade_data["sell"][k] = 1
+                    else:
+                        trade_data["sell"][k] = 0
+                        trade_data["buy"][k] = 1
+                elif trade_data["agg_profit"][k] < 0 or trade_data["agg_profit"][k] == 0:
+                    trade_data["trade_flag"][k] = 0
+                    if trade_data["entry_price"][k] > trade_data["exit_price"][k]:
+                        trade_data["buy"][k] = 1
+                        trade_data["sell"][k] = 0
+                    else:
+                        trade_data["sell"][k] = 1
+                        trade_data["buy"][k] = 0
+                    
         
+        trade_data = trade_data.drop(columns=['entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit'])
+        
+        trade_data.to_csv(f"data/trade_data_{i}.csv", index=False)
+        print(f"Data {i} done")
+              
 if __name__ == "__main__":
     main()
