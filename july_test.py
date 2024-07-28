@@ -5,6 +5,8 @@ import current_indicators.impulsemacd as impulsemacd
 import current_indicators.tsi as tsi
 import threading
 import refracted_advance as refracted
+import warnings
+warnings.filterwarnings("ignore")
 
 ohlc = ['into', 'inth', 'intl', 'intc']
 lock = threading.Lock()
@@ -43,6 +45,7 @@ def worker(symbol, min):
     for i in range(len(ret)):
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
+        states = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         
         list1 = ret.iloc[i].to_list()
         configs = list1[:2]
@@ -56,10 +59,10 @@ def worker(symbol, min):
         temp = df.head(5).copy()
         df = df.iloc[5:].reset_index(drop=True)
         
-        for j in range(0, len(ret1)):
+        for j in range(len(df)):
             
             with lock:
-                trade_data = refracted.final(temp, trade_data, configs)
+                trade_data, states = refracted.final(temp, trade_data, configs, states)
             
             if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
                 if trade_data['profit'].tail(3).sum() < -75:
@@ -71,7 +74,7 @@ def worker(symbol, min):
                 break
                 # Arbitrarily large loss to prevent further evaluation
                 
-            next_row = ret1.iloc[[j]]
+            next_row = df.iloc[[j]]
             temp = pd.concat([temp, next_row], ignore_index=True)
             temp = temp.tail(5)
     

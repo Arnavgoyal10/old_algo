@@ -132,11 +132,13 @@ def check_trade(df):
             buying_price = df["intl"].iloc[-1]
         return 1, market_direction, buying_price, stoploss
     
-def final(temp, trade_data, hyper_parameters):
+def final(temp, trade_data, hyper_parameters, states):
     global stoploss_config, squee_config
     
     global current_state, signal, market_direction, stoploss, order_count, buying_price, exit_time
     global exit_price, order_flag_count, entry_time, entry_price
+    
+    (current_state, signal, market_direction, stoploss, order_count, buying_price, exit_time, exit_price, order_flag_count, entry_time, entry_price) = states
     
     (stoploss_config, squee_config) = hyper_parameters
 
@@ -209,4 +211,6 @@ def final(temp, trade_data, hyper_parameters):
             current_state = 0
         signal, market_direction, buying_price, stoploss = new_signal, new_market_direction, new_buying_price, new_stoploss
         order_flag_count = 0
-    return trade_data
+    
+    states = (current_state, signal, market_direction, stoploss, order_count, buying_price, exit_time, exit_price, order_flag_count, entry_time, entry_price)
+    return trade_data, states

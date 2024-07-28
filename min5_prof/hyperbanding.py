@@ -12,6 +12,8 @@ import ray
 from ray import tune, train
 from ray.tune.search.bayesopt import BayesOptSearch
 from ray.tune.search import ConcurrencyLimiter
+import warnings
+warnings.filterwarnings("ignore")
 
 lock = threading.Lock()
 
@@ -35,6 +37,7 @@ def calculate_indicators(df, hyperparameters):
 def worker(params, ret):    
     trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
     trade_data = pd.DataFrame(columns=trade_columns)
+    states = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     
     hyperparameters = [
         params['lookback'],
@@ -49,11 +52,12 @@ def worker(params, ret):
     ]
     
     df = calculate_indicators(ret, hyperparameters)
-    temp = df.copy()
+    temp = df.head(5).copy()
+    df = df.iloc[5:].reset_index(drop=True)
     
     for j in range(0, len(df)):
         with lock:
-            trade_data = refracted.final(temp, trade_data, [params['stoploss'], params['squee']])
+            trade_data, states = refracted.final(temp, trade_data, [params['stoploss'], params['squee']], states)
         
         next_row = df.iloc[[j]]
         temp = pd.concat([temp, next_row.dropna(how='all')], ignore_index=True)  # Handle concatenation properly

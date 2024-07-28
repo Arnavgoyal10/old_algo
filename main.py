@@ -7,7 +7,8 @@ import current_indicators.velocity_indicator as velocity_indicator
 import current_indicators.squeeze as squeeze
 import current_indicators.impulsemacd as impulsemacd
 import current_indicators.tsi as tsi
-
+import warnings
+warnings.filterwarnings("ignore")
 
 ohlc=['into', 'inth', 'intl', 'intc']
      
@@ -48,6 +49,7 @@ def main():
     with cProfile.Profile() as pr:   
         trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit']
         trade_data = pd.DataFrame(columns=trade_columns)
+        states = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
         hyper_params     = [15.923617502107277,20.74092418115655,48.69763754932589,26.423868207117494,30.522490827984534,6.022950291540738,13.127021769538057,34.5678756760113,21.381032573200393]
         parse = [22.059387008716673,2.119323795593763]
@@ -65,7 +67,7 @@ def main():
         
                                                             
         for i in range(0, len(df)):
-            trade_data = refracted.final(temp, trade_data, parse)
+            trade_data, states = refracted.final(temp, trade_data, parse, states)
             
             # if len(trade_data) > 3 and (trade_data['profit'].tail(3) < 0).all():
             #     if trade_data['profit'].tail(3).sum() < -40:

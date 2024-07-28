@@ -7,6 +7,8 @@ import current_indicators.tsi as tsi
 import threading
 from multiprocessing import Pool, cpu_count
 import os
+import warnings
+warnings.filterwarnings("ignore")
 
 lock = threading.Lock()
 
