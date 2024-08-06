@@ -38,7 +38,7 @@ def calculate_indicators(df, hyperparameters):
 def worker(symbol, min):
     
     ret = pd.read_csv(f'min{min}_prof/after/{symbol}_after.csv')
-    ret1 = pd.read_csv(f'july/{symbol}.csv')
+    ret1 = pd.read_csv(f'July/{symbol}.csv')
     
     
     
@@ -49,7 +49,7 @@ def worker(symbol, min):
         
         list1 = ret.iloc[i].to_list()
         configs = list1[:2]
-        params = list1[2:-1]
+        params = list1[2:-2]
         net = 0
         ret1["time"] = pd.to_datetime(ret1["time"], format="%Y-%m-%d %H:%M:%S", dayfirst=False)
         for col in ohlc:
@@ -59,6 +59,7 @@ def worker(symbol, min):
         temp = df.head(5).copy()
         df = df.iloc[5:].reset_index(drop=True)
         
+        print("working for", i)
         for j in range(len(df)):
             
             with lock:
@@ -82,30 +83,35 @@ def worker(symbol, min):
         positive_sum = 0
         postive_counter = 0
         negative_counter = 0
-        for i in range(0, len(trade_data)):
-            if pd.notna(trade_data['agg_profit'].iloc[i]) and trade_data['agg_profit'].iloc[i] is not None:
-                if trade_data['agg_profit'].iloc[i] < 0:
-                    negative_sum += trade_data['agg_profit'].iloc[i]
+        for k in range(0, len(trade_data)):
+            if pd.notna(trade_data['agg_profit'].iloc[k]) and trade_data['agg_profit'].iloc[k] is not None:
+                if trade_data['agg_profit'].iloc[k] < 0:
+                    negative_sum += trade_data['agg_profit'].iloc[k]
                     negative_counter += 1
                 else:
-                    positive_sum += trade_data['agg_profit'].iloc[i]
+                    positive_sum += trade_data['agg_profit'].iloc[k]
                     postive_counter += 1
         
-        if negative_counter != 0:
+        if postive_counter == 0:
+            net = -15000
+        
+        elif negative_counter != 0:
             if ((positive_sum)/postive_counter)/((abs(negative_sum))/(negative_counter)) < 2:
                 net = -10000
-        
+    
+    
         if net == 0:
             net = trade_data['agg_profit'].sum()
     
         ret.at[i, 'net_profit_july'] = net
+        print(i)
             
     ret.to_csv(f'min{min}_prof/july/{symbol}_july.csv', index=False)
        
        
        
 def main():
-    worker('Nifty 50', 5)
+    # worker('Nifty 50', 5)
     worker('Nifty 50', 3)
     worker('Nifty Bank', 5)
     worker('Nifty Bank', 3)

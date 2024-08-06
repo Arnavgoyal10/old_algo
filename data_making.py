@@ -45,7 +45,7 @@ def main():
         ret1[col] = ret1[col].astype(float)
     
     for i in range(len(ret)):
-        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit', 'trade_flag', 'buy', 'sell']
+        trade_columns = ['entry_time', 'entry_price', 'exit_time', 'exit_price', 'profit', 'agg_profit', 'no_trade', 'buy', 'sell']
         trade_data = pd.DataFrame(columns=trade_columns)
         states = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         
@@ -79,7 +79,7 @@ def main():
         for k in range(0, len(trade_data)):
             if trade_data['agg_profit'][k] is not None:
                 if trade_data["agg_profit"][k] > 0:
-                    trade_data["trade_flag"][k] = 1
+                    trade_data["no_trade"][k] = 0
                     if trade_data["entry_price"][k] > trade_data["exit_price"][k]:
                         trade_data["buy"][k] = 0
                         trade_data["sell"][k] = 1
@@ -87,12 +87,12 @@ def main():
                         trade_data["sell"][k] = 0
                         trade_data["buy"][k] = 1
                 elif trade_data["agg_profit"][k] < 0 or trade_data["agg_profit"][k] == 0:
-                    trade_data["trade_flag"][k] = 0
+                    trade_data["no_trade"][k] = 1
                     if trade_data["entry_price"][k] > trade_data["exit_price"][k]:
-                        trade_data["buy"][k] = 1
+                        trade_data["buy"][k] = 0
                         trade_data["sell"][k] = 0
                     else:
-                        trade_data["sell"][k] = 1
+                        trade_data["sell"][k] = 0
                         trade_data["buy"][k] = 0
                     
         
