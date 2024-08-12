@@ -63,10 +63,12 @@ def worker(params, ret):
         temp = pd.concat([temp, next_row.dropna(how='all')], ignore_index=True)  # Handle concatenation properly
         temp = temp.tail(5)
     
-    if trade_data['percent'].iloc[-1].isna():
+    if len(trade_data) > 0 and pd.notna(trade_data['percent'].iloc[-1]) and trade_data['percent'].iloc[-1] is not None:
+        net_profit = trade_data['percent'].iloc[-1]
+    elif len(trade_data) > 1:
         net_profit = trade_data['percent'].iloc[-2]
     else:
-        net_profit = trade_data['percent'].iloc[-1]
+        net_profit = 0
     return net_profit  # BayesianOptimization minimizes the objective function
 
 def final(name):
@@ -129,7 +131,7 @@ def final(name):
         'signal': tune.uniform(2, 30)
     }
         
-    algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": 2.5, "xi": 0.0})
+    algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": 1.9, "xi": 0.0})
     algo = ConcurrencyLimiter(algo, max_concurrent=40)
     
     tuner = tune.Tuner(
