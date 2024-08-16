@@ -1,26 +1,29 @@
+import hour_agg.final3 as finalh_prof
 import min3_agg.final3 as final3_prof
 import min5_agg.final5 as final5_prof
 import threading
 
 
-def run_module(module):
-    module.main()
+def run_module(module, gamma):
+    module.main(gamma)
+
 
 def main():
-    modules = [final3_prof, final5_prof]
-    
+    modules = [finalh_prof, final3_prof, final5_prof]
+    gamma = [1.1, 1.9, 2.8, 4]
     print("TEST")
-    
+
     threads = []
-    
+
     for module in modules:
-        thread = threading.Thread(target=run_module, args=(module,))
-        thread.start()
-        threads.append(thread)
-    
+        for g in gamma:
+            thread = threading.Thread(target=run_module, args=(module, g))
+            thread.start()
+            threads.append(thread)
+
     for thread in threads:
         thread.join()
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()
-    

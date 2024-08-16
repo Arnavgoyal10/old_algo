@@ -3,18 +3,18 @@ import multiprocessing
 import hour_agg.hyperbanding as hyperbanding_3min
 
 
-def working(symbol):
-    hyperbanding_3min.final(symbol)
+def working(symbol, gamma):
+    hyperbanding_3min.final(symbol, gamma)
 
 
-def worker(symbol, counter):
+def worker(symbol, counter, gamma):
     print("Worker started ", counter)
     # print("Working on ", symbol)
-    working(symbol)
+    working(symbol, gamma)
     print("Worker finished ", counter)
 
 
-def main():
+def main(gamma):
     file_path = "combined_df.csv"
     file = pd.read_csv(file_path)
 
@@ -22,12 +22,12 @@ def main():
     processes = []
 
     for i, symbol in enumerate(symbols):
-        p = multiprocessing.Process(target=worker, args=(symbol, i))
+        p = multiprocessing.Process(target=worker, args=(symbol, i, gamma))
         processes.append(p)
         p.start()
 
-        if i >= 1:
-            break
+        # if i >= 1:
+        #     break
 
     for p in processes:
         p.join()

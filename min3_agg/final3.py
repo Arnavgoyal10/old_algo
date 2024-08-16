@@ -3,35 +3,37 @@ import multiprocessing
 import min3_agg.hyperbanding as hyperbanding_3min
 
 
+def working(symbol, gamma):
+    hyperbanding_3min.final(symbol, gamma)
 
-def working(symbol):
-    hyperbanding_3min.final(symbol)
 
-def worker(symbol, counter):
+def worker(symbol, counter, gamma):
     print("Worker started ", counter)
     # print("Working on ", symbol)
-    working(symbol)
-    print("Worker finished ", counter) 
+    working(symbol, gamma)
+    print("Worker finished ", counter)
 
-def main():
-    file_path = 'combined_df.csv'
+
+def main(gamma):
+    file_path = "combined_df.csv"
     file = pd.read_csv(file_path)
 
-    symbols  = file['Symbol'].unique()
+    symbols = file["Symbol"].unique()
     processes = []
-    
+
     for i, symbol in enumerate(symbols):
-        p = multiprocessing.Process(target=worker, args=(symbol, i))
+        p = multiprocessing.Process(target=worker, args=(symbol, i, gamma))
         processes.append(p)
         p.start()
 
-        if i >= 1:
-            break
-        
+        # if i >= 1:
+        #     break
+
     for p in processes:
         p.join()
-    
+
     print("All workers finished")
+
 
 if __name__ == "__main__":
     main()

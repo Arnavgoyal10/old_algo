@@ -95,7 +95,7 @@ def worker(params, ret):
     return net_profit  # BayesianOptimization minimizes the objective function
 
 
-def final(name):
+def final(name, gamma):
     print("Script started at:", datetime.now())
     print("Current working directory:", os.getcwd())
 
@@ -169,7 +169,7 @@ def final(name):
         "signal": tune.uniform(2, 30),
     }
 
-    algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": 2.5, "xi": 0.0})
+    algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": gamma, "xi": 0.0})
     algo = ConcurrencyLimiter(algo, max_concurrent=40)
 
     tuner = tune.Tuner(
