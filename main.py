@@ -141,6 +141,30 @@ def main():
     df_comb_file = os.path.join(base_directory, "trade_data_new_test3.csv")
     trade_data.to_csv(df_comb_file, index=True)
 
+    # folder = "symbols_profit"
+    # df_list = []
+
+    # for csv_file in os.listdir(folder):
+    #     if csv_file.endswith(".csv"):
+    #         file_path = os.path.join(folder, csv_file)
+    #         ret = pd.read_csv(file_path)
+    #         if ret["net_profit"].iloc[-1] > 800:
+    #             name = csv_file.split("_")[0]
+    #             df_list.append(
+    #                 pd.DataFrame(
+    #                     {"symbol": [name], "profit": [ret["net_profit"].iloc[-1]]}
+    #                 )
+    #             )
+
+    # if df_list:  # Only concatenate if there's data to avoid errors
+    #     df = pd.concat(df_list, ignore_index=True)
+    #     df = df.sort_values(by="profit", ascending=False)
+    #     df = df.reset_index(drop=True)  # Resetting the index after sorting
+    #     df = df.iloc[0:28]  # Selecting the top 28 rows
+    #     df.to_csv("symbols_profit.csv", index=False)
+    # else:
+    #     print("No files met the criteria.")
+
 
 if __name__ == "__main__":
     main()
