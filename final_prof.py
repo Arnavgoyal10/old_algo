@@ -10,7 +10,7 @@ def run_module(module, gamma):
 
 def main():
     modules = [finalh_prof, final3_prof, final5_prof]
-    gamma = [1.1, 1.9, 2.8, 4]
+    gamma = [1.1, 1.9, 2.8]
 
     print("TEST")
 

@@ -149,6 +149,8 @@ def final(name, gamma):
         ]
 
         output_dir = "/home/arnav.goyal_ug2023/old_algo/min3_agg/out"
+
+        # output_dir = "min3_agg/out"
         os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
         output_file = os.path.join(output_dir, f"{name.replace(' ', '')}_agg.csv")
@@ -180,7 +182,7 @@ def final(name, gamma):
     }
 
     algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": gamma, "xi": 0.0})
-    algo = ConcurrencyLimiter(algo, max_concurrent=40)
+    algo = ConcurrencyLimiter(algo, max_concurrent=1)
 
     tuner = tune.Tuner(
         optimize_function,

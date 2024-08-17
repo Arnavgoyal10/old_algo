@@ -15,7 +15,7 @@ def worker(symbol, counter, gamma):
 
 
 def main(gamma):
-    file_path = "combined_df.csv"
+    file_path = "symbols_profit.csv"
     file = pd.read_csv(file_path)
 
     symbols = file["Symbol"].unique()
