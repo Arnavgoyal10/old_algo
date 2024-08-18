@@ -18,7 +18,7 @@ def main(gamma):
     file_path = "symbols_profit.csv"
     file = pd.read_csv(file_path)
 
-    symbols = file["Symbol"].unique()
+    symbols = file["symbol"].unique()
     processes = []
 
     for i, symbol in enumerate(symbols):
