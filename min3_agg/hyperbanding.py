@@ -182,7 +182,7 @@ def final(name, gamma):
     }
 
     algo = BayesOptSearch(utility_kwargs={"kind": "ucb", "kappa": gamma, "xi": 0.0})
-    algo = ConcurrencyLimiter(algo, max_concurrent=1)
+    algo = ConcurrencyLimiter(algo, max_concurrent=11)
 
     tuner = tune.Tuner(
         optimize_function,
