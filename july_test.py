@@ -50,9 +50,6 @@ def worker(symbol, min):
     ret = pd.read_csv(f"filter/all/{min}_{symbol}")
     ret1 = pd.read_csv(f"final/{min}_{symbol}")
 
-    print(ret)
-    print(ret1)
-
     for i in range(len(ret)):
         trade_columns = [
             "entry_time",
@@ -145,10 +142,16 @@ def main():
     filter = "filter/all"
 
     for file in os.listdir(f"{filter}"):
-        time = file.split("_")[0]
         symbol = file.split("_")[1]
-        thread = threading.Thread(target=worker, args=(symbol, time))
-        thread.start()
+        if (
+            symbol == "Nifty 50.csv"
+            or symbol == "Nifty Bank.csv"
+            or symbol == "SHREECEM.csv"
+        ):
+            time = file.split("_")[0]
+            symbol = file.split("_")[1]
+            thread = threading.Thread(target=worker, args=(symbol, time))
+            thread.start()
 
 
 if __name__ == "__main__":

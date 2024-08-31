@@ -51,8 +51,14 @@ def main():
                 final = final[final["net_profit"] > 250]
                 # sort in ascending order of net_profit
                 final = final.sort_values(by="net_profit", ascending=False)
-                final.to_csv(f"{folders}/all/{folder}_all.csv", index=False)
-                print(final.shape)
+                # final.to_csv(f"{folders}/all/{folder}_all.csv", index=False)
+
+            if len(final[final.duplicated()]) > 0:
+                final = final.drop_duplicates()
+
+            # final.to_csv(f"{folders}/all/{folder}_all.csv", index=False)
+            print(len(final))
+            print("for ", folder)
 
 
 if __name__ == "__main__":
