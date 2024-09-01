@@ -143,10 +143,9 @@ def main():
 
     for file in os.listdir(f"{filter}"):
         symbol = file.split("_")[1]
+        time = file.split("_")[0]
         if (
-            symbol == "Nifty 50.csv"
-            or symbol == "Nifty Bank.csv"
-            or symbol == "SHREECEM.csv"
+            symbol == "Nifty 50.csv" and time == "5"
         ):
             time = file.split("_")[0]
             symbol = file.split("_")[1]
