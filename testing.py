@@ -16,49 +16,61 @@ def main():
     # df = pd.read_csv('lstm/testing_data.csv')
     # print(df)
 
-    folders = "filter"
-    required_columns = [
-        "stoploss",
-        "squee",
-        "lookback",
-        "ema_length",
-        "conv",
-        "length",
-        "lengthMA",
-        "lengthSignal",
-        "fast",
-        "slow",
-        "signal",
-        "net_profit",
-    ]
+    # folders = "filter"
+    # required_columns = [
+    #     "stoploss",
+    #     "squee",
+    #     "lookback",
+    #     "ema_length",
+    #     "conv",
+    #     "length",
+    #     "lengthMA",
+    #     "lengthSignal",
+    #     "fast",
+    #     "slow",
+    #     "signal",
+    #     "net_profit",
+    # ]
 
-    for folder in os.listdir(folders):
-        if folder == "all":
-            continue
-        folder_path = os.path.join(folders, folder)
-        if os.path.isdir(folder_path):
-            final = pd.DataFrame()
-            for file in os.listdir(folder_path):
-                if file.endswith(".csv"):
-                    df = pd.read_csv(os.path.join(folder_path, file))
+    # for folder in os.listdir(folders):
+    #     if folder == "all":
+    #         continue
+    #     folder_path = os.path.join(folders, folder)
+    #     if os.path.isdir(folder_path):
+    #         final = pd.DataFrame()
+    #         for file in os.listdir(folder_path):
+    #             if file.endswith(".csv"):
+    #                 df = pd.read_csv(os.path.join(folder_path, file))
 
-                    if list(df.columns) == required_columns:
-                        final = pd.concat([final, df], ignore_index=True)
+    #                 if list(df.columns) == required_columns:
+    #                     final = pd.concat([final, df], ignore_index=True)
 
-            if not final.empty:
-                # final.to_csv(f"{folders}/{folder}_all.csv", index=False)
-                # only keep rows which have net_profit > 250
-                final = final[final["net_profit"] > 250]
-                # sort in ascending order of net_profit
-                final = final.sort_values(by="net_profit", ascending=False)
-                # final.to_csv(f"{folders}/all/{folder}_all.csv", index=False)
+    #         if not final.empty:
+    #             # final.to_csv(f"{folders}/{folder}_all.csv", index=False)
+    #             # only keep rows which have net_profit > 250
+    #             final = final[final["net_profit"] > 250]
+    #             # sort in ascending order of net_profit
+    #             final = final.sort_values(by="net_profit", ascending=False)
+    #             # final.to_csv(f"{folders}/all/{folder}_all.csv", index=False)
 
-            if len(final[final.duplicated()]) > 0:
-                final = final.drop_duplicates()
+    #         if len(final[final.duplicated()]) > 0:
+    #             final = final.drop_duplicates()
 
-            # final.to_csv(f"{folders}/all/{folder}_all.csv", index=False)
-            print(len(final))
-            print("for ", folder)
+    #         # final.to_csv(f"{folders}/all/{folder}_all.csv", index=False)
+    #         print(len(final))
+    #         print("for ", folder)
+
+    folder = "done"
+    for file in os.listdir(folder):
+        if file.endswith(".csv"):
+            file_name = file.split(".")[0]
+            df = pd.read_csv(os.path.join(folder, file))
+            df = df[df["net_profit_july"] > 0]
+            df = df[df["net_profit"] / df["net_profit_july"] > 2]
+            df.sort_values(by="net_profit", ascending=False, inplace=True)
+            df.reset_index(drop=True, inplace=True)
+            if len(df) > 0:
+                df.to_csv(f"work/{file_name}.csv", index=False)
 
 
 if __name__ == "__main__":
