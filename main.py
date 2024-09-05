@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import refracted_advance as refracted
+import refracted_agg as refracted
 import cProfile
 import pstats
 import current_indicators.velocity_indicator as velocity_indicator
@@ -15,7 +15,7 @@ ohlc = ["into", "inth", "intl", "intc"]
 
 # file_path = 'nifty_data/nifty_feb.csv'
 # file_path = "data_3min/Nifty 50.csv"
-file_path = "final_1/3_Nifty 50.csv"
+file_path = "final_1/3_SHREECEM.csv"
 # file_path = "Nifty 50.csv"
 # file_path = 'Nifty 50.csv'
 ret = pd.read_csv(file_path)
@@ -71,22 +71,37 @@ def main():
             "exit_price",
             "profit",
             "agg_profit",
+            "percent",
         ]
         trade_data = pd.DataFrame(columns=trade_columns)
         states = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
+        # hyper_params = [
+        #     15.923617502107277,
+        #     20.74092418115655,
+        #     48.69763754932589,
+        #     26.423868207117494,
+        #     30.522490827984534,
+        #     6.022950291540738,
+        #     13.127021769538057,
+        #     34.5678756760113,
+        #     21.381032573200393,
+        # ]
+        # parse = [22.059387008716673, 2.119323795593763]
+
+        parse = [14.647310714581522, 8.160265603492665]
+
         hyper_params = [
-            15.923617502107277,
-            20.74092418115655,
-            48.69763754932589,
-            26.423868207117494,
-            30.522490827984534,
-            6.022950291540738,
-            13.127021769538057,
-            34.5678756760113,
-            21.381032573200393,
+            21.00269246889293,
+            31.132807303093635,
+            45.722773497329946,
+            28.9301444248758,
+            30.40167517240707,
+            9.90316336389218,
+            21.89795849001267,
+            28.77469410114307,
+            9.750494426500728,
         ]
-        parse = [22.059387008716673, 2.119323795593763]
 
         # hyper_params = [
         #     10.72740199049976,

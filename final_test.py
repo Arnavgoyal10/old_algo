@@ -47,7 +47,7 @@ def calculate_indicators(df, hyperparameters):
 
 def worker(symbol, min):
 
-    ret = pd.read_csv(f"work/{min}_{symbol}")
+    ret = pd.read_csv(f"work2/{min}_{symbol}")
     # symbol = symbol.replace(".csv", "")
     ret1 = pd.read_csv(f"final_1/{min}_{symbol}")
 
@@ -165,19 +165,27 @@ def worker(symbol, min):
             net = trade_data["agg_profit"].sum()
 
         ret.at[i, "net_profit_overall"] = net
+        ret.at[i, "percent"] = temp
 
-        ret.to_csv(f"work1/{min}_{symbol}", index=False)
+        ret.to_csv(f"work2/{min}_{symbol}", index=False)
 
-    ret = pd.read_csv(f"work1/{min}_{symbol}")
+    ret = pd.read_csv(f"work2/{min}_{symbol}")
     ret = ret[ret["net_profit_overall"] > 0]
     ret = ret.sort_values(by="net_profit_overall", ascending=False)
 
 
 def main():
 
-    filter = "work"
+    filter = "work2"
 
     for file in os.listdir(f"{filter}"):
+        # print(file)
+        # ret = pd.read_csv(f"{filter}/{file}")
+        # ret = ret[ret["net_profit_overall"] > 0]
+        # ret = ret.sort_values(by="net_profit_overall", ascending=False)
+        # if len(ret) > 0:
+        #     ret.to_csv(f"work2/{file}", index=False)
+
         symbol = file.split("_")[1]
         time = file.split("_")[0]
 
