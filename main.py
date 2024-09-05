@@ -14,7 +14,8 @@ warnings.filterwarnings("ignore")
 ohlc = ["into", "inth", "intl", "intc"]
 
 # file_path = 'nifty_data/nifty_feb.csv'
-file_path = "data_3min/Nifty 50.csv"
+# file_path = "data_3min/Nifty 50.csv"
+file_path = "final_1/3_Nifty 50.csv"
 # file_path = "Nifty 50.csv"
 # file_path = 'Nifty 50.csv'
 ret = pd.read_csv(file_path)
