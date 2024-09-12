@@ -73,34 +73,60 @@ def check_exit(df, market_direction, stoploss):
     return 0, exit_price, exit_time, stoploss
 
 
-def check_trade(df):
+def check_trade(df, confirmation_waiting):
+    temp1, temp2 = map(int, confirmation_waiting.split("_"))
     buying_price = 0
     waiting = 0
     market_direction = 0
     stoploss = 0
+    time_waiting = 0
+
+    if temp1 == 1:
+        if df["ImpulseMACD"].iloc[-1] == 0:
+            return 0, 0, 0, 0, "0_0"
+
+        impulse_temp1 = df["TSI"].iloc[-1] - df["TSIs"].iloc[-1]
+        impulse_temp2 = df["TSI"].iloc[-2] - df["TSIs"].iloc[-2]
+
+        if temp2 != 1:
+            impulse_temp1 = -impulse_temp1
+            impulse_temp2 = -impulse_temp2
+
+        if impulse_temp2 < 0 and impulse_temp1 > 0:
+            return 0, 0, 0, 0, "0_0"
+        elif not (impulse_temp1 > impulse_temp2):
+            return 0, 0, 0, 0, "0_0"
+
+        stoploss = set_stoploss(df, market_direction, stoploss)
+
+        if temp2 == 1:
+            buying_price = df["inth"].iloc[-1]
+        else:
+            buying_price = df["intl"].iloc[-1]
+        return 1, market_direction, buying_price, stoploss, "0_0"
 
     current_time = df["time"].iloc[-1]
     comparison_time = current_time.replace(hour=14, minute=49, second=0, microsecond=0)
 
     if current_time > comparison_time:
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, "0_0"
 
-    comparison_time = current_time.replace(hour=9, minute=16, second=0, microsecond=0)
+    # comparison_time = current_time.replace(hour=9, minute=45, second=0, microsecond=0)
 
-    if current_time < comparison_time:
-        return 0, 0, 0, 0
+    # if current_time < comparison_time:
+    #     return 0, 0, 0, 0
 
     smooth = df["smooth_velocity"].iloc[-1]
     smooth2 = df["smooth_velocity"].iloc[-2]
 
     if not ((smooth > 0 and smooth2 < 0) or (smooth < 0 and smooth2 > 0)):
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, "0_0"
 
     psi1 = df["psi"].iloc[-1]
     psi2 = df["psi"].iloc[-2]
 
     if not (psi1 < 80 and psi2 < 80 and (psi1 - squee_config) < psi2):
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, "0_0"
 
     if smooth < 0:
         market_direction = -1
@@ -108,7 +134,7 @@ def check_trade(df):
         market_direction = 1
 
     if df["ImpulseMACD"].iloc[-1] == 0:
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, "0_0"
 
     impulse_temp1 = df["ImpulseMACD"].iloc[-1] - df["ImpulseMACDCDSignal"].iloc[-1]
     impulse_temp2 = df["ImpulseMACD"].iloc[-2] - df["ImpulseMACDCDSignal"].iloc[-2]
@@ -120,7 +146,7 @@ def check_trade(df):
     if impulse_temp2 < 0 and impulse_temp1 > 0:
         waiting = 1
     elif not (impulse_temp1 > impulse_temp2):
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, "0_0"
 
     tsi_temp1 = df["TSI"].iloc[-1] - df["TSIs"].iloc[-1]
     tsi_temp2 = df["TSI"].iloc[-2] - df["TSIs"].iloc[-2]
@@ -132,14 +158,20 @@ def check_trade(df):
     if tsi_temp2 < 0 and tsi_temp1 > 0:
         waiting = 1
     elif not (tsi_temp1 > tsi_temp2):
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, "0_0"
 
-    # comparison_time = current_time.replace(hour=9, minute=20, second=0, microsecond=0)
-    # if current_time < comparison_time:
-    #     waiting = 1
+    comparison_time = current_time.replace(hour=9, minute=30, second=0, microsecond=0)
+    if current_time < comparison_time:
+        time_waiting = 1
 
-    if waiting == 1:
-        return 0, market_direction, 0, 0
+    if time_waiting == 1:
+        if market_direction == 1:
+            return 0, market_direction, 0, 0, "1_1"
+        else:
+            return 0, market_direction, 0, 0, "1_-1"
+    elif waiting == 1:
+        return 0, market_direction, 0, 0, "0_0"
+
     else:
         stoploss = set_stoploss(df, market_direction, stoploss)
 
@@ -147,15 +179,14 @@ def check_trade(df):
             buying_price = df["inth"].iloc[-1]
         else:
             buying_price = df["intl"].iloc[-1]
-        # print("placing order at time", df["time"].iloc[-1], "at price", buying_price)
-        return 1, market_direction, buying_price, stoploss
+        return 1, market_direction, buying_price, stoploss, "0_0"
 
 
 def final(temp, trade_data, hyper_parameters, states):
     global stoploss_config, squee_config
 
     global current_state, signal, market_direction, stoploss, order_count, buying_price, exit_time
-    global exit_price, order_flag_count, entry_time, entry_price
+    global exit_price, order_flag_count, entry_time, entry_price, confirmation_waiting
 
     (
         current_state,
@@ -169,6 +200,7 @@ def final(temp, trade_data, hyper_parameters, states):
         order_flag_count,
         entry_time,
         entry_price,
+        confirmation_waiting,
     ) = states
 
     (stoploss_config, squee_config) = hyper_parameters
@@ -232,7 +264,13 @@ def final(temp, trade_data, hyper_parameters, states):
             market_direction = 0
             signal = 0
 
-    new_signal, new_market_direction, new_buying_price, new_stoploss = check_trade(temp)
+    (
+        new_signal,
+        new_market_direction,
+        new_buying_price,
+        new_stoploss,
+        confirmation_waiting,
+    ) = check_trade(temp, confirmation_waiting)
     # new_signal = 0, new_market_direction = 0, new_buying_price = 0, new_stoploss = 0
     # new_signal = 1, new_market_direction = market_direction, new_buying_price = buying_price, new_stoploss = stoploss
 
@@ -289,5 +327,6 @@ def final(temp, trade_data, hyper_parameters, states):
         order_flag_count,
         entry_time,
         entry_price,
+        confirmation_waiting,
     )
     return trade_data, states
